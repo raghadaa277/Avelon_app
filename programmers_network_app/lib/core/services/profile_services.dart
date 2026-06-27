@@ -3,11 +3,9 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/models/Profile/UpdateProfileResponse.dart';
 import '../../data/models/Profile/profile_model.dart';
-import '../../data/models/Profile/profile_model.dart';
+
 import '../const/api_Constants.dart';
 import '../storage/token_storage.dart';
-
-
 
 class ProfileServices {
   Future<UserProfileModel> getUserProfile() async {
@@ -15,20 +13,22 @@ class ProfileServices {
     final prefs = await SharedPreferences.getInstance();
 
     final token = await TokenStorage.getToken();
-      final response = await http.get(
-    url,
-    headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-    if (token != null) 'Authorization': 'Bearer $token',
-    },
+    final response = await http.get(
+      url,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
     );
     print("📡 PROFILE RESPONSE STATUS => ${response.statusCode}");
     print("📡 PROFILE RESPONSE BODY => ${response.body}");
     if (response.statusCode == 200) {
       return UserProfileModel.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load profile: ${response.statusCode} - ${response.body}');
+      throw Exception(
+        'Failed to load profile: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 
@@ -49,7 +49,6 @@ class ProfileServices {
     required String? githubUrl,
     required String? linkedinUrl,
   }) async {
-
     final url = Uri.parse(ApiConstants.updateProfile);
     final token = await TokenStorage.getToken();
 
@@ -89,7 +88,9 @@ class ProfileServices {
 
       return UpdateProfileResponseModel.fromJson(jsonResponse);
     } else {
-      throw Exception('Failed to update profile: ${response.statusCode} - ${response.body}');
+      throw Exception(
+        'Failed to update profile: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 }

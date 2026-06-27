@@ -183,7 +183,7 @@ class _TagsPageState extends State<TagsPage> {
                     width: double.infinity,
                     height: 52,
                     child: ElevatedButton(
-                      onPressed: (ctrl.isLoading ||_activatedTags.isEmpty)///
+                      onPressed: (ctrl.isLoading || _activatedTags.isEmpty)
                           ? null
                           : () async {
                               final sources = ctrl.onboardingModel!.data.sources
