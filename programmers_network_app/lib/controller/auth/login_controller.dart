@@ -25,7 +25,7 @@ class LoginController extends GetxController {
       update();
 
       final result = await _loginServices.login(
-        fcmToken: "mmcccccة",
+        fcmToken: "dymy_token_",
         email: email.text.trim(),
         password: password.text,
       );

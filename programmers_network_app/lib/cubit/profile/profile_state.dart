@@ -10,10 +10,7 @@ class ProfileLoaded extends ProfileState {
   final UserProfileModel profileModel;
   final int activeTabIndex;
 
-
-  ProfileLoaded(
-      {required this.profileModel,
-       required this.activeTabIndex });
+  ProfileLoaded({required this.profileModel, required this.activeTabIndex});
 }
 
 class ProfileError extends ProfileState {

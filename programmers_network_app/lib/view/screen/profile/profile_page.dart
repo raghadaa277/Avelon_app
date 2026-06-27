@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
+import 'package:programmers_network_app/controller/auth/logout_controller.dart';
+import 'package:programmers_network_app/view/widget/profile/slider_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/services/profile_services.dart';
 import '../../../cubit/profile/profile_cubit.dart';
@@ -7,57 +10,192 @@ import '../../../cubit/profile/profile_state.dart';
 import '../../../data/models/Profile/profile_model.dart';
 import 'EditPhotoScreen.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  final LogoutController logoutController = Get.put(LogoutController());
+  void _showLogoutDialog(BuildContext context) {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: "Logout",
+      transitionDuration: const Duration(milliseconds: 250),
+      pageBuilder: (context, _, __) {
+        return Center(
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.logout_rounded,
+                    size: 50,
+                    color: Color(0xffB8FF1A),
+                  ),
+                  const SizedBox(height: 12),
+
+                  const Text(
+                    "Logout",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  Text(
+                    "Are you sure you want to log out?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          child: const Text(
+                            "Cancel",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(width: 10),
+
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            logoutController.logout();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xffB8FF1A),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: const Text(
+                            "Logout",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+      transitionBuilder: (context, animation, _, child) {
+        return ScaleTransition(
+          scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+          child: child,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ProfileCubit>(
-      create: (context) => ProfileCubit(service: ProfileServices())..fetchProfile(),
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF1FDE1),
-        appBar: _buildAppBar(context),
-        body: BlocBuilder<ProfileCubit, ProfileState>(
-          builder: (context, state) {
-            if (state is ProfileLoading) {
-              return const Center(child: CircularProgressIndicator(color: Color(0xffB8FF1A)));
-            } else if (state is ProfileError) {
-              return Center(child: Text(state.errorMessage));
-            } else if (state is ProfileLoaded) {
-              final profileData = state.profileModel.data;
+      create: (context) =>
+          ProfileCubit(service: ProfileServices())..fetchProfile(),
+      child: BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, state) {
+          if (state is ProfileLoading) {
+            return Scaffold(
+              backgroundColor: const Color(0xFFF1FDE1),
+              appBar: _buildAppBar(context),
+              body: const Center(
+                child: CircularProgressIndicator(color: Color(0xffB8FF1A)),
+              ),
+            );
+          } else if (state is ProfileError) {
+            return Scaffold(
+              backgroundColor: const Color(0xFFF1FDE1),
+              appBar: _buildAppBar(context),
+              body: Center(child: Text(state.errorMessage)),
+            );
+          } else if (state is ProfileLoaded) {
+            final profileData = state.profileModel.data;
 
-
-              Widget activeContent;
-              if (state.activeTabIndex == 0) {
-                activeContent = PostsTabContent(isActive: true);
-              } else if (state.activeTabIndex == 1) {
-                activeContent = AboutTabContent(data: profileData);
-              } else {
-                activeContent = SkillsTabContent(isActive: true);
-              }
-
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    UserHeaderCard(data: profileData),
-                    const SizedBox(height: 16),
-                    ActionButtonsRow(profileData: profileData),
-                    const SizedBox(height: 20),
-                    _buildTabBar(context, state.activeTabIndex),
-                    const SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: activeContent,
-                    ),
-                    const SizedBox(height: 40),
-                  ],
-                ),
-              );
+            Widget activeContent;
+            if (state.activeTabIndex == 0) {
+              activeContent = PostsTabContent(isActive: true);
+            } else if (state.activeTabIndex == 1) {
+              activeContent = AboutTabContent(data: profileData);
+            } else {
+              activeContent = SkillsTabContent(isActive: true);
             }
-            return const SizedBox.shrink();
-          },
-        ),
+            return AvelonHomeShell(
+              menu: ProfileSideMenu(
+                data: profileData,
+                onLogout: () {
+                  _showLogoutDialog(context);
+                },
+              ),
+              body: Scaffold(
+                backgroundColor: const Color(0xFFF1FDE1),
+                appBar: _buildAppBar(context),
+                body: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      UserHeaderCard(data: profileData),
+                      const SizedBox(height: 16),
+                      ActionButtonsRow(profileData: profileData),
+                      const SizedBox(height: 20),
+                      _buildTabBar(context, state.activeTabIndex),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: activeContent,
+                      ),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        },
       ),
     );
   }
@@ -76,31 +214,48 @@ class ProfilePage extends StatelessWidget {
           ),
           child: IconButton(
             padding: const EdgeInsets.only(left: 6),
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.black54, size: 14),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black54,
+              size: 14,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
         ),
       ),
       title: const Text(
         'A V E L O N',
-        style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w800, letterSpacing: 2.5),
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 14,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 2.5,
+        ),
       ),
       centerTitle: true,
       actions: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
-            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
             child: IconButton(
-              icon: const Icon(Icons.more_horiz, color: Colors.black54, size: 20),
-              onPressed: () {},
+              icon: const Icon(
+                Icons.more_horiz,
+                color: Colors.black54,
+                size: 20,
+              ),
+              onPressed: () {
+                AvelonHomeShell.of(context)?.toggleMenu();
+              },
             ),
           ),
         ),
       ],
     );
   }
-
 
   Widget _buildTabBar(BuildContext context, int activeIndex) {
     return Padding(
@@ -210,9 +365,9 @@ class AboutTabContent extends StatelessWidget {
   const AboutTabContent({super.key, required this.data});
   Future<void> _launchURL(BuildContext context, String? urlString) async {
     if (urlString == null || urlString.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Link not available")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Link not available")));
       return;
     }
 
@@ -224,45 +379,51 @@ class AboutTabContent extends StatelessWidget {
         throw 'Could not launch $urlString';
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Could not open link: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Could not open link: $e")));
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-
         _buildAboutCard(
           title: "Developer Information",
           icon: Icons.info_outline,
           items: [
-            {'label': 'Backend Developer at Avelon', 'icon': Icons.laptop_chromebook},
+            {
+              'label': 'Backend Developer at Avelon',
+              'icon': Icons.laptop_chromebook,
+            },
           ],
         ),
         const SizedBox(height: 16),
-
 
         _buildAboutCard(
           title: "Experience",
           icon: Icons.business_center_outlined,
           items: [
-            {'label': '${data.experienceYears} Years Experience', 'icon': Icons.trending_up},
+            {
+              'label': '${data.experienceYears} Years Experience',
+              'icon': Icons.trending_up,
+            },
           ],
         ),
         const SizedBox(height: 16),
-
 
         _buildAboutCard(
           title: "Location",
           icon: Icons.location_on_outlined,
           items: [
-            {'label': '${data.city}, ${data.country}', 'icon': Icons.map_outlined},
+            {
+              'label': '${data.city}, ${data.country}',
+              'icon': Icons.map_outlined,
+            },
           ],
         ),
         const SizedBox(height: 16),
-
 
         _buildAboutCard(
           title: "Education",
@@ -270,12 +431,19 @@ class AboutTabContent extends StatelessWidget {
           items: [
             {'label': data.educationStatus, 'icon': Icons.check_circle_outline},
             {'label': data.university, 'icon': Icons.account_balance_outlined},
-            {'label': data.major ?? "Software Engineering", 'icon': Icons.layers_outlined},
-            {'label': data.studyYear == "fourth_year" ? "Year 4" : data.studyYear, 'icon': Icons.timeline},
+            {
+              'label': data.major ?? "Software Engineering",
+              'icon': Icons.layers_outlined,
+            },
+            {
+              'label': data.studyYear == "fourth_year"
+                  ? "Year 4"
+                  : data.studyYear,
+              'icon': Icons.timeline,
+            },
           ],
         ),
         const SizedBox(height: 16),
-
 
         Container(
           width: double.infinity,
@@ -291,11 +459,13 @@ class AboutTabContent extends StatelessWidget {
                 children: [
                   Icon(Icons.link_rounded, size: 18, color: Colors.black87),
                   const SizedBox(width: 10),
-                  Text("Connect", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  Text(
+                    "Connect",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
               const Divider(height: 24, color: Color(0xFFF1FDE1)),
-
 
               _buildLinkTile(
                 context: context,
@@ -304,7 +474,6 @@ class AboutTabContent extends StatelessWidget {
                 url: data.githubUrl,
               ),
               const Divider(height: 20, color: Color(0xFFF1FDE1)),
-
 
               _buildLinkTile(
                 context: context,
@@ -319,12 +488,18 @@ class AboutTabContent extends StatelessWidget {
     );
   }
 
-
-  Widget _buildAboutCard({required String title, required IconData icon, required List<Map<String, dynamic>> items}) {
+  Widget _buildAboutCard({
+    required String title,
+    required IconData icon,
+    required List<Map<String, dynamic>> items,
+  }) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -332,62 +507,82 @@ class AboutTabContent extends StatelessWidget {
             children: [
               Icon(icon, size: 18, color: Colors.black87),
               const SizedBox(width: 10),
-              Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
           const Divider(height: 24, color: Color(0xFFF1FDE1)),
-          ...items.map((item) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              children: [
-                Icon(item['icon'] as IconData, size: 18, color: Colors.grey.shade600),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    (item['label'] as String).toUpperCase(),
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-                    overflow: TextOverflow.ellipsis,
+          ...items.map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                children: [
+                  Icon(
+                    item['icon'] as IconData,
+                    size: 18,
+                    color: Colors.grey.shade600,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      (item['label'] as String).toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          )),
+          ),
         ],
       ),
     );
   }
 
-
-  Widget _buildLinkTile({required String label,
+  Widget _buildLinkTile({
+    required String label,
     required BuildContext context,
     required IconData icon,
-    String? url}) {
+    String? url,
+  }) {
     final bool hasUrl = url != null && url.isNotEmpty;
     return GestureDetector(
-        onTap: () => _launchURL(context, url),
-        behavior: HitTestBehavior.opaque,
-        child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Row(
-              children: [
-                Icon(icon, size: 18, color: Colors.black87),
-                const SizedBox(width: 12),
-                Text(label, style: const TextStyle(
-                    fontSize: 13, fontWeight: FontWeight.w600)),
-                const Spacer(),
-                Text(
-                  url != null ? "View Profile" : "Not Provided",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: url != null ? Colors.grey : Colors.grey.shade400,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                const Icon(
-                    Icons.arrow_forward_ios, size: 12, color: Colors.grey),
-              ],
-            ),),);
-  }}
+      onTap: () => _launchURL(context, url),
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            Icon(icon, size: 18, color: Colors.black87),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            ),
+            const Spacer(),
+            Text(
+              url != null ? "View Profile" : "Not Provided",
+              style: TextStyle(
+                fontSize: 12,
+                color: url != null ? Colors.grey : Colors.grey.shade400,
+              ),
+            ),
+            const SizedBox(width: 4),
+            const Icon(Icons.arrow_forward_ios, size: 12, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class PostsTabContent extends StatelessWidget {
   final bool isActive;
@@ -400,9 +595,16 @@ class PostsTabContent extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 60),
         child: Column(
           children: [
-            const Icon(Icons.sticky_note_2_outlined, size: 48, color: Color(0xffB8FF1A)),
+            const Icon(
+              Icons.sticky_note_2_outlined,
+              size: 48,
+              color: Color(0xffB8FF1A),
+            ),
             const SizedBox(height: 16),
-            Text('No posts yet', style: TextStyle(color: Colors.grey[400], fontSize: 13)),
+            Text(
+              'No posts yet',
+              style: TextStyle(color: Colors.grey[400], fontSize: 13),
+            ),
           ],
         ),
       ),
@@ -422,52 +624,68 @@ class ActionButtonsRow extends StatelessWidget {
         children: [
           Expanded(
             flex: 2,
-        child: GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (c) => BlocProvider.value(
-                  value: context.read<ProfileCubit>(),
-                  child: EditPhotoScreen(profileData: profileData),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (c) => BlocProvider.value(
+                      value: context.read<ProfileCubit>(),
+                      child: EditPhotoScreen(profileData: profileData),
+                    ),
+                  ),
+                ).then((_) {
+                  if (context.mounted) {
+                    context.read<ProfileCubit>().fetchProfile();
+                  }
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xffB8FF1A),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.edit_note_rounded, size: 16),
+                    SizedBox(width: 6),
+                    Text(
+                      "Edit Profile",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ).then((_) {
-
-              if (context.mounted) {
-                context.read<ProfileCubit>().fetchProfile();
-              }
-            });
-          },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(color: const Color(0xffB8FF1A), borderRadius: BorderRadius.circular(14)),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.edit_note_rounded, size: 16),
-                  SizedBox(width: 6),
-                  Text("Edit Profile", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-
-                ],
-              ),
             ),
-          ),),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: Colors.grey.shade300)),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.ios_share, size: 16),
                   SizedBox(width: 6),
-                  Text("Share", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  Text(
+                    "Share",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                  ),
                 ],
               ),
             ),
-          ), ],
+          ),
+        ],
       ),
     );
   }
@@ -491,14 +709,14 @@ class UserHeaderCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-
-
               Stack(
                 children: [
                   CircleAvatar(
                     radius: 46,
                     backgroundColor: const Color(0xFFEFEFEF),
-                    backgroundImage: data.avatarFullUrl != null ? NetworkImage(data.avatarFullUrl!) : null,
+                    backgroundImage: data.avatarFullUrl != null
+                        ? NetworkImage(data.avatarFullUrl!)
+                        : null,
                     child: data.avatarFullUrl == null
                         ? const Icon(Icons.person, size: 40, color: Colors.grey)
                         : null,
@@ -523,13 +741,10 @@ class UserHeaderCard extends StatelessWidget {
               ),
               const SizedBox(width: 16),
 
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
-
                     Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
@@ -542,47 +757,61 @@ class UserHeaderCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 6),
-
                       ],
                     ),
                     const SizedBox(height: 2),
 
-
                     Text(
                       '@${data.username}',
-                      style: TextStyle(color: Colors.grey[400], fontSize: 12, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        color: Colors.grey[400],
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const SizedBox(height: 8),
 
-                    // 3. التخصص
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xffB8FF1A).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         data.specialization,
-                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black87),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8),
 
-
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.location_on_outlined, color: Colors.grey[400], size: 14),
+                        Icon(
+                          Icons.location_on_outlined,
+                          color: Colors.grey[400],
+                          size: 14,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           '${data.city}, ${data.country}',
-                          style: TextStyle(color: Colors.grey[500], fontSize: 12, fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 12),
 
-                    // 5. الـ Bio
                     Text(
                       data.bio,
                       textAlign: TextAlign.start,
@@ -598,7 +827,6 @@ class UserHeaderCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 24),
-
 
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -626,23 +854,27 @@ class UserHeaderCard extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(count, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+        Text(
+          count,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
         const SizedBox(height: 4),
-        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+        Text(
+          label,
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+        ),
       ],
     );
   }
 
   Widget _buildVerticalDivider() {
-    return Container(
-      height: 30,
-      width: 1,
-      color: Colors.grey.shade200,
-    );
+    return Container(height: 30, width: 1, color: Colors.grey.shade200);
   }
 }
-
-
 
 class SkillsTabContent extends StatelessWidget {
   final bool isActive;
@@ -650,7 +882,6 @@ class SkillsTabContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final List<Map<String, String>> dummySkills = [
       {'name': 'Laravel', 'level': 'Expert'},
       {'name': 'PHP', 'level': 'Expert'},
@@ -674,19 +905,35 @@ class SkillsTabContent extends StatelessWidget {
             children: [
               const Text(
                 "My Skills",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
               ),
               ElevatedButton.icon(
                 onPressed: () {},
                 icon: const Icon(Icons.add, size: 14, color: Colors.black),
-                label: const Text("Add Skill", style: TextStyle(fontSize: 11, color: Colors.black, fontWeight: FontWeight.bold)),
+                label: const Text(
+                  "Add Skill",
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xffB8FF1A),
                   elevation: 0,
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
-              )
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -694,7 +941,8 @@ class SkillsTabContent extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: dummySkills.length,
-            separatorBuilder: (context, index) => const Divider(height: 20, color: Color(0xFFF1FDE1)),
+            separatorBuilder: (context, index) =>
+                const Divider(height: 20, color: Color(0xFFF1FDE1)),
             itemBuilder: (context, index) {
               final skill = dummySkills[index];
               return Row(
@@ -703,18 +951,28 @@ class SkillsTabContent extends StatelessWidget {
                   const SizedBox(width: 12),
                   Text(
                     skill['name']!,
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const Spacer(),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFF1FDE1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       skill['level']!,
-                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -726,6 +984,5 @@ class SkillsTabContent extends StatelessWidget {
         ],
       ),
     );
-
   }
 }

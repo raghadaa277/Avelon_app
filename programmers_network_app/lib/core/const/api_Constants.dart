@@ -9,4 +9,5 @@ class ApiConstants {
   static const String refreshToken = "/api/refresh/access/token";
   static const String userProfile = "$baseurl/api/get/user/profile";
   static const String updateProfile = "$baseurl/api/update/user/profile";
+  static const String logout = "/api/mobile/logout";
 }
