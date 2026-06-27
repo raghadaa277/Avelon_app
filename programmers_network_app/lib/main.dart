@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     final prefs = await SharedPreferences.getInstance();
 
-    final seenOnboarding = prefs.getBool('seen_onboarding') ?? false;
+    final seenOnboarding = prefs.getBool('seen_onboarding') ?? true;
 
     if (!seenOnboarding) {
       initialRoute = AppRoute.register;
@@ -96,14 +96,18 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: AppRoute.login,
+      //initialRoute: AppRoute.login,
+        initialRoute:initialRoute,
       getPages: [
         GetPage(name: AppRoute.login, page: () => LoginPage()),
         GetPage(name: AppRoute.register, page: () => RegisterPage()),
         GetPage(name: AppRoute.verify, page: () => VerifyPage()),
         GetPage(name: AppRoute.complete, page: () => CompletePage()),
         GetPage(name: AppRoute.resetpassword, page: () => ForgetPasswordPage()),
-        GetPage(name: AppRoute.homePage, page: () => HomePage()),
+        GetPage(
+          name: AppRoute.homePage,
+          page: () => HomePage(profileCompletion: Get.arguments ?? "0%"),
+        ),
         GetPage(name: AppRoute.source, page: () => SourcePage()),
         GetPage(name: AppRoute.profilePage, page: () => ProfilePage()),
         GetPage(name: AppRoute.readyPage, page: () => ReadyPage()),

@@ -47,7 +47,8 @@ class OnboardingController extends GetxController {
 
       Get.snackbar("Success", completeModel?.message ?? "Success");
 
-      Get.offAllNamed(AppRoute.readyPage);
+      Get.offAllNamed(AppRoute.readyPage,
+        arguments: Get.arguments,);
     } catch (e) {
       Get.snackbar("Error", completeModel?.message ?? "Error");
     } finally {

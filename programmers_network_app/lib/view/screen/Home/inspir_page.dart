@@ -228,6 +228,7 @@ class _InspirationPageState extends State<InspirationPage> {
                                   selectedGoals: widget.selectedGoals,
                                   selectedInspirations: _selectedIds.toList(),
                                 ),
+                                  arguments: Get.arguments,
                               );
                             },
                       style: ElevatedButton.styleFrom(

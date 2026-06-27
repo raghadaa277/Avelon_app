@@ -94,7 +94,9 @@ class _ReadyPageState extends State<ReadyPage> {
                   child: ButtonCustomer(
                     text: "Enter Avelon",
                     onTap: () {
-                      Get.offAllNamed(AppRoute.profilePage);
+                      Get.offAllNamed(
+                          AppRoute.homePage,
+                          arguments: Get.arguments,);
                     },
                   ),
                 ),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../profile/profile_page.dart';
+
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final String profileCompletion;
+  const HomePage({super.key, required this.profileCompletion});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +18,7 @@ class HomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 8),
-              const ProfileCompletionCard(),
+              ProfileCompletionCard(completionText: profileCompletion),
               const SizedBox(height: 24),
               const StoriesSection(),
               const SizedBox(height: 24),
@@ -163,10 +166,13 @@ class AvelonLogoPainter extends CustomPainter {
 }
 
 class ProfileCompletionCard extends StatelessWidget {
-  const ProfileCompletionCard({super.key});
+  final String completionText;
+  const ProfileCompletionCard({super.key, required this.completionText});
 
   @override
   Widget build(BuildContext context) {
+    final cleanNumber = completionText.replaceAll('%', '').trim();
+    final double progressValue = (double.tryParse(cleanNumber) ?? 0.0) / 100.0;
     return Stack(
       children: [
 
@@ -193,15 +199,15 @@ class ProfileCompletionCard extends StatelessWidget {
                     width: 40,
                     height: 40,
                     child: CircularProgressIndicator(
-                      value: 0.65,
+                      value: progressValue,
                       strokeWidth: 2.5,
                       backgroundColor: Colors.grey[100],
 
                       valueColor: const AlwaysStoppedAnimation<Color>(Color(0xffB8FF1A)),
                     ),
                   ),
-                  const Text(
-                    '65%',
+                   Text(
+                      completionText,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black),
                   ),
                 ],
@@ -227,7 +233,21 @@ class ProfileCompletionCard extends StatelessWidget {
               ),
               const SizedBox(width: 6),
 
-              Container(
+                     GestureDetector(
+                           onTap: () {
+                                  print("BUTTON CLICKED");
+
+                                             Navigator.push(
+                                                    context,
+                                              MaterialPageRoute(
+                                                   builder: (_) {
+                                                print("BUILDING PROFILE PAGE");
+                                                 return const ProfilePage();
+                       },
+                           ),
+                                );
+                                    },
+             child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 decoration: BoxDecoration(
                   color: const Color(0xffB8FF1A),
@@ -244,25 +264,11 @@ class ProfileCompletionCard extends StatelessWidget {
                     Icon(Icons.arrow_forward, size: 14, color: Colors.black),
                   ],
                 ),
-              ),
+              ),),
             ],
           ),
         ),
 
-        Positioned(
-          top: 6,
-          right: 12,
-          child: GestureDetector(
-            onTap: () {
-
-            },
-            child: Icon(
-              Icons.close,
-              size: 16,
-              color: Colors.grey[500],
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -432,6 +438,7 @@ class FeedPostCard extends StatelessWidget {
               const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+
                 children: [
                   Row(
                     children: [
@@ -452,7 +459,7 @@ class FeedPostCard extends StatelessWidget {
           const SizedBox(height: 12),
           if (isCodePost)
             Container(
-              height: 170,
+              padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
                 color: const Color(0xFF0D1117),
                 borderRadius: BorderRadius.circular(16),
@@ -488,10 +495,11 @@ class FeedPostCard extends StatelessWidget {
                       ),
                       child: const Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('Performance', style: TextStyle(color: Colors.grey, fontSize: 10)),
                           Text('+3x', style: TextStyle(color: Color(0xffB8FF1A), fontWeight: FontWeight.bold, fontSize: 14)),
-                          Spacer(),
+                          SizedBox(height: 16),
                           Text('Requests', style: TextStyle(color: Colors.grey, fontSize: 10)),
                           Text('24.8K', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
                         ],
@@ -562,8 +570,8 @@ class CustomBottomNavBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(child: _buildNavItem(Icons.home_outlined, 'Home', true)),
-          Expanded(child: _buildNavItem(Icons.search, 'Explore', false)),
+          Expanded(child: _buildNavItem(context, Icons.home_outlined, 'Home', true, onTap: () {})),
+          Expanded(child: _buildNavItem(context, Icons.search, 'Explore', false, onTap: () {})),
           Expanded(
             child: Center(
               child: Container(
@@ -577,32 +585,52 @@ class CustomBottomNavBar extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(child: _buildNavItem(Icons.notifications_none, 'Notifications', false)),
-          Expanded(child: _buildNavItem(Icons.person_outline, 'Profile', false)),
+          Expanded(child: _buildNavItem(context, Icons.notifications_none, 'Notifications', false, onTap: () {})),
+
+          // 💡 هنا قمنا بربط أيقونة البروفايل بالانتقال النقي للبلوك
+          Expanded(
+            child: _buildNavItem(
+              context,
+              Icons.person_outline,
+              'Profile',
+              false,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfilePage()),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, bool isActive) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          icon,
-          color: isActive ? const Color(0xffB8FF1A) : Colors.grey[400],
-          size: 24,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: isActive ? Colors.black : Colors.grey[400],
-            fontSize: 10,
-            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+  // أضفنا الـ context والـ onTap لتفعيل الضغط والتنقل
+  Widget _buildNavItem(BuildContext context, IconData icon, String label, bool isActive, {required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque, // يضمن استجابة المنطقة بالكامل لللمس
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: isActive ? const Color(0xffB8FF1A) : Colors.grey[400],
+            size: 24,
           ),
-        ),
-      ],
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: isActive ? Colors.black : Colors.grey[400],
+              fontSize: 10,
+              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

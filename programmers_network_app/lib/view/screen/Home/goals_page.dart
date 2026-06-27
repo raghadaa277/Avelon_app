@@ -222,6 +222,7 @@ class _GoalsPageState extends State<GoalsPage> {
                                   selectedSources: widget.selectedSources,
                                   selectedGoals: _selectedIds.toList(),
                                 ),
+                                  arguments: Get.arguments,
                               );
                             },
                       style: ElevatedButton.styleFrom(

@@ -220,6 +220,7 @@ class _SourcePageState extends State<SourcePage> {
                                 () => GoalsPage(
                                   selectedSources: _selectedIds.toList(),
                                 ),
+                                arguments: Get.arguments,
                               );
                             },
                       style: ElevatedButton.styleFrom(

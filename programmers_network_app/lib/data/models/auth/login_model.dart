@@ -34,17 +34,20 @@ class UserModel {
 class DataLoginModel {
   final String accessToken;
   final String refreshToken;
+  final String profileCompletion;
   final UserModel users;
 
   DataLoginModel({
     required this.accessToken,
     required this.refreshToken,
+    required this.profileCompletion,
     required this.users,
   });
   factory DataLoginModel.fromJson(Map<String, dynamic> json) {
     return DataLoginModel(
       accessToken: json['access_token'],
       refreshToken: json['refresh_token'],
+      profileCompletion: json['profile_completion'] ?? '0%',
       users: UserModel.fromJson(json['user'] ?? {}),
     );
   }
