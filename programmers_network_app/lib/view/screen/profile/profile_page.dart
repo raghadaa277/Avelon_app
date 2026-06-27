@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../core/const/api_Constants.dart';
 import '../../../core/services/profile_services.dart';
+import '../../../core/storage/api_client.dart';
 import '../../../cubit/profile/profile_cubit.dart';
 import '../../../cubit/profile/profile_state.dart';
 import '../../../data/models/Profile/profile_model.dart';
@@ -13,7 +15,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ProfileCubit>(
-      create: (context) => ProfileCubit(service: ProfileServices())..fetchProfile(),
+      create: (context) => ProfileCubit(service: ProfileServices(ApiClient(baseUrl: ApiConstants.baseurl)))..fetchProfile(),
       child: Scaffold(
         backgroundColor: const Color(0xFFF1FDE1),
         appBar: _buildAppBar(context),

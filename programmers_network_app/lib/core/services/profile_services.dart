@@ -1,28 +1,38 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/models/Profile/UpdateProfileResponse.dart';
 import '../../data/models/Profile/profile_model.dart';
-
+import '../../data/services/Home/refresh_token_services.dart';
 import '../const/api_Constants.dart';
-import '../storage/token_storage.dart';
+
+import '../storage/api_client.dart';
 
 class ProfileServices {
-  Future<UserProfileModel> getUserProfile() async {
-    final url = Uri.parse(ApiConstants.userProfile);
-    final prefs = await SharedPreferences.getInstance();
 
-    final token = await TokenStorage.getToken();
-    final response = await http.get(
-      url,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        if (token != null) 'Authorization': 'Bearer $token',
-      },
-    );
+  final ApiClient apiClient;
+
+  ProfileServices(this.apiClient);
+
+  Future<UserProfileModel> getUserProfile() async {
+
+    final response = await apiClient.get("/api/get/user/profile");
+
     print("📡 PROFILE RESPONSE STATUS => ${response.statusCode}");
     print("📡 PROFILE RESPONSE BODY => ${response.body}");
+    if (response.statusCode == 410) {
+      print("🔄 Session expired (410). Attempting manual refresh token...");
+
+
+      final bool refreshed = await RefreshTokenService().refreshToken();
+
+      if (refreshed) {
+        print("✅ Token refreshed successfully! Re-sending profile request...");
+
+
+      } else {
+        print("❌ Refresh token expired too. User must log in.");
+        throw Exception('Session expired completely. Please login again.');
+      }
+    }
     if (response.statusCode == 200) {
       return UserProfileModel.fromJson(jsonDecode(response.body));
     } else {
@@ -49,9 +59,6 @@ class ProfileServices {
     required String? githubUrl,
     required String? linkedinUrl,
   }) async {
-    final url = Uri.parse(ApiConstants.updateProfile);
-    final token = await TokenStorage.getToken();
-
     final Map<String, dynamic> bodyData = {
       'full_name': fullName,
       'username': username,
@@ -70,14 +77,10 @@ class ProfileServices {
       'linkedin_url': linkedinUrl,
     };
 
-    final response = await http.post(
-      url,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        if (token != null) 'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode(bodyData),
+
+    final response = await apiClient.post(
+      "/api/update/user/profile",
+      body: bodyData,
     );
 
     print("📡 UPDATE PROFILE STATUS => ${response.statusCode}");
@@ -85,7 +88,6 @@ class ProfileServices {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonResponse = jsonDecode(response.body);
-
       return UpdateProfileResponseModel.fromJson(jsonResponse);
     } else {
       throw Exception(
