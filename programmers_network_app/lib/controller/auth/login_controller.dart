@@ -25,7 +25,7 @@ class LoginController extends GetxController {
       update();
 
       final result = await _loginServices.login(
-        fcmToken: "mmcccccة",//هون كل ما برنن بغيره لبين ما نعمل الاشعارات
+        fcmToken: "mmcccccة",
         email: email.text.trim(),
         password: password.text,
       );
@@ -34,10 +34,7 @@ class LoginController extends GetxController {
         refreshToken: result.data.refreshToken,
       );
       Get.snackbar("Success", result.message);
-      Get.offNamed(//هون ضفت هاد مشان مررالنسبة
-        AppRoute.source,
-      arguments: result.data.profileCompletion,
-          );
+      Get.offNamed(AppRoute.source, arguments: result.data.profileCompletion);
     } on LoginException catch (e) {
       switch (e.statusCode) {
         case 401:
