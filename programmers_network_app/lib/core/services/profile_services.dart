@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../data/models/Profile/UpdateProfileResponse.dart';
 import '../../data/models/Profile/profile_model.dart';
 
@@ -10,7 +10,6 @@ import '../storage/token_storage.dart';
 class ProfileServices {
   Future<UserProfileModel> getUserProfile() async {
     final url = Uri.parse(ApiConstants.userProfile);
-    final prefs = await SharedPreferences.getInstance();
 
     final token = await TokenStorage.getToken();
     final response = await http.get(
