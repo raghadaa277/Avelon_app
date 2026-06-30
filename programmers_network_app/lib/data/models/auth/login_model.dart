@@ -109,8 +109,6 @@ class LoginRequest {
   final String password;
   final String deviceId;
   final String device;
-  final String platform;
-  final String browser;
   final String fcmToken;
 
   LoginRequest({
@@ -118,8 +116,6 @@ class LoginRequest {
     required this.password,
     required this.deviceId,
     required this.device,
-    required this.platform,
-    required this.browser,
     required this.fcmToken,
   });
 
@@ -129,8 +125,6 @@ class LoginRequest {
       "password": password,
       "device_id": deviceId,
       "device": device,
-      "platform": platform,
-      "browser": browser,
       "fcm_token": fcmToken,
     };
   }

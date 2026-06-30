@@ -12,7 +12,8 @@ import 'package:programmers_network_app/view/screen/auth/login_page.dart';
 import 'package:programmers_network_app/view/screen/auth/register_page.dart';
 import 'package:programmers_network_app/view/screen/auth/verify_page.dart';
 import 'package:programmers_network_app/view/screen/profile/profile_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:programmers_network_app/view/screen/profile/user_activity_page.dart';
+import 'package:programmers_network_app/view/widget/welcome_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,20 +62,25 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     );
   }
 
+  // Future<void> checkStart() async {
+  //   /// مؤقتاً لا تمسحي التوكن أثناء الاختبار
+  //   // await TokenStorage.clearToken();
+
+  //   final prefs = await SharedPreferences.getInstance();
+
+  //   final seenOnboarding = prefs.getBool('seen_onboarding') ?? true;
+
+  //   if (!seenOnboarding) {
+  //     initialRoute = AppRoute.register;
+  //   } else {
+  //     initialRoute = AppRoute.login;
+  //   }
+
+  //   setState(() {});
+  // }
+
   Future<void> checkStart() async {
-    /// مؤقتاً لا تمسحي التوكن أثناء الاختبار
-    // await TokenStorage.clearToken();
-
-    final prefs = await SharedPreferences.getInstance();
-
-    final seenOnboarding = prefs.getBool('seen_onboarding') ?? true;
-
-    if (!seenOnboarding) {
-      initialRoute = AppRoute.register;
-    } else {
-      initialRoute = AppRoute.login;
-    }
-
+    initialRoute = AppRoute.welcomePage;
     setState(() {});
   }
 
@@ -96,8 +102,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      //initialRoute: AppRoute.login,
-        initialRoute:initialRoute,
+      initialRoute: AppRoute.welcomePage,
       getPages: [
         GetPage(name: AppRoute.login, page: () => LoginPage()),
         GetPage(name: AppRoute.register, page: () => RegisterPage()),
@@ -111,6 +116,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         GetPage(name: AppRoute.source, page: () => SourcePage()),
         GetPage(name: AppRoute.profilePage, page: () => ProfilePage()),
         GetPage(name: AppRoute.readyPage, page: () => ReadyPage()),
+        GetPage(name: AppRoute.welcomePage, page: () => WelcomeWidget()),
+        GetPage(name: AppRoute.userSession, page: () => UserActivityPage()),
       ],
     );
   }

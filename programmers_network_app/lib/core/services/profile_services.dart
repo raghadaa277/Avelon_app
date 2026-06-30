@@ -1,38 +1,27 @@
 import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 import '../../data/models/Profile/UpdateProfileResponse.dart';
 import '../../data/models/Profile/profile_model.dart';
-import '../../data/services/Home/refresh_token_services.dart';
-import '../const/api_Constants.dart';
 
-import '../storage/api_client.dart';
+import '../const/api_Constants.dart';
+import '../storage/token_storage.dart';
 
 class ProfileServices {
-
-  final ApiClient apiClient;
-
-  ProfileServices(this.apiClient);
-
   Future<UserProfileModel> getUserProfile() async {
+    final url = Uri.parse(ApiConstants.userProfile);
 
-    final response = await apiClient.get("/api/get/user/profile");
-
+    final token = await TokenStorage.getToken();
+    final response = await http.get(
+      url,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
+    );
     print("📡 PROFILE RESPONSE STATUS => ${response.statusCode}");
     print("📡 PROFILE RESPONSE BODY => ${response.body}");
-    if (response.statusCode == 410) {
-      print("🔄 Session expired (410). Attempting manual refresh token...");
-
-
-      final bool refreshed = await RefreshTokenService().refreshToken();
-
-      if (refreshed) {
-        print("✅ Token refreshed successfully! Re-sending profile request...");
-
-
-      } else {
-        print("❌ Refresh token expired too. User must log in.");
-        throw Exception('Session expired completely. Please login again.');
-      }
-    }
     if (response.statusCode == 200) {
       return UserProfileModel.fromJson(jsonDecode(response.body));
     } else {
@@ -58,7 +47,11 @@ class ProfileServices {
     required int experienceYears,
     required String? githubUrl,
     required String? linkedinUrl,
+    //required int profilecompletion,
   }) async {
+    final url = Uri.parse(ApiConstants.updateProfile);
+    final token = await TokenStorage.getToken();
+
     final Map<String, dynamic> bodyData = {
       'full_name': fullName,
       'username': username,
@@ -75,12 +68,17 @@ class ProfileServices {
       'experience_years': experienceYears,
       'github_url': githubUrl,
       'linkedin_url': linkedinUrl,
+      //'profile_completion':profilecompletion,
     };
 
-
-    final response = await apiClient.post(
-      "/api/update/user/profile",
-      body: bodyData,
+    final response = await http.post(
+      url,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(bodyData),
     );
 
     print("📡 UPDATE PROFILE STATUS => ${response.statusCode}");
@@ -88,10 +86,64 @@ class ProfileServices {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final jsonResponse = jsonDecode(response.body);
+
       return UpdateProfileResponseModel.fromJson(jsonResponse);
     } else {
       throw Exception(
         'Failed to update profile: ${response.statusCode} - ${response.body}',
+      );
+    }
+  }
+
+  Future<Map<String, dynamic>> getPrivacySettings() async {
+
+    final url = Uri.parse(ApiConstants.getPrivacySettings);
+    final token = await TokenStorage.getToken();
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
+    );
+
+    print("📡 GET PRIVACY STATUS => ${response.statusCode}");
+    print("📡 GET PRIVACY BODY => ${response.body}");
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception(
+        'Failed to load privacy settings: ${response.statusCode} - ${response.body}',
+      );
+    }
+  }
+
+
+  Future<bool> updatePrivacySettings(Map<String, dynamic> settingsJson) async {
+    final url = Uri.parse(ApiConstants.updatePrivacySettings);
+    final token = await TokenStorage.getToken();
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(settingsJson),
+    );
+
+    print("📡 UPDATE PRIVACY STATUS => ${response.statusCode}");
+    print("📡 UPDATE PRIVACY BODY => ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else {
+      throw Exception(
+        'Failed to update privacy settings: ${response.statusCode} - ${response.body}',
       );
     }
   }

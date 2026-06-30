@@ -1,6 +1,6 @@
 class ApiConstants {
-  static const String baseurl = "https://0179-146-70-246-140.ngrok-free.app";
-  static const String login = "/api/login";
+  static const String baseurl = "https://85c2-190-2-149-241.ngrok-free.app";
+  static const String login = "/api/mobile/login";
   static const String register = "/api/register";
   static const String resendtoken = "/api/resend/verification/link";
   static const String forgetPassword = "/api/forget/password";
@@ -9,4 +9,9 @@ class ApiConstants {
   static const String refreshToken = "/api/refresh/access/token";
   static const String userProfile = "$baseurl/api/get/user/profile";
   static const String updateProfile = "$baseurl/api/update/user/profile";
+  static const String logout = "/api/mobile/logout";
+  static const String startUserSession = "/api/start/user/session";
+  static const String endUserSession = "/api/end/user/session";
+  static const String getPrivacySettings = "$baseurl/api/get/user/privacy-settings";
+  static const String updatePrivacySettings = "$baseurl/api/update/user/privacy-settings";
 }

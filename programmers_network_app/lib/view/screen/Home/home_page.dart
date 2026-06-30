@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../cubit/profile/profile_cubit.dart';
+import '../../../cubit/profile/profile_state.dart';
 import '../profile/profile_page.dart';
 
 class HomePage extends StatelessWidget {
-  final String profileCompletion;
-  const HomePage({super.key, required this.profileCompletion});
+
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +21,7 @@ class HomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 8),
-              ProfileCompletionCard(completionText: profileCompletion),
+
               const SizedBox(height: 24),
               const StoriesSection(),
               const SizedBox(height: 24),
@@ -28,18 +31,34 @@ class HomePage extends StatelessWidget {
                 name: 'Ahmed Saadi',
                 handle: '@ahmad_dev',
                 time: '2h ago',
-                content: 'Finished building my new Laravel API architecture 🚀\nPerformance is 3x better than before.',
+                content:
+                    'Finished building my new Laravel API architecture 🚀\nPerformance is 3x better than before.',
                 isCodePost: true,
                 likes: '54',
                 comments: '12',
                 reposts: '5',
               ),
               const SizedBox(height: 16),
+              BlocBuilder<ProfileCubit, ProfileState>(
+                builder: (context, state) {
+                  String currentPercentage = "0%";
+
+                  if (state is ProfileLoaded) {
+
+                    currentPercentage = state.profileModel.profileCompletion ?? "0%";
+                  }
+
+
+                  return ProfileCompletionCard(completionText: currentPercentage);
+                },
+              ),
+
               const FeedPostCard(
                 name: 'Ahmed Saadi',
                 handle: '@ahmad_dev',
                 time: 'Yesterday',
-                content: 'Working on a new SaaS idea.\nExcited to build something impactful! 💡',
+                content:
+                    'Working on a new SaaS idea.\nExcited to build something impactful! 💡',
                 isCodePost: false,
                 likes: '78',
                 comments: '21',
@@ -55,7 +74,6 @@ class HomePage extends StatelessWidget {
   }
 }
 
-
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
 
@@ -66,13 +84,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Row(
           children: [
-
             ShaderMask(
               shaderCallback: (bounds) => const LinearGradient(
-                colors: [
-                  Color(0xff8CEE1A),
-                  Color(0xffC6FF1A),
-                ],
+                colors: [Color(0xff8CEE1A), Color(0xffC6FF1A)],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ).createShader(bounds),
@@ -88,7 +102,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
             ),
-            // ----------------------------------------------------
             const SizedBox(width: 10),
             const Text(
               'AVELON',
@@ -141,18 +154,13 @@ class AvelonLogoPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
 
-
     paint.shader = const LinearGradient(
-      colors: [
-        Color(0xff76DE1A),
-        Color(0xffB8FF1A),
-      ],
+      colors: [Color(0xff76DE1A), Color(0xffB8FF1A)],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
     ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
     final path = Path();
-
 
     path.moveTo(size.width * 0.15, size.height);
     path.lineTo(size.width * 0.65, size.height * 0.05);
@@ -175,9 +183,13 @@ class ProfileCompletionCard extends StatelessWidget {
     final double progressValue = (double.tryParse(cleanNumber) ?? 0.0) / 100.0;
     return Stack(
       children: [
-
         Container(
-          padding: const EdgeInsets.only(left: 16, right: 16, top: 20, bottom: 20),
+          padding: const EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 20,
+            bottom: 20,
+          ),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(13),
@@ -191,7 +203,6 @@ class ProfileCompletionCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -203,12 +214,18 @@ class ProfileCompletionCard extends StatelessWidget {
                       strokeWidth: 2.5,
                       backgroundColor: Colors.grey[100],
 
-                      valueColor: const AlwaysStoppedAnimation<Color>(Color(0xffB8FF1A)),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        Color(0xffB8FF1A),
+                      ),
                     ),
                   ),
-                   Text(
-                      completionText,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black),
+                  Text(
+                    completionText,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: Colors.black,
+                    ),
                   ),
                 ],
               ),
@@ -221,54 +238,65 @@ class ProfileCompletionCard extends StatelessWidget {
                   children: [
                     const Text(
                       'Complete your profile',
-                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 10, color: Colors.black),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 10,
+                        color: Colors.black,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       'Add photo, bio and links to\nbuild your identity',
-                      style: TextStyle(color: Colors.grey[500], fontSize: 10, height: 1.3),
+                      style: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 10,
+                        height: 1.3,
+                      ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 6),
 
-                     GestureDetector(
-                           onTap: () {
-                                  print("BUTTON CLICKED");
+              GestureDetector(
+                onTap: () {
+                  print("BUTTON CLICKED");
 
-                                             Navigator.push(
-                                                    context,
-                                              MaterialPageRoute(
-                                                   builder: (_) {
-                                                print("BUILDING PROFILE PAGE");
-                                                 return const ProfilePage();
-                       },
-                           ),
-                                );
-                                    },
-             child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                decoration: BoxDecoration(
-                  color: const Color(0xffB8FF1A),
-                  borderRadius: BorderRadius.circular(10),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ProfilePage()),
+
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xffB8FF1A),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Complete',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(width: 6),
+                      Icon(Icons.arrow_forward, size: 14, color: Colors.black),
+                    ],
+                  ),
                 ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Complete',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.black),
-                    ),
-                    SizedBox(width: 6),
-                    Icon(Icons.arrow_forward, size: 14, color: Colors.black),
-                  ],
-                ),
-              ),),
+              ),
             ],
           ),
         ),
-
       ],
     );
   }
@@ -280,10 +308,26 @@ class StoriesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stories = [
-      {'name': 'Your story', 'img': 'https://i.pravatar.cc/150?u=1', 'isMe': true},
-      {'name': 'Sarah Dev', 'img': 'https://i.pravatar.cc/150?u=2', 'isMe': false},
-      {'name': 'Omar Code', 'img': 'https://i.pravatar.cc/150?u=3', 'isMe': false},
-      {'name': 'Lina Tech', 'img': 'https://i.pravatar.cc/150?u=4', 'isMe': false},
+      {
+        'name': 'Your story',
+        'img': 'https://i.pravatar.cc/150?u=1',
+        'isMe': true,
+      },
+      {
+        'name': 'Sarah Dev',
+        'img': 'https://i.pravatar.cc/150?u=2',
+        'isMe': false,
+      },
+      {
+        'name': 'Omar Code',
+        'img': 'https://i.pravatar.cc/150?u=3',
+        'isMe': false,
+      },
+      {
+        'name': 'Lina Tech',
+        'img': 'https://i.pravatar.cc/150?u=4',
+        'isMe': false,
+      },
       {'name': 'Hassan', 'img': 'https://i.pravatar.cc/150?u=5', 'isMe': false},
     ];
 
@@ -292,9 +336,19 @@ class StoriesSection extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Text('Stories', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Text(
+              'Stories',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const Spacer(),
-            Text('View all >', style: TextStyle(color: Colors.grey[600], fontSize: 13, fontWeight: FontWeight.w500)),
+            Text(
+              'View all >',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 12),
@@ -315,11 +369,16 @@ class StoriesSection extends StatelessWidget {
                           padding: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: const Color(0xffB8FF1A), width: 2),
+                            border: Border.all(
+                              color: const Color(0xffB8FF1A),
+                              width: 2,
+                            ),
                           ),
                           child: CircleAvatar(
                             radius: 24,
-                            backgroundImage: NetworkImage(story['img'] as String),
+                            backgroundImage: NetworkImage(
+                              story['img'] as String,
+                            ),
                           ),
                         ),
                         if (story['isMe'] as bool)
@@ -328,8 +387,15 @@ class StoriesSection extends StatelessWidget {
                             right: 0,
                             child: Container(
                               padding: const EdgeInsets.all(2),
-                              decoration: const BoxDecoration(color: Color(0xffB8FF1A), shape: BoxShape.circle),
-                              child: const Icon(Icons.add, size: 12, color: Colors.black),
+                              decoration: const BoxDecoration(
+                                color: Color(0xffB8FF1A),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.add,
+                                size: 12,
+                                color: Colors.black,
+                              ),
                             ),
                           )
                         else
@@ -342,7 +408,10 @@ class StoriesSection extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: const Color(0xffB8FF1A),
                                 shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white, width: 1.5),
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 1.5,
+                                ),
                               ),
                             ),
                           ),
@@ -351,7 +420,11 @@ class StoriesSection extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       story['name'] as String,
-                      style: TextStyle(fontSize: 11, color: Colors.grey[800], fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey[800],
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
@@ -433,7 +506,9 @@ class FeedPostCard extends StatelessWidget {
             children: [
               const CircleAvatar(
                 radius: 18,
-                backgroundImage: NetworkImage('https://i.pravatar.cc/150?u=ahmed'),
+                backgroundImage: NetworkImage(
+                  'https://i.pravatar.cc/150?u=ahmed',
+                ),
               ),
               const SizedBox(width: 12),
               Column(
@@ -442,12 +517,25 @@ class FeedPostCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
                       const SizedBox(width: 4),
-                      const Icon(Icons.check_circle, color: Color(0xffB8FF1A), size: 14),
+                      const Icon(
+                        Icons.check_circle,
+                        color: Color(0xffB8FF1A),
+                        size: 14,
+                      ),
                     ],
                   ),
-                  Text('$handle • $time', style: TextStyle(color: Colors.grey[400], fontSize: 11)),
+                  Text(
+                    '$handle • $time',
+                    style: TextStyle(color: Colors.grey[400], fontSize: 11),
+                  ),
                 ],
               ),
               const Spacer(),
@@ -455,7 +543,14 @@ class FeedPostCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Text(content, style: TextStyle(height: 1.4, color: Colors.grey[800], fontSize: 14)),
+          Text(
+            content,
+            style: TextStyle(
+              height: 1.4,
+              color: Colors.grey[800],
+              fontSize: 14,
+            ),
+          ),
           const SizedBox(height: 12),
           if (isCodePost)
             Container(
@@ -473,13 +568,62 @@ class FeedPostCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('1   <?php', style: TextStyle(color: Colors.grey, fontSize: 10, fontFamily: 'monospace')),
-                          Text("2   Route::middleware(['auth:sanctum'])", style: TextStyle(color: Color(0xffB8FF1A), fontSize: 10, fontFamily: 'monospace')),
-                          Text("3   ->prefix('api')", style: TextStyle(color: Colors.white, fontSize: 10, fontFamily: 'monospace')),
-                          Text("4   ->group(function () {", style: TextStyle(color: Colors.white, fontSize: 10, fontFamily: 'monospace')),
-                          Text("5      Route::apiResource('posts',", style: TextStyle(color: Color(0xffB8FF1A), fontSize: 10, fontFamily: 'monospace')),
-                          Text("6      PostController::class);", style: TextStyle(color: Colors.white, fontSize: 10, fontFamily: 'monospace')),
-                          Text("16   });", style: TextStyle(color: Colors.white, fontSize: 10, fontFamily: 'monospace')),
+                          Text(
+                            '1   <?php',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 10,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                          Text(
+                            "2   Route::middleware(['auth:sanctum'])",
+                            style: TextStyle(
+                              color: Color(0xffB8FF1A),
+                              fontSize: 10,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                          Text(
+                            "3   ->prefix('api')",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                          Text(
+                            "4   ->group(function () {",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                          Text(
+                            "5      Route::apiResource('posts',",
+                            style: TextStyle(
+                              color: Color(0xffB8FF1A),
+                              fontSize: 10,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                          Text(
+                            "6      PostController::class);",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                          Text(
+                            "16   });",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -497,11 +641,31 @@ class FeedPostCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('Performance', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                          Text('+3x', style: TextStyle(color: Color(0xffB8FF1A), fontWeight: FontWeight.bold, fontSize: 14)),
+                          Text(
+                            'Performance',
+                            style: TextStyle(color: Colors.grey, fontSize: 10),
+                          ),
+                          Text(
+                            '+3x',
+                            style: TextStyle(
+                              color: Color(0xffB8FF1A),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
                           SizedBox(height: 16),
-                          Text('Requests', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                          Text('24.8K', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                          Text(
+                            'Requests',
+                            style: TextStyle(color: Colors.grey, fontSize: 10),
+                          ),
+                          Text(
+                            '24.8K',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -516,7 +680,9 @@ class FeedPostCard extends StatelessWidget {
                 color: const Color(0xFFF0F2F5),
                 borderRadius: BorderRadius.circular(16),
                 image: const DecorationImage(
-                  image: NetworkImage('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop'),
+                  image: NetworkImage(
+                    'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop',
+                  ),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -526,7 +692,11 @@ class FeedPostCard extends StatelessWidget {
             children: [
               _buildStat(Icons.favorite_border, likes, Colors.grey[600]!),
               const SizedBox(width: 24),
-              _buildStat(Icons.chat_bubble_outline, comments, Colors.grey[600]!),
+              _buildStat(
+                Icons.chat_bubble_outline,
+                comments,
+                Colors.grey[600]!,
+              ),
               const SizedBox(width: 24),
               _buildStat(Icons.repeat, reposts, Colors.grey[600]!),
               const Spacer(),
@@ -570,8 +740,24 @@ class CustomBottomNavBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(child: _buildNavItem(context, Icons.home_outlined, 'Home', true, onTap: () {})),
-          Expanded(child: _buildNavItem(context, Icons.search, 'Explore', false, onTap: () {})),
+          Expanded(
+            child: _buildNavItem(
+              context,
+              Icons.home_outlined,
+              'Home',
+              true,
+              onTap: () {},
+            ),
+          ),
+          Expanded(
+            child: _buildNavItem(
+              context,
+              Icons.search,
+              'Explore',
+              false,
+              onTap: () {},
+            ),
+          ),
           Expanded(
             child: Center(
               child: Container(
@@ -585,7 +771,15 @@ class CustomBottomNavBar extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(child: _buildNavItem(context, Icons.notifications_none, 'Notifications', false, onTap: () {})),
+          Expanded(
+            child: _buildNavItem(
+              context,
+              Icons.notifications_none,
+              'Notifications',
+              false,
+              onTap: () {},
+            ),
+          ),
 
           // 💡 هنا قمنا بربط أيقونة البروفايل بالانتقال النقي للبلوك
           Expanded(
@@ -608,7 +802,13 @@ class CustomBottomNavBar extends StatelessWidget {
   }
 
   // أضفنا الـ context والـ onTap لتفعيل الضغط والتنقل
-  Widget _buildNavItem(BuildContext context, IconData icon, String label, bool isActive, {required VoidCallback onTap}) {
+  Widget _buildNavItem(
+    BuildContext context,
+    IconData icon,
+    String label,
+    bool isActive, {
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque, // يضمن استجابة المنطقة بالكامل لللمس

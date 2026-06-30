@@ -57,12 +57,22 @@ class ApiClient {
     );
   }
 
+  Future<http.Response> patch(String endpoint, {dynamic body}) async {
+    return _sendRequest(
+      () async => http.patch(
+        Uri.parse('$baseUrl$endpoint'),
+        headers: await _headers(),
+        body: jsonEncode(body),
+      ),
+    );
+  }
+
   Future<http.Response> _sendRequest(
     Future<http.Response> Function() request,
   ) async {
     var response = await request();
 
-    if (response.statusCode == 401) {
+    if (response.statusCode == 401 || response.statusCode == 403) {
       final refreshed = await RefreshTokenService().refreshToken();
 
       if (refreshed) {
@@ -70,6 +80,7 @@ class ApiClient {
       } else {
         await TokenStorage.clearTokens();
         Get.offAllNamed(AppRoute.login);
+        return response;
       }
     }
 

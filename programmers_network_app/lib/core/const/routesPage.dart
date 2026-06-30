@@ -9,4 +9,6 @@ class AppRoute {
   static const String source = "/SourcePage";
   static const String profilePage = "/profilePage";
   static const String readyPage = "/ReadyPage";
+  static const String welcomePage = "/WelcomePage";
+  static const String userSession = "/userSession";
 }

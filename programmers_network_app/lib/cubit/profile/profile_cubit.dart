@@ -1,6 +1,7 @@
 
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/models/Profile/profile_model.dart';
 import '../../core/services/profile_services.dart';
@@ -18,6 +19,13 @@ class ProfileCubit extends Cubit<ProfileState> {
     emit(ProfileLoading());
     try {
       _cachedProfile = await service.getUserProfile();
+      final prefs = await SharedPreferences.getInstance();
+      if (_cachedProfile!.profileCompletion != null) {
+        await prefs.setString('profile_completion', _cachedProfile!.profileCompletion!);
+      }
+
+
+
       emit(ProfileLoaded
         (profileModel: _cachedProfile!, activeTabIndex: _activeTabIndex,));
     } catch (e) {
@@ -52,6 +60,8 @@ class ProfileCubit extends Cubit<ProfileState> {
     required int experienceYears,
     required String? githubUrl,
     required String? linkedinUrl,
+
+
   }) async {
     try {
 
@@ -71,6 +81,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         experienceYears: experienceYears,
         githubUrl: githubUrl,
         linkedinUrl: linkedinUrl,
+
       );
 
 
@@ -78,8 +89,12 @@ class ProfileCubit extends Cubit<ProfileState> {
         success: responseModel.success,
         message: responseModel.message,
         data: responseModel.userProfile,
+        profileCompletion: responseModel.profileCompletion,
       );
-
+      final prefs = await SharedPreferences.getInstance();
+      if (responseModel.profileCompletion != null) {
+        await prefs.setString('profile_completion', responseModel.profileCompletion!);
+      }
       emit(ProfileLoaded(
         profileModel: _cachedProfile!,
         activeTabIndex: _activeTabIndex,

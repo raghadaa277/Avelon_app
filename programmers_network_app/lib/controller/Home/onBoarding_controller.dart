@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
 import 'package:programmers_network_app/core/const/routesPage.dart';
 import 'package:programmers_network_app/data/models/Home/OnBoarding/complete_model.dart';
@@ -21,7 +23,18 @@ class OnboardingController extends GetxController {
 
       onboardingModel = await onbordingServices.getOnBoarding();
     } catch (e) {
-      Get.snackbar("Error", onboardingModel?.message ?? "Error");
+      String message = "Error";
+
+      try {
+        final decoded = jsonDecode(
+          e.toString().replaceAll("Exception:", "").trim(),
+        );
+        message = decoded["message"] ?? message;
+      } catch (_) {
+        message = e.toString();
+      }
+
+      Get.snackbar("Error", message);
     } finally {
       isLoading = false;
       update();
@@ -47,10 +60,20 @@ class OnboardingController extends GetxController {
 
       Get.snackbar("Success", completeModel?.message ?? "Success");
 
-      Get.offAllNamed(AppRoute.readyPage,
-        arguments: Get.arguments,);
+      Get.offAllNamed(AppRoute.readyPage, arguments: Get.arguments);
     } catch (e) {
-      Get.snackbar("Error", completeModel?.message ?? "Error");
+      String message = "Error";
+
+      try {
+        final decoded = jsonDecode(
+          e.toString().replaceAll("Exception:", "").trim(),
+        );
+        message = decoded["message"] ?? message;
+      } catch (_) {
+        message = e.toString();
+      }
+
+      Get.snackbar("Error", message);
     } finally {
       isLoading = false;
       update();

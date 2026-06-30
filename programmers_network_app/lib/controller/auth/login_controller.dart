@@ -25,16 +25,22 @@ class LoginController extends GetxController {
       update();
 
       final result = await _loginServices.login(
-        fcmToken: "mmلنssssة",
+        fcmToken: "dymy33336000",
         email: email.text.trim(),
         password: password.text,
       );
+
       await TokenStorage.saveTokens(
         accessToken: result.data.accessToken,
         refreshToken: result.data.refreshToken,
       );
       Get.snackbar("Success", result.message);
-      Get.offNamed(AppRoute.source, arguments: result.data.profileCompletion);
+
+      if (result.data.onboardingCompletedAt != null) {
+        Get.offAllNamed(AppRoute.homePage);
+      } else {
+        Get.offNamed(AppRoute.source, arguments: result.data.profileCompletion);
+      }
     } on LoginException catch (e) {
       switch (e.statusCode) {
         case 401:

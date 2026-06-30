@@ -26,8 +26,6 @@ class LoginServices {
         password: password,
         deviceId: deviceData["device_id"]!,
         device: deviceData["device"]!,
-        platform: deviceData["platform"]!,
-        browser: kIsWeb ? "web" : "app",
         fcmToken: fcmToken,
       );
 
