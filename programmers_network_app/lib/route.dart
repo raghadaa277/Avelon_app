@@ -9,7 +9,7 @@ import 'package:programmers_network_app/view/screen/auth/forget_page.dart';
 import 'package:programmers_network_app/view/screen/auth/register_page.dart';
 import 'package:programmers_network_app/view/screen/auth/verify_page.dart';
 import 'package:programmers_network_app/view/screen/profile/profile_page.dart';
-import 'package:programmers_network_app/view/screen/profile/user_activity_page.dart';
+import 'package:programmers_network_app/view/screen/profile/user_activity/user_activity_page.dart';
 import 'package:programmers_network_app/view/widget/welcome_widget.dart';
 
 Map<String, Widget Function(BuildContext)> routes = {
@@ -23,5 +23,5 @@ Map<String, Widget Function(BuildContext)> routes = {
   AppRoute.profilePage: (context) => ProfilePage(),
   AppRoute.readyPage: (context) => ReadyPage(),
   AppRoute.welcomePage: (context) => const WelcomeWidget(),
-  AppRoute.userSession: (context) => UserActivityPage(),
+  AppRoute.userSession: (context) => UserActivityScreen(),
 };

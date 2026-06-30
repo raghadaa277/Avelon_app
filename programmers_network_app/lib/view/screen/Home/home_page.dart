@@ -87,7 +87,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             const SizedBox(width: 10),
             const Text(
-              'AVELON',
+              'A V E L O N',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -776,6 +776,7 @@ class CustomBottomNavBar extends StatelessWidget {
               'Profile',
               false,
               onTap: () {
+                // Get.toNamed(AppRoute.userSession);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const ProfilePage()),

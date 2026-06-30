@@ -72,12 +72,22 @@ class ApiClient {
   ) async {
     var response = await request();
 
-    if (response.statusCode == 401 || response.statusCode == 403) {
+    print("=========== API RESPONSE ===========");
+    print("Status Code: ${response.statusCode}");
+    print("Body: ${response.body}");
+    print("===================================");
+
+    if (response.statusCode == 410) {
+      print("⚠️ Access Token Expired");
+
       final refreshed = await RefreshTokenService().refreshToken();
 
       if (refreshed) {
+        print("✅ Token Refreshed");
         response = await request();
       } else {
+        print("❌ Refresh Failed");
+
         await TokenStorage.clearTokens();
         Get.offAllNamed(AppRoute.login);
         return response;
