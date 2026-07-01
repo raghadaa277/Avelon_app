@@ -13,8 +13,11 @@ class ApiConstants {
   static const String startUserSession = "/api/start/user/session";
   static const String endUserSession = "/api/end/user/session";
   static const String getuserdaily = "/api/get/user/daily/app/usages";
-  static const String getPrivacySettings="/api/get/user/pivacy/setting";
-  static const String updatePrivacySettings="/api/assign/user/privacy/setting";
-  static const String updateAvatar = "/api/update/avatar";
-  static const String removeAvatar = "/api/remove/avatar";
+  static const String getUserStatusesHistory =
+      "/api/get/user/status/history/and/summary";
+
+  static const String getPrivacySettings = "/api/get/user/privacy/settings";
+  static const String updatePrivacySettings = "/api/update/user/privacy/settings";
+  static const String updateAvatar = "/api/update/user/avatar";
+  static const String removeAvatar = "/api/remove/user/avatar";
 }

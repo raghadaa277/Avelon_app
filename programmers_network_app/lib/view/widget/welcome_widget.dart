@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:programmers_network_app/controller/Home/profile/user_session_controller.dart';
+
 import 'package:programmers_network_app/core/const/color_const.dart';
 import 'package:programmers_network_app/core/const/routesPage.dart';
 import 'package:programmers_network_app/core/storage/token_storage.dart';
@@ -54,7 +55,7 @@ class _WelcomeWidgetState extends State<WelcomeWidget>
     if (token != null && token.isNotEmpty) {
       await Get.find<UserSessionController>().startSession();
 
-      Get.offAllNamed(AppRoute.register);
+      Get.offAllNamed(AppRoute.userStatus);
     } else {
       Get.offAllNamed(AppRoute.login);
     }

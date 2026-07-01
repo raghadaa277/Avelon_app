@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:programmers_network_app/core/const/color_const.dart';
+
 import 'package:programmers_network_app/data/services/auth/register_services.dart';
 import 'package:programmers_network_app/view/screen/auth/verify_page.dart';
 
@@ -24,7 +24,7 @@ class RegisterController extends GetxController {
   bool hasSpecialChar = false;
 
   void onPasswordChanged(String value) {
-    hasMinLength = value.length >= 12;
+    hasMinLength = value.length >= 8;
     hasUpperAndLower =
         value.contains(RegExp(r'[A-Z]')) && value.contains(RegExp(r'[a-z]'));
     hasNumber = value.contains(RegExp(r'[0-9]'));
@@ -46,11 +46,7 @@ class RegisterController extends GetxController {
         passwordConfirmation: passwordConfirmation.text,
       );
 
-      Get.snackbar(
-        "Success",
-        result.message,
-        backgroundColor: ColorConst.colorApp,
-      );
+      Get.snackbar("Success", result.message);
 
       Get.to(() => const VerifyPage(), arguments: result.data.email);
     } catch (e) {

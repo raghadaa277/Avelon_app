@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:programmers_network_app/controller/Home/profile/user_session_controller.dart';
 import 'package:programmers_network_app/core/const/routesPage.dart';
@@ -16,10 +15,8 @@ import 'package:programmers_network_app/view/screen/auth/register_page.dart';
 import 'package:programmers_network_app/view/screen/auth/verify_page.dart';
 import 'package:programmers_network_app/view/screen/profile/profile_page.dart';
 import 'package:programmers_network_app/view/screen/profile/user_activity/user_activity_page.dart';
+import 'package:programmers_network_app/view/screen/profile/user_status_history/user_status_history_page.dart';
 import 'package:programmers_network_app/view/widget/welcome_widget.dart';
-
-import 'cubit/profile/profile_cubit.dart';
-import 'data/services/profile/profile_services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -129,11 +126,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       );
     }
 
-    return BlocProvider(
-        create: (context) => ProfileCubit( ProfileServices())..fetchProfile(),
-        child: GetMaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: AppRoute.welcomePage,
+      initialRoute: initialRoute,
       getPages: [
         GetPage(name: AppRoute.login, page: () => LoginPage()),
         GetPage(name: AppRoute.register, page: () => RegisterPage()),
@@ -149,6 +144,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         GetPage(name: AppRoute.readyPage, page: () => ReadyPage()),
         GetPage(name: AppRoute.welcomePage, page: () => WelcomeWidget()),
         GetPage(name: AppRoute.userSession, page: () => UserActivityScreen()),
-      ],) );
+        GetPage(
+          name: AppRoute.userStatus,
+          page: () => UserStatusHistoryScreen(),
+        ),
+      ],
+    );
   }
 }

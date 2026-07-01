@@ -16,3 +16,13 @@ class ColorConst {
   static const Color textGrey = Color(0xFF8A8A8E);
   static const Color iconBgGreen = Color(0xFFEFF6E2);
 }
+
+const bgColor = Color(0xFFF5F5F0);
+const cardColor = Colors.white;
+
+const green = Color(0xFF4CAF50);
+const orange = Color(0xFFFFA726);
+const deepOrange = Color(0xFFFF5722);
+const red = Color(0xFFF44336);
+
+const accent = Color(0xffB8FF1A);
