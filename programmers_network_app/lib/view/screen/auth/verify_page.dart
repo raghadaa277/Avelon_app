@@ -5,6 +5,7 @@ import 'package:get/state_manager.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:programmers_network_app/controller/auth/resend_verify_token_controller.dart';
 import 'package:programmers_network_app/core/const/color_const.dart';
+import 'package:programmers_network_app/core/const/routesPage.dart';
 import 'package:programmers_network_app/view/widget/auth/card_verify_widget.dart';
 import 'package:programmers_network_app/view/widget/auth/button_customer.dart';
 import 'package:programmers_network_app/view/widget/auth/register_steperr_widget.dart';
@@ -99,7 +100,7 @@ class _VerifyPageState extends State<VerifyPage> {
                             child: Text(
                               email,
                               style: const TextStyle(
-                                fontSize: 18,
+                                fontSize: 13,
                                 fontWeight: FontWeight.w700,
                                 color: Color(0xFF111827),
                               ),
@@ -116,7 +117,11 @@ class _VerifyPageState extends State<VerifyPage> {
                                 )
                               : ButtonCustomer(
                                   text: 'I have verifed my email',
+                                  onTap: () {
+                                    Get.offAllNamed(AppRoute.complete);
+                                  },
                                   // onTap: () => controller.resendToken(email),
+                                  // onTap: () => controller.verifyToken(email),
                                 ),
                           const SizedBox(height: 30),
 

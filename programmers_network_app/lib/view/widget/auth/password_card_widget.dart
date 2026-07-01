@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:programmers_network_app/core/const/color_const.dart';
 
 class PasswordStrengthCard extends StatelessWidget {
   final bool hasMinLength;
@@ -26,6 +27,21 @@ class PasswordStrengthCard extends StatelessWidget {
     return score;
   }
 
+  Color get strengthColor {
+    switch (strength) {
+      case 4:
+        return green;
+      case 3:
+        return orange;
+      case 2:
+        return deepOrange;
+      case 1:
+        return red;
+      default:
+        return Colors.grey;
+    }
+  }
+
   String get strengthText {
     switch (strength) {
       case 4:
@@ -43,8 +59,6 @@ class PasswordStrengthCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const lime = Color(0xFFB7F51A);
-
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -72,7 +86,6 @@ class PasswordStrengthCard extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: lime,
                 ),
               ),
             ],
@@ -88,7 +101,9 @@ class PasswordStrengthCard extends StatelessWidget {
                   margin: EdgeInsets.only(right: index == 4 ? 0 : 6),
                   height: 5,
                   decoration: BoxDecoration(
-                    color: index < strength ? lime : const Color(0xFFE5E7EB),
+                    color: index < strength
+                        ? strengthColor
+                        : const Color(0xFFE5E7EB),
                     borderRadius: BorderRadius.circular(100),
                   ),
                 ),
@@ -98,7 +113,7 @@ class PasswordStrengthCard extends StatelessWidget {
 
           const SizedBox(height: 18),
 
-          _RequirementItem(text: "12+ characters", isValid: hasMinLength),
+          _RequirementItem(text: "8+ characters", isValid: hasMinLength),
 
           const SizedBox(height: 10),
 

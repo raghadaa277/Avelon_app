@@ -11,4 +11,5 @@ class AppRoute {
   static const String readyPage = "/ReadyPage";
   static const String welcomePage = "/WelcomePage";
   static const String userSession = "/userSession";
+  static const String userStatus = "/userStatusHistoryScreen";
 }

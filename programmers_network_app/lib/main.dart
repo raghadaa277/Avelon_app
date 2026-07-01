@@ -15,6 +15,7 @@ import 'package:programmers_network_app/view/screen/auth/register_page.dart';
 import 'package:programmers_network_app/view/screen/auth/verify_page.dart';
 import 'package:programmers_network_app/view/screen/profile/profile_page.dart';
 import 'package:programmers_network_app/view/screen/profile/user_activity/user_activity_page.dart';
+import 'package:programmers_network_app/view/screen/profile/user_status_history/user_status_history_page.dart';
 import 'package:programmers_network_app/view/widget/welcome_widget.dart';
 
 void main() async {
@@ -143,6 +144,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         GetPage(name: AppRoute.readyPage, page: () => ReadyPage()),
         GetPage(name: AppRoute.welcomePage, page: () => WelcomeWidget()),
         GetPage(name: AppRoute.userSession, page: () => UserActivityScreen()),
+        GetPage(
+          name: AppRoute.userStatus,
+          page: () => UserStatusHistoryScreen(),
+        ),
       ],
     );
   }

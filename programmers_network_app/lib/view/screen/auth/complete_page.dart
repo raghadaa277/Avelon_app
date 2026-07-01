@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/state_manager.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:programmers_network_app/core/const/color_const.dart';
+import 'package:programmers_network_app/core/const/routesPage.dart';
 import 'package:programmers_network_app/view/widget/auth/button_customer.dart';
 import 'package:programmers_network_app/view/widget/auth/register_steperr_widget.dart';
 import 'package:programmers_network_app/view/widget/auth/verify_icon_widget.dart';
@@ -157,7 +160,7 @@ class _CompletePageState extends State<CompletePage> {
                     ButtonCustomer(
                       text: 'Continue to login',
                       onTap: () {
-                        // Get.offAllNamed(AppRoutes.home);
+                        Get.offAllNamed(AppRoute.login);
                       },
                     ),
                   ],

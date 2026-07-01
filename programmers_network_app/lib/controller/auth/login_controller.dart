@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:programmers_network_app/controller/auth/resend_verify_token_controller.dart';
+import 'package:programmers_network_app/core/const/color_const.dart';
 
 import 'package:programmers_network_app/core/const/routesPage.dart';
 import 'package:programmers_network_app/core/helper/device_helper.dart';
@@ -14,6 +16,85 @@ class LoginController extends GetxController {
   final TextEditingController password = TextEditingController();
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final ResendVerifyTokenController _resendVerifyTokenController =
+      ResendVerifyTokenController();
+
+  void showEmailNotVerifiedDialog() {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.mark_email_unread_outlined,
+                size: 60,
+                color: ColorConst.colorApp,
+              ),
+
+              const SizedBox(height: 15),
+
+              const Text(
+                "Email is not Verified",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+
+              const SizedBox(height: 10),
+
+              const Text(
+                "Your account is not verified yet.\nPlease check your email or\n resend the verification link.",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14),
+              ),
+
+              const SizedBox(height: 20),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Get.back(),
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(color: Colors.red[200]),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 10),
+
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: ColorConst.colorApp,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () async {
+                        Get.back();
+
+                        await _resendVerifyTokenController.resendToken(
+                          email.text.trim(),
+                        );
+                      },
+                      child: const Text(
+                        "Resend",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+  }
 
   bool isLoading = false;
   bool obscurePassword = true;
@@ -28,7 +109,7 @@ class LoginController extends GetxController {
       final deviceData = await DeviceHelper.getDeviceData();
 
       final result = await _loginServices.login(
-        fcmToken: "du123456",
+        fcmToken: "du1257077",
         email: email.text.trim(),
         password: password.text,
       );
@@ -41,7 +122,7 @@ class LoginController extends GetxController {
       Get.snackbar("Success", result.message);
 
       if (result.data.onboardingCompletedAt != null) {
-        Get.offAllNamed(AppRoute.userSession);
+        Get.offAllNamed(AppRoute.userStatus);
       } else {
         Get.offNamed(AppRoute.source, arguments: result.data.profileCompletion);
       }
@@ -55,11 +136,12 @@ class LoginController extends GetxController {
           );
           break;
         case 403:
-          showSnackbar(
-            title: "Account Not Verified",
-            message: e.message,
-            isError: true,
-          );
+          showEmailNotVerifiedDialog();
+          // showSnackbar(
+          //   title: "Account Not Verified",
+          //   message: e.message,
+          //   isError: true,
+          // );
           break;
         case 428:
           showSnackbar(
