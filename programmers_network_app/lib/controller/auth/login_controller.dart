@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:programmers_network_app/core/const/routesPage.dart';
+import 'package:programmers_network_app/core/helper/device_helper.dart';
 import 'package:programmers_network_app/core/storage/token_storage.dart';
 import 'package:programmers_network_app/data/services/auth/login_services.dart';
 import 'package:programmers_network_app/view/widget/auth/snackBar_controller_widget.dart';
@@ -24,8 +25,10 @@ class LoginController extends GetxController {
       isLoading = true;
       update();
 
+      final deviceData = await DeviceHelper.getDeviceData();
+
       final result = await _loginServices.login(
-        fcmToken: "dymy33336000",
+        fcmToken: "du1996800622",
         email: email.text.trim(),
         password: password.text,
       );
@@ -34,10 +37,11 @@ class LoginController extends GetxController {
         accessToken: result.data.accessToken,
         refreshToken: result.data.refreshToken,
       );
+      await TokenStorage.saveDeviceId(deviceData["device_id"]!);
       Get.snackbar("Success", result.message);
 
       if (result.data.onboardingCompletedAt != null) {
-        Get.offAllNamed(AppRoute.homePage);
+        Get.offAllNamed(AppRoute.homePage);//
       } else {
         Get.offNamed(AppRoute.source, arguments: result.data.profileCompletion);
       }

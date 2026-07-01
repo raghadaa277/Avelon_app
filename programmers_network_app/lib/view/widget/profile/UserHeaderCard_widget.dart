@@ -12,7 +12,7 @@ class UserHeaderCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(25),
       ),
       child: Column(
         children: [
@@ -22,7 +22,7 @@ class UserHeaderCard extends StatelessWidget {
               Stack(
                 children: [
                   CircleAvatar(
-                    radius: 46,
+                    radius: 60,
                     backgroundColor: const Color(0xFFEFEFEF),
                     backgroundImage: data.avatarFullUrl != null
                         ? NetworkImage(data.avatarFullUrl!)
@@ -32,8 +32,8 @@ class UserHeaderCard extends StatelessWidget {
                         : null,
                   ),
                   Positioned(
-                    bottom: 4,
-                    right: 4,
+                    bottom: 6,
+                    right: 6,
                     child: Container(
                       padding: const EdgeInsets.all(1.5),
                       decoration: const BoxDecoration(
@@ -43,13 +43,13 @@ class UserHeaderCard extends StatelessWidget {
                       child: const Icon(
                         Icons.check_circle,
                         color: Color(0xffB8FF1A),
-                        size: 18,
+                        size: 20,
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 8),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,7 +62,7 @@ class UserHeaderCard extends StatelessWidget {
                         color: Colors.black,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
                     Text(
                       '@${data.username}',
                       style: TextStyle(
@@ -74,8 +74,8 @@ class UserHeaderCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
+                        horizontal: 2,
+                        vertical: 8,
                       ),
                       decoration: BoxDecoration(
                         color: const Color(0xffB8FF1A).withValues(alpha: 0.2),
@@ -90,7 +90,7 @@ class UserHeaderCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 2),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -99,7 +99,7 @@ class UserHeaderCard extends StatelessWidget {
                           color: Colors.grey[400],
                           size: 14,
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 1),
                         Text(
                           '${data.city}, ${data.country}',
                           style: TextStyle(
@@ -110,14 +110,14 @@ class UserHeaderCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 4),
                     Text(
                       data.bio,
                       textAlign: TextAlign.start,
                       style: TextStyle(
                         color: Colors.grey[600],
-                        fontSize: 12,
-                        height: 1.4,
+                        fontSize: 11,
+                        height: 2,
                       ),
                     ),
                   ],
@@ -125,7 +125,7 @@ class UserHeaderCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 50),
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             decoration: BoxDecoration(

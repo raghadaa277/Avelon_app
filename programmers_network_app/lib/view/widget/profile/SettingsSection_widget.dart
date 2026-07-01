@@ -34,7 +34,7 @@ class SettingsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // عنوان المجموعة مع الأيقونة والوصف
+
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
@@ -72,7 +72,7 @@ class SettingsSection extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
             child: Divider(height: 1, color: Color(0xFFF0F1EC)),
           ),
-          // حقول الـ Switches المضافة بداخل المجموعة
+
           ...children,
         ],
       ),

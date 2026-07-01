@@ -39,7 +39,7 @@ class SwitchTile extends StatelessWidget {
         style: TextStyle(fontSize: 10.5, color: Colors.grey[500]),
       ),
       trailing: Transform.scale(
-        scale: 0.85, // لتصغير حجم الـ Switch ليتناسب مع رقة التصميم في الصورة
+        scale: 0.85,
         child: Switch(
           value: value,
           activeColor: Colors.white,

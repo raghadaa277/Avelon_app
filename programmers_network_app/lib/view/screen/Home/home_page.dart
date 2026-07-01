@@ -19,7 +19,22 @@ class HomePage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+
             children: [
+              const SizedBox(height: 16),
+              BlocBuilder<ProfileCubit, ProfileState>(
+                builder: (context, state) {
+                  String currentPercentage = "0%";
+
+                  if (state is ProfileLoaded) {
+
+                    currentPercentage = state.profileModel.profileCompletion ?? "0%";
+                  }
+
+
+                  return ProfileCompletionCard(completionText: currentPercentage);
+                },
+              ),
               const SizedBox(height: 8),
 
               const SizedBox(height: 24),
@@ -38,20 +53,7 @@ class HomePage extends StatelessWidget {
                 comments: '12',
                 reposts: '5',
               ),
-              const SizedBox(height: 16),
-              BlocBuilder<ProfileCubit, ProfileState>(
-                builder: (context, state) {
-                  String currentPercentage = "0%";
-
-                  if (state is ProfileLoaded) {
-
-                    currentPercentage = state.profileModel.profileCompletion ?? "0%";
-                  }
-
-
-                  return ProfileCompletionCard(completionText: currentPercentage);
-                },
-              ),
+           //   const SizedBox(height: 16),
 
               const FeedPostCard(
                 name: 'Ahmed Saadi',
@@ -104,7 +106,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             const SizedBox(width: 10),
             const Text(
-              'AVELON',
+              'A V E L O N',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -789,6 +791,7 @@ class CustomBottomNavBar extends StatelessWidget {
               'Profile',
               false,
               onTap: () {
+                // Get.toNamed(AppRoute.userSession);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const ProfilePage()),

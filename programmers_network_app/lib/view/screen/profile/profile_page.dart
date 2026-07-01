@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:programmers_network_app/controller/auth/logout_controller.dart';
+import 'package:programmers_network_app/view/screen/profile/PrivacySettingsPage.dart';
 import 'package:programmers_network_app/view/widget/profile/slider_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../core/services/profile_services.dart';
+import '../../../cubit/PrivacySettings/privacy_settings_cubit.dart';
+import '../../../data/services/profile/profile_services.dart';
 import '../../../cubit/profile/profile_cubit.dart';
 import '../../../cubit/profile/profile_state.dart';
 import '../../../data/models/Profile/profile_model.dart';
@@ -76,7 +78,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       Expanded(
                         child: TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            logoutController.logout();},
                           style: TextButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
@@ -126,6 +130,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         );
       },
+
       transitionBuilder: (context, animation, _, child) {
         return ScaleTransition(
           scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
@@ -139,8 +144,10 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return BlocProvider<ProfileCubit>(
       create: (context) =>
-          ProfileCubit(service: ProfileServices())..fetchProfile(),
+      ProfileCubit(ProfileServices())..fetchProfile(),
+
       child: BlocBuilder<ProfileCubit, ProfileState>(
+
         builder: (context, state) {
           if (state is ProfileLoading) {
             return Scaffold(
@@ -153,7 +160,7 @@ class _ProfilePageState extends State<ProfilePage> {
           } else if (state is ProfileError) {
             return Scaffold(
               backgroundColor: const Color(0xFFF1FDE1),
-              appBar: const ProfileAppBar(), // 👈 بعد التعديل
+              appBar: const ProfileAppBar(),
               body: Center(child: Text(state.errorMessage)),
             );
           } else if (state is ProfileLoaded) {
@@ -170,10 +177,26 @@ class _ProfilePageState extends State<ProfilePage> {
             return AvelonHomeShell(
               menu: ProfileSideMenu(
                 data: profileData,
+
+                onSettings: () {
+
+                  AvelonHomeShell.of(context)?.closeMenu();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider<PrivacySettingsCubit>(
+                        create: (context) => PrivacySettingsCubit(services: ProfileServices()),
+                        child: const PrivacySettingsPage(),
+                      ),
+                    ),
+                  );
+                },
                 onLogout: () {
                   _showLogoutDialog(context);
                 },
               ),
+
+
               body: Scaffold(
                 backgroundColor: const Color(0xFFF1FDE1),
                 appBar: const ProfileAppBar(),
@@ -201,7 +224,7 @@ class _ProfilePageState extends State<ProfilePage> {
           return const SizedBox.shrink();
         },
       ),
-    );
+        );
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {

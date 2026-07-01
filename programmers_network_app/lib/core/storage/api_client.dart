@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -72,12 +73,22 @@ class ApiClient {
   ) async {
     var response = await request();
 
-    if (response.statusCode == 401 || response.statusCode == 403) {
+    print("=========== API RESPONSE ===========");
+    print("Status Code: ${response.statusCode}");
+    print("Body: ${response.body}");
+    print("===================================");
+
+    if (response.statusCode == 410) {
+      print("⚠️ Access Token Expired");
+
       final refreshed = await RefreshTokenService().refreshToken();
 
       if (refreshed) {
+        print("✅ Token Refreshed");
         response = await request();
       } else {
+        print("❌ Refresh Failed");
+
         await TokenStorage.clearTokens();
         Get.offAllNamed(AppRoute.login);
         return response;
@@ -85,5 +96,24 @@ class ApiClient {
     }
 
     return response;
+  }
+  Future<http.Response> postMultipart(String endpoint, File file, String fieldName) async {
+    final token = await TokenStorage.getToken();
+    final uri = Uri.parse('$baseUrl$endpoint');
+
+    final request = http.MultipartRequest('POST', uri);
+
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+    request.headers['Accept'] = 'application/json';
+
+
+    request.files.add(
+      await http.MultipartFile.fromPath(fieldName, file.path),
+    );
+
+    final streamedResponse = await request.send();
+    return await http.Response.fromStream(streamedResponse);
   }
 }

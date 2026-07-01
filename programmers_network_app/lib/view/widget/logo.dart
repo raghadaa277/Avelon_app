@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:programmers_network_app/core/const/image_const.dart';
+import 'package:programmers_network_app/core/const/color_const.dart';
 
 class BuildLogo extends StatelessWidget {
   const BuildLogo({super.key});
@@ -8,17 +8,22 @@ class BuildLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.asset(
-          ImageAsset.logo,
-          height: 180,
-          width: 250,
-          fit: BoxFit.contain,
+        Text(
+          'A',
+          style: TextStyle(
+            color: ColorConst.colorButton,
+            fontSize: 100,
+            fontWeight: FontWeight.w900,
+            fontStyle: FontStyle.italic,
+            fontFamily: 'sans-serif',
+            height: 1.0,
+          ),
         ),
 
-        const SizedBox(height: 8),
+        const SizedBox(width: 15),
 
         const Text(
-          "avelon",
+          "A V E L O N ",
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w800,

@@ -1,11 +1,17 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import '../../../cubit/profile/profile_cubit.dart';
-import '../../../data/models/Profile/profile_model.dart';
-import 'EditInformationScreen.dart';
 
+import '../../../cubit/profile/profile_cubit.dart';
+import '../../../cubit/profile/profile_state.dart';
+import '../../../data/models/Profile/profile_model.dart';
+import '../../widget/auth/snackBar_controller_widget.dart';
+import 'EditInformationScreen.dart';
 
 class EditPhotoScreen extends StatefulWidget {
   final ProfileData profileData;
@@ -25,7 +31,11 @@ class _EditPhotoScreenState extends State<EditPhotoScreen> {
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      setState(() { _imageFile = File(pickedFile.path); });
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+
+      context.read<ProfileCubit>().updateAvatar(_imageFile!);
     }
   }
 
@@ -51,95 +61,135 @@ class _EditPhotoScreenState extends State<EditPhotoScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
-          child: Column(
-            children: [
+      body: BlocConsumer<ProfileCubit, ProfileState>(
+        listener: (context, state) {
+          if (state is AvatarUploadSuccess) {
 
-              Container(
-                decoration: BoxDecoration(color: grayInactive, borderRadius: BorderRadius.circular(30)),
-                padding: const EdgeInsets.all(4),
-                child: Row(
-                  children: [
+            showSnackbar(
+              title: "update image",
+              message: state.message,
 
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: BoxDecoration(color: limeGreen, borderRadius: BorderRadius.circular(25)),
-                        child: const Center(child: Text('Edit Photo', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13))),
-                      ),
-                    ),
+            );
+          } else if (state is AvatarRemoveSuccess) {
+            setState(() { _imageFile = null; });
+            showSnackbar(
+              title: "remove image",
+              message: state.message,
+            );
+          } else if (state is AvatarActionFailure) {
 
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (c) => BlocProvider.value(
-                                value: context.read<ProfileCubit>(),
-                                child: EditInformationScreen(profileData: widget.profileData),
-                              ),
-                            ),
-                          );
-                        },
-                        child: const Center(child: Text('Edit Information', style: TextStyle(color: Colors.black54, fontSize: 13))),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 40),
+            showSnackbar(
+              title: "failure process",
+              message: state.message,
+              isError: true,
+            );
+          }
+        },
 
+        builder: (context, state) {
 
-              Stack(
+          final isProcessing = state is AvatarUploading || state is AvatarRemoving;
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+              child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 65,
-                    backgroundColor: const Color(0xFFEFEFEF),
-                    backgroundImage: _imageFile != null
-                        ? FileImage(_imageFile!)
-                        : (widget.profileData.avatarFullUrl != null ? NetworkImage(widget.profileData.avatarFullUrl!) : null) as ImageProvider?,
-                    child: _imageFile == null && widget.profileData.avatarFullUrl == null ? const Icon(Icons.person, size: 50, color: Colors.grey) : null,
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 4,
-                    child: GestureDetector(
-                      onTap: _pickImage,
-                      child: CircleAvatar(radius: 18, backgroundColor: limeGreen, child: const Icon(Icons.camera_alt_outlined, color: Colors.black, size: 18)),
+
+                  Container(
+                    decoration: BoxDecoration(color: grayInactive, borderRadius: BorderRadius.circular(30)),
+                    padding: const EdgeInsets.all(4),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            decoration: BoxDecoration(color: limeGreen, borderRadius: BorderRadius.circular(25)),
+                            child: const Center(child: Text('Edit Photo', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13))),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: isProcessing ? null : () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (c) => BlocProvider.value(
+                                    value: context.read<ProfileCubit>(),
+                                    child: EditInformationScreen(profileData: widget.profileData),
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Center(child: Text('Edit Information', style: TextStyle(color: Colors.black54, fontSize: 13))),
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                  const SizedBox(height: 40),
+
+
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      CircleAvatar(
+                        radius: 65,
+                        backgroundColor: const Color(0xFFEFEFEF),
+                        backgroundImage: _imageFile != null
+                            ? FileImage(_imageFile!)
+                            : (widget.profileData.avatarFullUrl != null ? NetworkImage(widget.profileData.avatarFullUrl!) : null) as ImageProvider?,
+                        child: _imageFile == null && widget.profileData.avatarFullUrl == null ? const Icon(Icons.person, size: 50, color: Colors.grey) : null,
+                      ),
+                      if (isProcessing)
+                        const CircleAvatar(
+                          radius: 65,
+                          backgroundColor: Colors.black26,
+                          child: CircularProgressIndicator(color: Colors.white),
+                        ),
+                      if (!isProcessing)
+                        Positioned(
+                          bottom: 0,
+                          right: 4,
+                          child: GestureDetector(
+                            onTap: _pickImage,
+                            child: CircleAvatar(radius: 18, backgroundColor: limeGreen, child: const Icon(Icons.camera_alt_outlined, color: Colors.black, size: 18)),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text('Profile Photo', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14)),
+                  const SizedBox(height: 4),
+                  const Text('JPG, PNG max 5MB', style: TextStyle(color: Colors.grey, fontSize: 11)),
+                  const SizedBox(height: 30),
+
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: isProcessing ? null : _pickImage,
+                      style: ElevatedButton.styleFrom(backgroundColor: limeGreen, elevation: 0, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                      child: const Text('Choose Photo', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13)),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+
+                  TextButton(
+                    onPressed: isProcessing ? null : () {
+
+                      context.read<ProfileCubit>().removeAvatar();
+                    },
+                    child: const Text('Remove Photo', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 13)),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              const Text('Profile Photo', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14)),
-              const SizedBox(height: 4),
-              const Text('JPG, PNG max 5MB', style: TextStyle(color: Colors.grey, fontSize: 11)),
-              const SizedBox(height: 30),
-
-
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _pickImage,
-                  style: ElevatedButton.styleFrom(backgroundColor: limeGreen, elevation: 0, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-                  child: const Text('Choose Photo', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13)),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-
-              TextButton(
-                onPressed: () => setState(() => _imageFile = null),
-                child: const Text('Remove Photo', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 13)),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

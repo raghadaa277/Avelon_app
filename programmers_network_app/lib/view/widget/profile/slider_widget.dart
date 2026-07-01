@@ -26,9 +26,16 @@ class _AvelonHomeShellState extends State<AvelonHomeShell> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final drawerWidth = screenWidth * 0.82;
+    final drawerWidth = screenWidth * 0.60;
 
-    return Scaffold(
+    return PopScope(
+        canPop: !isMenuOpen,
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop && isMenuOpen) {
+            closeMenu();
+          }
+        },
+        child:Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: [
@@ -37,7 +44,7 @@ class _AvelonHomeShellState extends State<AvelonHomeShell> {
             curve: _curve,
             top: 0,
             bottom: 0,
-            left: isMenuOpen ? 0 : -drawerWidth,
+            right : isMenuOpen ? 0 : -drawerWidth,
             width: drawerWidth,
             child: widget.menu,
           ),
@@ -47,16 +54,16 @@ class _AvelonHomeShellState extends State<AvelonHomeShell> {
             curve: _curve,
             top: 0,
             bottom: 0,
-            left: isMenuOpen ? drawerWidth : 0,
-            right: isMenuOpen ? -drawerWidth : 0,
+            left: isMenuOpen ? -drawerWidth : 0,
+            right: isMenuOpen ? drawerWidth : 0,
             child: GestureDetector(
               onTap: isMenuOpen ? closeMenu : null,
               child: AnimatedScale(
                 duration: _duration,
                 curve: _curve,
-                scale: isMenuOpen ? 0.9 : 1,
+                scale: 1,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(isMenuOpen ? 26 : 0),
+                  borderRadius: BorderRadius.circular(0),
                   child: Stack(
                     children: [
                       widget.body,
@@ -77,7 +84,7 @@ class _AvelonHomeShellState extends State<AvelonHomeShell> {
           ),
         ],
       ),
-    );
+        ));
   }
 }
 
@@ -117,8 +124,8 @@ class ProfileSideMenu extends StatelessWidget {
     return Material(
       color: const Color(0xFFFCFDF8),
       borderRadius: const BorderRadius.only(
-        topRight: Radius.circular(28),
-        bottomRight: Radius.circular(28),
+        topLeft: Radius.circular(28),
+        bottomLeft: Radius.circular(28),
       ),
       child: SafeArea(
         child: Column(
@@ -194,7 +201,7 @@ class ProfileSideMenu extends StatelessWidget {
                 ],
               ),
             ),
-            const _Footer(),
+            //const _Footer(),
           ],
         ),
       ),
@@ -334,10 +341,10 @@ class _MenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
       leading: Container(
-        width: 38,
-        height: 38,
+        width: 34,
+        height: 34,
         decoration: BoxDecoration(
           color: tint,
           borderRadius: BorderRadius.circular(10),
@@ -346,7 +353,9 @@ class _MenuItem extends StatelessWidget {
       ),
       title: Text(
         label,
-        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
       ),
       trailing: const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
     );
@@ -378,30 +387,7 @@ class _LogoutTile extends StatelessWidget {
   }
 }
 
-class _Footer extends StatelessWidget {
-  const _Footer();
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 18),
-      child: Column(
-        children: [
-          const Text(
-            'A V E L O N',
-            style: TextStyle(
-              fontWeight: FontWeight.w800,
-              fontSize: 14,
-              letterSpacing: 2.5,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Version 1.0.0',
-            style: TextStyle(color: Colors.grey[500], fontSize: 12),
-          ),
-        ],
-      ),
-    );
-  }
-}
+
+
+
