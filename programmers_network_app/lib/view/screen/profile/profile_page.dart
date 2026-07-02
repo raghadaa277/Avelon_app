@@ -14,6 +14,7 @@ import '../../widget/profile/ActionButtonsRow_widget.dart';
 import '../../widget/profile/PostsTabContent_widget.dart';
 import '../../widget/profile/ProfileAppBar.dart';
 import '../../widget/profile/UserHeaderCard_widget.dart';
+import '../../widget/profile/post_input_section.dart';
 import 'EditPhotoScreen.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -162,6 +163,8 @@ class _ProfilePageState extends State<ProfilePage> {
               backgroundColor: const Color(0xFFF1FDE1),
               appBar: const ProfileAppBar(),
               body: Center(child: Text(state.errorMessage)),
+
+
             );
           } else if (state is ProfileLoaded) {
             final profileData = state.profileModel.data;
@@ -210,6 +213,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       const SizedBox(height: 20),
                       _buildTabBar(context, state.activeTabIndex),
                       const SizedBox(height: 16),
+                      if (state.activeTabIndex == 0) ...[
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: PostInputSection(),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: activeContent,
