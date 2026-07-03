@@ -109,7 +109,7 @@ class LoginController extends GetxController {
       final deviceData = await DeviceHelper.getDeviceData();
 
       final result = await _loginServices.login(
-        fcmToken: "du1257077",
+        fcmToken: "du125707788",
         email: email.text.trim(),
         password: password.text,
       );

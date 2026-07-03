@@ -2,11 +2,12 @@ class UserProfileModel {
   final bool success;
   final String message;
   final ProfileData data;
-
+  final String? profileCompletion;
   UserProfileModel({
     required this.success,
     required this.message,
     required this.data,
+   required this.profileCompletion,
   });
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
@@ -14,6 +15,7 @@ class UserProfileModel {
       success: json['success'] ?? false,
       message: json['message'] ?? '',
       data: ProfileData.fromJson(json['data'] ?? {}),
+     profileCompletion: json['data'] != null ? json['data']['profile_completion'] : null,
     );
   }
 }

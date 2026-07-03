@@ -137,7 +137,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         GetPage(name: AppRoute.resetpassword, page: () => ForgetPasswordPage()),
         GetPage(
           name: AppRoute.homePage,
-          page: () => HomePage(profileCompletion: Get.arguments ?? "0%"),
+          page: () => HomePage(),
         ),
         GetPage(name: AppRoute.source, page: () => SourcePage()),
         GetPage(name: AppRoute.profilePage, page: () => ProfilePage()),

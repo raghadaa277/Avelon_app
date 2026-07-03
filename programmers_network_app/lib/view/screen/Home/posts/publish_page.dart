@@ -139,9 +139,57 @@ class _PublishPageState extends State<PublishPage> {
                             width: double.infinity,
                             height: 52,
                             child: ElevatedButton(
-                              onPressed: controller.canContinue
-                                  ? () {
-                                      Get.to(() => ProfilePage());
+                              onPressed: controller.canPublish
+                                  ? () async {
+                                      final success = await controller
+                                          .createPost(
+                                            type: controller.selectedType!,
+                                            title: controller
+                                                .titleController
+                                                .text
+                                                .trim(),
+                                            content: controller
+                                                .contentController
+                                                .text
+                                                .trim(),
+                                            visibility: controller.visibility,
+
+                                            allowComments:
+                                                controller.allowComments,
+                                            hideCommentsCount:
+                                                controller.hideCommentsCount,
+                                            hideReactions:
+                                                controller.hideReactions,
+                                            hideReactionsCount:
+                                                controller.hideReactionsCount,
+                                            hideViews: controller.hideViews,
+                                            hideViewsCount:
+                                                controller.hideViewsCount,
+
+                                            publishedAt: controller.publishNow
+                                                ? null
+                                                : controller.scheduledAt
+                                                      ?.toIso8601String(),
+
+                                            media: controller.mediaFiles,
+                                          );
+
+                                      if (success) {
+                                        Get.offAll(() => const ProfilePage());
+
+                                        Get.snackbar(
+                                          "Success",
+                                          "Post created successfully",
+                                          snackPosition: SnackPosition.BOTTOM,
+                                        );
+                                      } else {
+                                        Get.snackbar(
+                                          "Error",
+                                          controller.errorMessage ??
+                                              "Failed to create post",
+                                          snackPosition: SnackPosition.BOTTOM,
+                                        );
+                                      }
                                     }
                                   : null,
                               style: ElevatedButton.styleFrom(

@@ -17,3 +17,19 @@ class ProfileError extends ProfileState {
   final String errorMessage;
   ProfileError({required this.errorMessage});
 }
+class AvatarUploading extends ProfileState {}
+class AvatarUploadSuccess extends ProfileState {
+  final String message;
+  AvatarUploadSuccess(this.message);
+}
+
+class AvatarRemoving extends ProfileState {}
+class AvatarRemoveSuccess extends ProfileState {
+  final String message;
+  AvatarRemoveSuccess(this.message);
+}
+
+class AvatarActionFailure extends ProfileState {
+  final String message;
+  AvatarActionFailure(this.message);
+}

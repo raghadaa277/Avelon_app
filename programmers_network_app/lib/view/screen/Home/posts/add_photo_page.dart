@@ -220,7 +220,7 @@ class _AddPhotoPageState extends State<AddPhotoPage> {
                             child: ElevatedButton(
                               onPressed: controller.canContinue
                                   ? () {
-                                      Get.to(() => PostSettingPage);
+                                      Get.to(() => const PostSettingPage());
                                     }
                                   : null,
                               style: ElevatedButton.styleFrom(

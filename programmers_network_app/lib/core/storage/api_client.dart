@@ -127,6 +127,25 @@ class ApiClient {
 
     return response;
   }
+  Future<http.Response> postMultipart(String endpoint, File file, String fieldName) async {
+    final token = await TokenStorage.getToken();
+    final uri = Uri.parse('$baseUrl$endpoint');
+
+    final request = http.MultipartRequest('POST', uri);
+
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+    request.headers['Accept'] = 'application/json';
+
+
+    request.files.add(
+      await http.MultipartFile.fromPath(fieldName, file.path),
+    );
+
+    final streamedResponse = await request.send();
+    return await http.Response.fromStream(streamedResponse);
+  }
 }
 
 // import 'dart:convert';

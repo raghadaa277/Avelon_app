@@ -20,7 +20,7 @@ Map<String, Widget Function(BuildContext)> routes = {
   AppRoute.complete: (context) => CompletePage(),
   AppRoute.resetpassword: (context) => ForgetPasswordPage(),
   AppRoute.homePage: (context) =>
-      HomePage(profileCompletion: Get.arguments ?? "0%"),
+      HomePage(),
   AppRoute.source: (context) => SourcePage(),
   AppRoute.profilePage: (context) => ProfilePage(),
   AppRoute.readyPage: (context) => ReadyPage(),

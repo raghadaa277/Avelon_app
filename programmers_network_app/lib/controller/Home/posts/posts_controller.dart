@@ -26,6 +26,8 @@ class PostsController extends GetxController {
   ];
   String? selectedType;
 
+  String visibility = "public";
+
   bool allowComments = false;
   bool hideCommentsCount = false;
   bool hideReactions = false;
