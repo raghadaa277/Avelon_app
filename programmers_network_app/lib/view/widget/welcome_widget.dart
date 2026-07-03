@@ -55,7 +55,7 @@ class _WelcomeWidgetState extends State<WelcomeWidget>
     if (token != null && token.isNotEmpty) {
       await Get.find<UserSessionController>().startSession();
 
-      Get.offAllNamed(AppRoute.userStatus);
+      Get.offAllNamed(AppRoute.CreatePost);
     } else {
       Get.offAllNamed(AppRoute.login);
     }

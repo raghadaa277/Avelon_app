@@ -1,48 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:programmers_network_app/data/models/Home/OnBoarding/onboarding_model.dart';
+import 'package:programmers_network_app/data/models/Home/posts/create_post_model.dart';
 
-({IconData icon, Color color}) _sourceStyle(String name) {
+({IconData icon, Color color}) _typePostStyle(String name) {
   switch (name.toLowerCase()) {
-    case 'instagram':
-      return (icon: Icons.camera_alt, color: const Color(0xFFE1306C));
-    case 'facebook':
-      return (icon: Icons.facebook, color: const Color(0xFF1877F2));
-    case 'linkedin':
-      return (icon: Icons.work_rounded, color: const Color(0xFF0A66C2));
-    case 'youtube':
-      return (icon: Icons.play_circle_fill, color: const Color(0xFFFF0000));
-    case 'tiktok':
-      return (icon: Icons.music_note_rounded, color: const Color(0xFF010101));
-    case 'google':
-      return (icon: Icons.search_rounded, color: const Color(0xFF4285F4));
-    case 'friend':
-      return (icon: Icons.people_rounded, color: const Color(0xFF7C3AED));
-    case 'university':
-      return (icon: Icons.school_rounded, color: const Color(0xFFF59E0B));
-    case 'github':
-      return (icon: Icons.code_rounded, color: const Color(0xFF24292E));
+    case 'article':
+      return (icon: Icons.article_outlined, color: const Color(0xFF2563EB));
+
+    case 'problem':
+      return (
+        icon: Icons.report_problem_outlined,
+        color: const Color(0xFFEF4444),
+      );
+
+    case 'question':
+      return (icon: Icons.help_outline, color: const Color(0xFFF59E0B));
+
+    case 'project':
+      return (icon: Icons.work_outline, color: const Color(0xFF10B981));
+
+    case 'poll':
+      return (icon: Icons.poll_outlined, color: const Color(0xFF8B5CF6));
+
     default:
-      return (icon: Icons.more_horiz, color: const Color(0xFF6B7280));
+      return (icon: Icons.description_outlined, color: Colors.grey);
   }
 }
 
-class SourceChip extends StatelessWidget {
-  final SourcesModel source;
+class TypePostChip extends StatelessWidget {
+  final PostType type;
   final bool isSelected;
   final VoidCallback onTap;
 
-  const SourceChip({
+  const TypePostChip({
     super.key,
-    required this.source,
+    required this.type,
     required this.isSelected,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (source.name.toLowerCase() == 'other') return const SizedBox.shrink();
-
-    final style = _sourceStyle(source.name);
+    final style = _typePostStyle(type.type);
 
     return GestureDetector(
       onTap: onTap,
@@ -65,22 +63,21 @@ class SourceChip extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: style.color.withValues(alpha: 0.12),
+                color: style.color.withValues(alpha: .12),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(style.icon, size: 19, color: style.color),
+              child: Icon(style.icon, color: style.color, size: 19),
             ),
+
             const SizedBox(width: 10),
 
             Expanded(
               child: Text(
-                source.label.isNotEmpty ? source.label : source.name,
+                type.label,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected
-                      ? const Color(0xFF111827)
-                      : const Color(0xFF374151),
+                  color: const Color(0xFF374151),
                 ),
               ),
             ),
@@ -90,8 +87,8 @@ class SourceChip extends StatelessWidget {
                 width: 20,
                 height: 20,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
                   color: style.color,
+                  shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.check, size: 12, color: Colors.white),
               ),

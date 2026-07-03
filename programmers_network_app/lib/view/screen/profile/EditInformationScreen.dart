@@ -50,7 +50,7 @@ class _EditInformationScreenState extends State<EditInformationScreen> {
     _jobTitleController = TextEditingController(text: data.jobTitle);
     _companyController = TextEditingController(text: data.company);
     _experienceController = TextEditingController(
-      text: data.experienceYears?.toString() ?? '0',
+      text: data.experienceYears.toString(),
     );
     _githubController = TextEditingController(text: data.githubUrl);
     _linkedinController = TextEditingController(text: data.linkedinUrl);

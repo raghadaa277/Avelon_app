@@ -68,8 +68,8 @@ class StatusHistoryItem extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: TimelineColumn(
-                          label: "Started At",
-                          value: formatDateTime(item.startedAt),
+                          label: "Reason",
+                          value: item.reason.isEmpty ? "-" : item.reason,
                         ),
                       ),
                     ],
@@ -81,22 +81,18 @@ class StatusHistoryItem extends StatelessWidget {
                     children: [
                       Expanded(
                         child: TimelineColumn(
+                          label: "Started At",
+                          value: formatDateTime(item.startedAt),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TimelineColumn(
                           label: "Ended At",
                           value: ongoing ? "-" : formatDateTime(item.endedAt),
                         ),
                       ),
                     ],
-                  ),
-
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Reason",
-                    style: TextStyle(fontSize: 11, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    item.reason.isEmpty ? "-" : item.reason,
-                    style: const TextStyle(fontSize: 13),
                   ),
                 ],
               ),

@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String baseurl = "https://9eda-146-70-246-134.ngrok-free.app";
+  static const String baseurl = "https://c446-80-79-7-105.ngrok-free.app";
   static const String login = "/api/mobile/login";
   static const String register = "/api/register";
   static const String resendtoken = "/api/resend/verification/link";
@@ -15,4 +15,5 @@ class ApiConstants {
   static const String getuserdaily = "/api/get/user/daily/app/usages";
   static const String getUserStatusesHistory =
       "/api/get/user/status/history/and/summary";
+  static const String createPost = "/api/create/post";
 }

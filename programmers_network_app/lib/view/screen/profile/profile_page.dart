@@ -553,7 +553,6 @@ class AboutTabContent extends StatelessWidget {
     required IconData icon,
     String? url,
   }) {
-    final bool hasUrl = url != null && url.isNotEmpty;
     return GestureDetector(
       onTap: () => _launchURL(context, url),
       behavior: HitTestBehavior.opaque,
