@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:get/get_connect/http/src/response/response.dart';
-import 'package:http/http.dart';
 import 'package:programmers_network_app/core/const/api_Constants.dart';
 import 'package:programmers_network_app/core/storage/api_client.dart';
 import 'package:programmers_network_app/core/storage/token_storage.dart';
@@ -10,7 +8,6 @@ import '../../models/Profile/UpdateProfileResponse.dart';
 import '../../models/Profile/profile_model.dart';
 
 class ProfileServices {
-
   final ApiClient profileApi = ApiClient(baseUrl: ApiConstants.baseurl);
 
   Future<UserProfileModel?> getUserProfile() async {
@@ -94,7 +91,8 @@ class ProfileServices {
         return UpdateProfileResponseModel.fromJson(decodedResponse);
       } else {
         throw Exception(
-            decodedResponse['message'] ?? 'Failed to update profile');
+          decodedResponse['message'] ?? 'Failed to update profile',
+        );
       }
     } catch (e) {
       throw Exception(e.toString());
@@ -120,17 +118,20 @@ class ProfileServices {
         return decodedResponse as Map<String, dynamic>;
       } else {
         throw Exception(
-            decodedResponse['message'] ?? 'Failed to load privacy settings');
+          decodedResponse['message'] ?? 'Failed to load privacy settings',
+        );
       }
     } catch (e) {
       throw Exception(e.toString());
     }
   }
+
   Future<bool> updatePrivacySettings(Map<String, dynamic> bodyData) async {
     try {
-      final response = await profileApi.post(ApiConstants.updatePrivacySettings,
-        body: bodyData,);
-
+      final response = await profileApi.post(
+        ApiConstants.updatePrivacySettings,
+        body: bodyData,
+      );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
@@ -143,7 +144,6 @@ class ProfileServices {
     }
   }
 
-
   Future<AvatarActionResponseModel?> updateAvatar(File imageFile) async {
     final token = await TokenStorage.getToken();
 
@@ -153,7 +153,6 @@ class ProfileServices {
     }
 
     try {
-
       final response = await profileApi.postMultipart(
         ApiConstants.updateAvatar,
         imageFile,
@@ -168,13 +167,14 @@ class ProfileServices {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return AvatarActionResponseModel.fromJson(decodedResponse);
       } else {
-        throw Exception(decodedResponse['message'] ?? 'Failed to update avatar');
+        throw Exception(
+          decodedResponse['message'] ?? 'Failed to update avatar',
+        );
       }
     } catch (e) {
       throw Exception(e.toString());
     }
   }
-
 
   Future<AvatarActionResponseModel?> removeAvatar() async {
     final token = await TokenStorage.getToken();
@@ -198,11 +198,12 @@ class ProfileServices {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return AvatarActionResponseModel.fromJson(decodedResponse);
       } else {
-        throw Exception(decodedResponse['message'] ?? 'Failed to remove avatar');
+        throw Exception(
+          decodedResponse['message'] ?? 'Failed to remove avatar',
+        );
       }
     } catch (e) {
       throw Exception(e.toString());
     }
   }
-
 }

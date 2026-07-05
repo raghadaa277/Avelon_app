@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
+import 'package:programmers_network_app/controller/Home/posts/my_posts_controller.dart';
 import 'package:programmers_network_app/controller/Home/posts/posts_controller.dart';
 import 'package:get/get.dart';
 import 'package:programmers_network_app/core/const/color_const.dart';
@@ -29,6 +30,26 @@ class _PublishPageState extends State<PublishPage> {
       init: controller,
       builder: (controller) {
         return Scaffold(
+          appBar: AppBar(
+            backgroundColor: ColorConst.colorBackGroung,
+            elevation: 0,
+            leading: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: ColorConst.colorApp,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: ColorConst.colorBackGroung),
+              ),
+              child: IconButton(
+                onPressed: () => Get.back(),
+                icon: const Icon(
+                  Icons.arrow_back_ios_rounded,
+                  size: 18,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
           backgroundColor: ColorConst.colorBackGroung,
           body: SafeArea(
             child: SingleChildScrollView(
@@ -86,16 +107,8 @@ class _PublishPageState extends State<PublishPage> {
                             color: Color(0xFF6B7280),
                           ),
                         ),
-                        if (controller.isLoading)
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 32),
-                            child: Center(
-                              child: CircularProgressIndicator(
-                                color: ColorConst.colorButton,
-                              ),
-                            ),
-                          )
-                        else if (controller.errorMessage != null)
+
+                        if (controller.errorMessage != null)
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 24),
                             child: Text(
@@ -144,16 +157,26 @@ class _PublishPageState extends State<PublishPage> {
                                       final success = await controller
                                           .createPost(
                                             type: controller.selectedType!,
-                                            title: controller
-                                                .titleController
-                                                .text
-                                                .trim(),
-                                            content: controller
-                                                .contentController
-                                                .text
-                                                .trim(),
-                                            visibility: controller.visibility,
 
+                                            title:
+                                                controller.selectedType ==
+                                                    "poll"
+                                                ? controller.pollQuestion
+                                                : controller
+                                                      .titleController
+                                                      .text
+                                                      .trim(),
+
+                                            content:
+                                                controller.selectedType ==
+                                                    "poll"
+                                                ? controller.pollQuestion
+                                                : controller
+                                                      .contentController
+                                                      .text
+                                                      .trim(),
+
+                                            visibility: controller.visibility,
                                             allowComments:
                                                 controller.allowComments,
                                             hideCommentsCount:
@@ -165,30 +188,17 @@ class _PublishPageState extends State<PublishPage> {
                                             hideViews: controller.hideViews,
                                             hideViewsCount:
                                                 controller.hideViewsCount,
-
                                             publishedAt: controller.publishNow
                                                 ? null
                                                 : controller.scheduledAt
                                                       ?.toIso8601String(),
-
                                             media: controller.mediaFiles,
                                           );
 
                                       if (success) {
+                                        Get.find<MyPostsController>()
+                                            .fetchPosts();
                                         Get.offAll(() => const ProfilePage());
-
-                                        Get.snackbar(
-                                          "Success",
-                                          "Post created successfully",
-                                          snackPosition: SnackPosition.BOTTOM,
-                                        );
-                                      } else {
-                                        Get.snackbar(
-                                          "Error",
-                                          controller.errorMessage ??
-                                              "Failed to create post",
-                                          snackPosition: SnackPosition.BOTTOM,
-                                        );
                                       }
                                     }
                                   : null,
@@ -206,25 +216,28 @@ class _PublishPageState extends State<PublishPage> {
                                   borderRadius: BorderRadius.circular(14),
                                 ),
                               ),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Continue",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white,
+                              child: controller.isLoading
+                                  ? const SizedBox(
+                                      width: 22,
+                                      height: 22,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Publish",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Icon(
-                                    Icons.arrow_forward,
-                                    size: 18,
-                                    color: Colors.white,
-                                  ),
-                                ],
-                              ),
                             ),
                           ),
                         ),

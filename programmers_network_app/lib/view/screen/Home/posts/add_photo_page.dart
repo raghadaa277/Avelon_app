@@ -27,23 +27,38 @@ class _AddPhotoPageState extends State<AddPhotoPage> {
       builder: (controller) {
         return Scaffold(
           appBar: AppBar(
+            backgroundColor: ColorConst.colorBackGroung,
+            elevation: 0,
+            leading: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: ColorConst.colorApp,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: IconButton(
+                onPressed: () => Get.back(),
+                icon: const Icon(
+                  Icons.arrow_back_ios_rounded,
+                  size: 18,
+                  color: Colors.black,
+                ),
+              ),
+            ),
             actions: [
               TextButton(
-                onPressed: () {
-                  Get.to(() => PostSettingPage());
-                },
-                child: Text(
+                onPressed: () => Get.to(() => PostSettingPage()),
+                child: const Text(
                   "Skip",
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
                     color: Color(0xFF111827),
-                    height: 1.25,
                   ),
                 ),
               ),
             ],
           ),
+
           backgroundColor: ColorConst.colorBackGroung,
           body: SafeArea(
             child: SingleChildScrollView(
@@ -141,7 +156,13 @@ class _AddPhotoPageState extends State<AddPhotoPage> {
                           itemBuilder: (context, index) {
                             if (index == 0) {
                               return GestureDetector(
-                                onTap: controller.pickImage,
+                                onTap: () async {
+                                  print("Pressed");
+
+                                  await controller.pickImage();
+
+                                  print("Done");
+                                },
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: const Color(0xFFF3F4F6),

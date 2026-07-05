@@ -28,6 +28,26 @@ class _PostSettingPageState extends State<PostSettingPage> {
       init: controller,
       builder: (controller) {
         return Scaffold(
+          appBar: AppBar(
+            backgroundColor: ColorConst.colorBackGroung,
+            elevation: 0,
+            leading: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: ColorConst.colorApp,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: ColorConst.colorBackGroung),
+              ),
+              child: IconButton(
+                onPressed: () => Get.back(),
+                icon: const Icon(
+                  Icons.arrow_back_ios_rounded,
+                  size: 18,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
           backgroundColor: ColorConst.colorBackGroung,
 
           body: SafeArea(
@@ -108,7 +128,7 @@ class _PostSettingPageState extends State<PostSettingPage> {
 
                         CardSwitchPostSettingsWidget(
                           icon: HugeIcons.strokeRoundedCommentAdd03,
-                          text: "Add comments",
+                          text: "Allow comments",
                           value: controller.allowComments,
                           onChanged: (value) {
                             controller.allowComments = value;
@@ -165,6 +185,75 @@ class _PostSettingPageState extends State<PostSettingPage> {
                             controller.update();
                           },
                         ),
+
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Visibility",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                                color: Color(0xFF111827),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+
+                            DropdownButtonFormField<String>(
+                              // ignore: deprecated_member_use
+                              value: controller.visibility,
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: const Color(0xFFF9FAFB),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 16,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: const BorderSide(
+                                    color: ColorConst.colorButton,
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
+                              items: const [
+                                DropdownMenuItem(
+                                  value: "public",
+                                  child: Text("Public"),
+                                ),
+                                DropdownMenuItem(
+                                  value: "close_friends",
+                                  child: Text("Close Friends"),
+                                ),
+                                DropdownMenuItem(
+                                  value: "followers",
+                                  child: Text("Followers"),
+                                ),
+                                DropdownMenuItem(
+                                  value: "only_me",
+                                  child: Text("Only Me"),
+                                ),
+                              ],
+                              onChanged: (value) {
+                                controller.visibility = value!;
+                                controller.update();
+                              },
+                            ),
+                          ],
+                        ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 20,
@@ -174,7 +263,7 @@ class _PostSettingPageState extends State<PostSettingPage> {
                             width: double.infinity,
                             height: 52,
                             child: ElevatedButton(
-                              onPressed: controller.canContinue
+                              onPressed: controller.canSubmitSettings
                                   ? () {
                                       Get.to(() => PublishPage());
                                     }

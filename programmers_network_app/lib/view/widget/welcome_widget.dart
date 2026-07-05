@@ -51,11 +51,14 @@ class _WelcomeWidgetState extends State<WelcomeWidget>
 
   Future<void> _goNext() async {
     final token = await TokenStorage.getToken();
+    final onboardingDone = await TokenStorage.isOnboardingDone();
 
-    if (token != null && token.isNotEmpty) {
+    debugPrint("🔑 token: $token");
+    debugPrint("✅ onboardingDone: $onboardingDone");
+
+    if (token != null && token.isNotEmpty && onboardingDone) {
       await Get.find<UserSessionController>().startSession();
-
-      Get.offAllNamed(AppRoute.CreatePost);
+      Get.offAllNamed(AppRoute.homePage);
     } else {
       Get.offAllNamed(AppRoute.login);
     }

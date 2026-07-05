@@ -74,13 +74,21 @@ class PostsController extends GetxController {
         hideViewsCount: hideViewsCount,
         publishedAt: publishedAt,
         media: media,
+
+        pollQuestion: type == "poll" ? pollQuestion : null,
+        pollOptions: type == "poll" ? pollOptions : null,
+        allowMultipleAnswers: type == "poll" ? allowMultipleAnswers : null,
       );
-      if (createPostModel != null && createPostModel!.success) {
-        clearPostData();
-      }
+      Get.snackbar(
+        "Success",
+        createPostModel!.message,
+        snackPosition: SnackPosition.TOP,
+      );
+
+      clearPostData();
+
       isLoading = false;
       update();
-
       return true;
     } catch (e) {
       errorMessage = e.toString().replaceFirst("Exception: ", "");
@@ -150,6 +158,10 @@ class PostsController extends GetxController {
 
     selectedType = null;
 
+    pollQuestion = '';
+    pollOptions = ['', ''];
+    allowMultipleAnswers = false;
+
     update();
   }
 
@@ -157,7 +169,7 @@ class PostsController extends GetxController {
     return publishNow || scheduledAt != null;
   }
 
-  bool publishNow = false;
+  bool publishNow = true;
 
   DateTime? scheduledAt;
 
@@ -195,5 +207,43 @@ class PostsController extends GetxController {
     );
 
     update();
+  }
+
+  String pollQuestion = '';
+  List<String> pollOptions = ['', ''];
+  bool allowMultipleAnswers = false;
+
+  void setPollQuestion(String value) {
+    pollQuestion = value;
+    update();
+  }
+
+  void addPollOption() {
+    if (pollOptions.length < 10) {
+      pollOptions.add('');
+      update();
+    }
+  }
+
+  void removePollOption(int index) {
+    if (pollOptions.length > 2) {
+      pollOptions.removeAt(index);
+      update();
+    }
+  }
+
+  void updatePollOption(int index, String value) {
+    pollOptions[index] = value;
+    update();
+  }
+
+  void toggleMultipleAnswers(bool value) {
+    allowMultipleAnswers = value;
+    update();
+  }
+
+  bool get canContinuePoll {
+    return pollQuestion.trim().isNotEmpty &&
+        pollOptions.where((o) => o.trim().isNotEmpty).length >= 2;
   }
 }

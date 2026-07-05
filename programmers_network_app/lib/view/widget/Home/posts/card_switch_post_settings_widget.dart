@@ -33,7 +33,7 @@ class CardSwitchPostSettingsWidget extends StatelessWidget {
                 text,
                 style: const TextStyle(
                   color: Color(0xFF111827),
-                  fontSize: 16,
+                  fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
               ),

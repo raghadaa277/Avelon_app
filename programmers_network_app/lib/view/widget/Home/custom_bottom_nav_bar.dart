@@ -14,6 +14,7 @@ class CustomBottomNavBar extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.04),
             blurRadius: 8,
             offset: const Offset(0, -2),
@@ -22,8 +23,24 @@ class CustomBottomNavBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(child: _buildNavItem(context, Icons.home_outlined, 'Home', true, onTap: () {})),
-          Expanded(child: _buildNavItem(context, Icons.search, 'Explore', false, onTap: () {})),
+          Expanded(
+            child: _buildNavItem(
+              context,
+              Icons.home_outlined,
+              'Home',
+              true,
+              onTap: () {},
+            ),
+          ),
+          Expanded(
+            child: _buildNavItem(
+              context,
+              Icons.search,
+              'Explore',
+              false,
+              onTap: () {},
+            ),
+          ),
           Expanded(
             child: Center(
               child: Container(
@@ -37,7 +54,15 @@ class CustomBottomNavBar extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(child: _buildNavItem(context, Icons.notifications_none, 'Notifications', false, onTap: () {})),
+          Expanded(
+            child: _buildNavItem(
+              context,
+              Icons.notifications_none,
+              'Notifications',
+              false,
+              onTap: () {},
+            ),
+          ),
           Expanded(
             child: _buildNavItem(
               context,
@@ -57,14 +82,24 @@ class CustomBottomNavBar extends StatelessWidget {
     );
   }
 
-  Widget _buildNavItem(BuildContext context, IconData icon, String label, bool isActive, {required VoidCallback onTap}) {
+  Widget _buildNavItem(
+    BuildContext context,
+    IconData icon,
+    String label,
+    bool isActive, {
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: isActive ? const Color(0xffB8FF1A) : Colors.grey[400], size: 24),
+          Icon(
+            icon,
+            color: isActive ? const Color(0xffB8FF1A) : Colors.grey[400],
+            size: 24,
+          ),
           const SizedBox(height: 4),
           Text(
             label,

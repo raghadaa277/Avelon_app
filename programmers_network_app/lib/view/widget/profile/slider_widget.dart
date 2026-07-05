@@ -29,62 +29,63 @@ class _AvelonHomeShellState extends State<AvelonHomeShell> {
     final drawerWidth = screenWidth * 0.60;
 
     return PopScope(
-        canPop: !isMenuOpen,
-        onPopInvokedWithResult: (didPop, result) {
-          if (!didPop && isMenuOpen) {
-            closeMenu();
-          }
-        },
-        child:Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          AnimatedPositioned(
-            duration: _duration,
-            curve: _curve,
-            top: 0,
-            bottom: 0,
-            right : isMenuOpen ? 0 : -drawerWidth,
-            width: drawerWidth,
-            child: widget.menu,
-          ),
+      canPop: !isMenuOpen,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && isMenuOpen) {
+          closeMenu();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: Stack(
+          children: [
+            AnimatedPositioned(
+              duration: _duration,
+              curve: _curve,
+              top: 0,
+              bottom: 0,
+              right: isMenuOpen ? 0 : -drawerWidth,
+              width: drawerWidth,
+              child: widget.menu,
+            ),
 
-          AnimatedPositioned(
-            duration: _duration,
-            curve: _curve,
-            top: 0,
-            bottom: 0,
-            left: isMenuOpen ? -drawerWidth : 0,
-            right: isMenuOpen ? drawerWidth : 0,
-            child: GestureDetector(
-              onTap: isMenuOpen ? closeMenu : null,
-              child: AnimatedScale(
-                duration: _duration,
-                curve: _curve,
-                scale: 1,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(0),
-                  child: Stack(
-                    children: [
-                      widget.body,
+            AnimatedPositioned(
+              duration: _duration,
+              curve: _curve,
+              top: 0,
+              bottom: 0,
+              left: isMenuOpen ? -drawerWidth : 0,
+              right: isMenuOpen ? drawerWidth : 0,
+              child: GestureDetector(
+                onTap: isMenuOpen ? closeMenu : null,
+                child: AnimatedScale(
+                  duration: _duration,
+                  curve: _curve,
+                  scale: 1,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(0),
+                    child: Stack(
+                      children: [
+                        widget.body,
 
-                      AnimatedOpacity(
-                        duration: _duration,
-                        opacity: isMenuOpen ? 0.45 : 0,
-                        child: IgnorePointer(
-                          ignoring: !isMenuOpen,
-                          child: Container(color: Colors.black),
+                        AnimatedOpacity(
+                          duration: _duration,
+                          opacity: isMenuOpen ? 0.45 : 0,
+                          child: IgnorePointer(
+                            ignoring: !isMenuOpen,
+                            child: Container(color: Colors.black),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-        ));
+    );
   }
 }
 
@@ -102,10 +103,12 @@ class ProfileSideMenu extends StatelessWidget {
     this.onMutedPeople,
     this.onDashboard,
     this.onLogout,
+    this.onStatusUser,
   });
 
   final ProfileData data;
   final VoidCallback? onSettings;
+  final VoidCallback? onStatusUser;
   final VoidCallback? onActivity;
   final VoidCallback? onArchive;
   final VoidCallback? onTimeManagement;
@@ -131,7 +134,7 @@ class ProfileSideMenu extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          //  _Header(data: data, accent: _accent),
+            //  _Header(data: data, accent: _accent),
             const SizedBox(height: 12),
             const SizedBox(height: 4),
             Expanded(
@@ -158,9 +161,15 @@ class ProfileSideMenu extends StatelessWidget {
                   ),
                   _MenuItem(
                     icon: Icons.access_time_rounded,
-                    label: 'Time Management',
+                    label: 'User Activity',
                     tint: _tint,
                     onTap: onTimeManagement,
+                  ),
+                  _MenuItem(
+                    icon: Icons.person_2,
+                    label: 'Status User',
+                    tint: _tint,
+                    onTap: onStatusUser,
                   ),
                   _MenuItem(
                     icon: Icons.shield_outlined,
@@ -209,6 +218,7 @@ class ProfileSideMenu extends StatelessWidget {
   }
 }
 
+// ignore: unused_element
 class _Header extends StatelessWidget {
   const _Header({required this.data, required this.accent});
 
@@ -386,8 +396,3 @@ class _LogoutTile extends StatelessWidget {
     );
   }
 }
-
-
-
-
-

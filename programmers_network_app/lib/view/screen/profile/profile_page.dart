@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:programmers_network_app/controller/Home/posts/my_posts_controller.dart';
+
 import 'package:programmers_network_app/controller/auth/logout_controller.dart';
 import 'package:programmers_network_app/view/screen/profile/PrivacySettingsPage.dart';
+import 'package:programmers_network_app/view/screen/profile/user_activity/user_activity_page.dart';
+import 'package:programmers_network_app/view/screen/profile/user_status_history/user_status_history_page.dart';
+import 'package:programmers_network_app/view/widget/Home/posts/getPost/post_card_widget.dart';
+
 import 'package:programmers_network_app/view/widget/profile/slider_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../cubit/PrivacySettings/privacy_settings_cubit.dart';
@@ -25,6 +31,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final LogoutController logoutController = Get.put(LogoutController());
+
   void _showLogoutDialog(BuildContext context) {
     showGeneralDialog(
       context: context,
@@ -58,29 +65,23 @@ class _ProfilePageState extends State<ProfilePage> {
                     color: Color(0xffB8FF1A),
                   ),
                   const SizedBox(height: 12),
-
                   const Text(
                     "Logout",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-
                   const SizedBox(height: 8),
-
                   Text(
                     "Are you sure you want to log out?",
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
                   ),
-
                   const SizedBox(height: 20),
-
                   Row(
                     children: [
                       Expanded(
                         child: TextButton(
                           onPressed: () {
                             Navigator.pop(context);
-                            logoutController.logout();
                           },
                           style: TextButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -97,9 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                       ),
-
                       const SizedBox(width: 10),
-
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
@@ -131,7 +130,6 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         );
       },
-
       transitionBuilder: (context, animation, _, child) {
         return ScaleTransition(
           scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
@@ -145,7 +143,6 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return BlocProvider<ProfileCubit>(
       create: (context) => ProfileCubit(ProfileServices())..fetchProfile(),
-
       child: BlocBuilder<ProfileCubit, ProfileState>(
         builder: (context, state) {
           if (state is ProfileLoading) {
@@ -167,60 +164,81 @@ class _ProfilePageState extends State<ProfilePage> {
 
             Widget activeContent;
             if (state.activeTabIndex == 0) {
-              activeContent = PostsTabContent(isActive: true);
+              activeContent = PostsTabContent(
+                isActive: true,
+                profileData: profileData,
+              );
             } else if (state.activeTabIndex == 1) {
               activeContent = AboutTabContent(data: profileData);
             } else {
               activeContent = SkillsTabContent(isActive: true);
             }
+
             return AvelonHomeShell(
               menu: ProfileSideMenu(
                 data: profileData,
-
-                onSettings: () {
+                onSettings: () async {
                   AvelonHomeShell.of(context)?.closeMenu();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider<PrivacySettingsCubit>(
-                        create: (context) =>
-                            PrivacySettingsCubit(services: ProfileServices()),
-                        child: const PrivacySettingsPage(),
-                      ),
+                  await Future.delayed(const Duration(milliseconds: 280));
+                  Get.to(
+                    () => BlocProvider(
+                      create: (_) =>
+                          PrivacySettingsCubit(services: ProfileServices()),
+                      child: const PrivacySettingsPage(),
                     ),
                   );
+                },
+                onTimeManagement: () async {
+                  AvelonHomeShell.of(context)?.closeMenu();
+                  await Future.delayed(const Duration(milliseconds: 280));
+                  Get.to(() => UserActivityScreen());
+                },
+                onStatusUser: () async {
+                  AvelonHomeShell.of(context)?.closeMenu();
+                  await Future.delayed(const Duration(milliseconds: 280));
+                  Get.to(() => UserStatusHistoryScreen());
                 },
                 onLogout: () {
                   _showLogoutDialog(context);
                 },
               ),
-
               body: Scaffold(
                 backgroundColor: const Color(0xFFF1FDE1),
                 appBar: const ProfileAppBar(),
-                body: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 10),
-                      UserHeaderCard(data: profileData),
-                      const SizedBox(height: 16),
-                      ActionButtonsRow(profileData: profileData),
-                      const SizedBox(height: 20),
-                      _buildTabBar(context, state.activeTabIndex),
-                      const SizedBox(height: 16),
-                      if (state.activeTabIndex == 0) ...[
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: PostInputSection(),
-                        ),
+                body: NotificationListener<ScrollNotification>(
+                  onNotification: (scroll) {
+                    if (scroll.metrics.pixels >=
+                        scroll.metrics.maxScrollExtent - 200) {
+                      if (Get.isRegistered<MyPostsController>()) {
+                        Get.find<MyPostsController>().loadMore();
+                      }
+                    }
+                    return false;
+                  },
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 10),
+                        UserHeaderCard(data: profileData),
                         const SizedBox(height: 16),
+                        ActionButtonsRow(profileData: profileData),
+                        const SizedBox(height: 20),
+                        _buildTabBar(context, state.activeTabIndex),
+                        const SizedBox(height: 16),
+                        if (state.activeTabIndex == 0) ...[
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: PostInputSection(),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: activeContent,
+                        ),
+                        const SizedBox(height: 40),
                       ],
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: activeContent,
-                      ),
-                      const SizedBox(height: 40),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -229,69 +247,6 @@ class _ProfilePageState extends State<ProfilePage> {
           return const SizedBox.shrink();
         },
       ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      leading: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-          ),
-          child: IconButton(
-            padding: const EdgeInsets.only(left: 6),
-            icon: const Icon(
-              Icons.arrow_back_ios,
-              color: Colors.black54,
-              size: 14,
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
-      ),
-      title: const Text(
-        'A V E L O N',
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: 14,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 2.5,
-        ),
-      ),
-      centerTitle: true,
-      actions: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-            child: Builder(
-              builder: (innerContext) {
-                return IconButton(
-                  icon: const Icon(
-                    Icons.more_horiz,
-                    color: Colors.black54,
-                    size: 20,
-                  ),
-                  onPressed: () {
-                    final shell = AvelonHomeShell.of(context);
-                    print(shell);
-                    shell?.toggleMenu();
-                  },
-                );
-              },
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -398,9 +353,88 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
+class PostsTabContent extends StatefulWidget {
+  final bool isActive;
+  final ProfileData profileData;
+  const PostsTabContent({
+    super.key,
+    required this.isActive,
+    required this.profileData,
+  });
+
+  @override
+  State<PostsTabContent> createState() => _PostsTabContentState();
+}
+
+class _PostsTabContentState extends State<PostsTabContent> {
+  late MyPostsController ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    ctrl = Get.put(MyPostsController());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GetBuilder<MyPostsController>(
+      builder: (ctrl) {
+        if (ctrl.isLoading) {
+          return const Center(
+            child: CircularProgressIndicator(color: Color(0xffB8FF1A)),
+          );
+        }
+
+        if (ctrl.posts.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 60),
+              child: Column(
+                children: [
+                  const Icon(
+                    Icons.sticky_note_2_outlined,
+                    size: 48,
+                    color: Color(0xffB8FF1A),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No posts yet',
+                    style: TextStyle(color: Colors.grey[400], fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: ctrl.posts.length + (ctrl.hasMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index == ctrl.posts.length) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Center(
+                  child: CircularProgressIndicator(color: Color(0xffB8FF1A)),
+                ),
+              );
+            }
+            return PostCard(
+              post: ctrl.posts[index],
+              profileData: widget.profileData,
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
 class AboutTabContent extends StatelessWidget {
   final ProfileData data;
   const AboutTabContent({super.key, required this.data});
+
   Future<void> _launchURL(BuildContext context, String? urlString) async {
     if (urlString == null || urlString.isEmpty) {
       ScaffoldMessenger.of(
@@ -408,7 +442,6 @@ class AboutTabContent extends StatelessWidget {
       ).showSnackBar(const SnackBar(content: Text("Link not available")));
       return;
     }
-
     final Uri url = Uri.parse(urlString);
     try {
       if (await canLaunchUrl(url)) {
@@ -438,7 +471,6 @@ class AboutTabContent extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-
         _buildAboutCard(
           title: "Experience",
           icon: Icons.business_center_outlined,
@@ -450,7 +482,6 @@ class AboutTabContent extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-
         _buildAboutCard(
           title: "Location",
           icon: Icons.location_on_outlined,
@@ -462,7 +493,6 @@ class AboutTabContent extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-
         _buildAboutCard(
           title: "Education",
           icon: Icons.school_outlined,
@@ -482,7 +512,6 @@ class AboutTabContent extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(16),
@@ -496,7 +525,7 @@ class AboutTabContent extends StatelessWidget {
               const Row(
                 children: [
                   Icon(Icons.link_rounded, size: 18, color: Colors.black87),
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10),
                   Text(
                     "Connect",
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
@@ -504,7 +533,6 @@ class AboutTabContent extends StatelessWidget {
                 ],
               ),
               const Divider(height: 24, color: Color(0xFFF1FDE1)),
-
               _buildLinkTile(
                 context: context,
                 label: "GitHub",
@@ -512,7 +540,6 @@ class AboutTabContent extends StatelessWidget {
                 url: data.githubUrl,
               ),
               const Divider(height: 20, color: Color(0xFFF1FDE1)),
-
               _buildLinkTile(
                 context: context,
                 label: "LinkedIn",
@@ -621,34 +648,7 @@ class AboutTabContent extends StatelessWidget {
   }
 }
 
-class PostsTabContent extends StatelessWidget {
-  final bool isActive;
-  const PostsTabContent({super.key, required this.isActive});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 60),
-        child: Column(
-          children: [
-            const Icon(
-              Icons.sticky_note_2_outlined,
-              size: 48,
-              color: Color(0xffB8FF1A),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No posts yet',
-              style: TextStyle(color: Colors.grey[400], fontSize: 13),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
+// ─────────────────────────────────────────────
 class ActionButtonsRow extends StatelessWidget {
   final ProfileData profileData;
   const ActionButtonsRow({super.key, required this.profileData});
@@ -728,6 +728,7 @@ class ActionButtonsRow extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────────
 class UserHeaderCard extends StatelessWidget {
   final ProfileData data;
   const UserHeaderCard({super.key, required this.data});
@@ -777,27 +778,19 @@ class UserHeaderCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(width: 16),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Text(
-                          data.fullName,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                      ],
+                    Text(
+                      data.fullName,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
                     const SizedBox(height: 2),
-
                     Text(
                       '@${data.username}',
                       style: TextStyle(
@@ -807,7 +800,6 @@ class UserHeaderCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -827,7 +819,6 @@ class UserHeaderCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -848,7 +839,6 @@ class UserHeaderCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-
                     Text(
                       data.bio,
                       textAlign: TextAlign.start,
@@ -864,7 +854,6 @@ class UserHeaderCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 24),
-
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             decoration: BoxDecoration(
@@ -913,6 +902,7 @@ class UserHeaderCard extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────────
 class SkillsTabContent extends StatelessWidget {
   final bool isActive;
   const SkillsTabContent({super.key, required this.isActive});

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
+import 'package:get/get.dart';
+import 'package:programmers_network_app/core/const/routesPage.dart';
 
 class PostInputSection extends StatelessWidget {
   const PostInputSection({super.key});
@@ -13,18 +16,24 @@ class PostInputSection extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const CircleAvatar(
-            radius: 16,
-            backgroundImage: NetworkImage(''),
-          ),
+          const CircleAvatar(radius: 16, backgroundImage: NetworkImage('')),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              "What's on your mind?",
-              style: TextStyle(color: Colors.grey[400], fontSize: 14),
+            child: InkWell(
+              onTap: () {
+                Get.toNamed(AppRoute.CreatePost);
+              },
+              child: Text(
+                "What's on your mind?",
+                style: TextStyle(color: Colors.grey[400], fontSize: 14),
+              ),
             ),
           ),
-          Icon(Icons.image_outlined, color: Colors.grey[400], size: 22),
+          HugeIcon(
+            icon: HugeIcons.strokeRoundedImageAdd01,
+            color: Colors.grey.shade400,
+            size: 22,
+          ),
         ],
       ),
     );

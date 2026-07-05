@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_instance/get_instance.dart';
+import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:programmers_network_app/controller/Home/posts/posts_controller.dart';
 import 'package:programmers_network_app/core/const/color_const.dart';
@@ -20,6 +21,26 @@ class _CreatePostPageState extends State<CreatePostPage> {
     return GetBuilder<PostsController>(
       builder: (_) {
         return Scaffold(
+          appBar: AppBar(
+            backgroundColor: ColorConst.colorBackGroung,
+            elevation: 0,
+            leading: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: ColorConst.colorApp,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: ColorConst.colorBackGroung),
+              ),
+              child: IconButton(
+                onPressed: () => Get.back(),
+                icon: const Icon(
+                  Icons.arrow_back_ios_rounded,
+                  size: 18,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
           backgroundColor: ColorConst.colorBackGroung,
           body: SafeArea(
             child: SingleChildScrollView(

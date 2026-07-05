@@ -4,7 +4,11 @@ import '../../../../data/models/Profile/profile_model.dart';
 
 class PostsTabContent extends StatelessWidget {
   final bool isActive;
-  const PostsTabContent({super.key, required this.isActive});
+  const PostsTabContent({
+    super.key,
+    required this.isActive,
+    required ProfileData profileData,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +40,9 @@ class AboutTabContent extends StatelessWidget {
 
   Future<void> _launchURL(BuildContext context, String? urlString) async {
     if (urlString == null || urlString.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Link not available")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Link not available")));
       return;
     }
     final Uri url = Uri.parse(urlString);
@@ -49,9 +53,9 @@ class AboutTabContent extends StatelessWidget {
         throw 'Could not launch $urlString';
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Could not open link: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Could not open link: $e")));
     }
   }
 
@@ -103,7 +107,9 @@ class AboutTabContent extends StatelessWidget {
               'icon': Icons.layers_outlined,
             },
             {
-              'label': data.studyYear == "fourth_year" ? "Year 4" : data.studyYear,
+              'label': data.studyYear == "fourth_year"
+                  ? "Year 4"
+                  : data.studyYear,
               'icon': Icons.timeline,
             },
           ],
@@ -171,13 +177,16 @@ class AboutTabContent extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 title,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
           const Divider(height: 24, color: Color(0xFFF1FDE1)),
           ...items.map(
-                (item) => Padding(
+            (item) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Row(
                 children: [
@@ -308,7 +317,7 @@ class SkillsTabContent extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             itemCount: dummySkills.length,
             separatorBuilder: (context, index) =>
-            const Divider(height: 20, color: Color(0xFFF1FDE1)),
+                const Divider(height: 20, color: Color(0xFFF1FDE1)),
             itemBuilder: (context, index) {
               final skill = dummySkills[index];
               return Row(
