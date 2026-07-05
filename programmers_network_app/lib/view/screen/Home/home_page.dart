@@ -5,6 +5,7 @@ import '../../../cubit/profile/profile_cubit.dart';
 import '../../../cubit/profile/profile_state.dart';
 
 
+import '../../../data/services/profile/profile_services.dart';
 import '../../widget/Home/custom_app_bar.dart';
 import '../../widget/Home/profile_completion_card.dart';
 import '../../widget/Home/stories_section.dart';
@@ -17,7 +18,10 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocProvider(
+
+        create: (context) => ProfileCubit(ProfileServices())..fetchProfile(),
+        child: Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: const CustomAppBar(),
       body: SingleChildScrollView(
@@ -66,7 +70,6 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const CustomBottomNavBar(),
-    );
+      bottomNavigationBar: const CustomBottomNavBar(),));
   }
 }

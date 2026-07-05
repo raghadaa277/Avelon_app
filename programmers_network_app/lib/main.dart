@@ -128,7 +128,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: initialRoute,
+      initialRoute: AppRoute.homePage,
       getPages: [
         GetPage(name: AppRoute.login, page: () => LoginPage()),
         GetPage(name: AppRoute.register, page: () => RegisterPage()),
