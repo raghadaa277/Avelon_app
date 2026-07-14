@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:programmers_network_app/view/screen/Home/search_page.dart';
 import '../../screen/profile/profile_page.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
@@ -38,7 +39,12 @@ class CustomBottomNavBar extends StatelessWidget {
               Icons.search,
               'Explore',
               false,
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SearchPage()),
+                );
+              },
             ),
           ),
           Expanded(

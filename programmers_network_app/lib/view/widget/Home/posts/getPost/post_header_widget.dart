@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:programmers_network_app/controller/Home/posts/edit_post_controller.dart';
 import 'package:programmers_network_app/data/models/Home/posts/get_my_posts_model.dart';
 import 'package:programmers_network_app/data/models/Profile/profile_model.dart';
+import 'package:programmers_network_app/view/widget/Home/posts/confirm_delete_widget.dart';
+import 'package:programmers_network_app/view/widget/Home/posts/poup_button/post_options_menu_widget.dart';
+import 'package:programmers_network_app/controller/Home/posts/archive_post_controller.dart';
 
 class PostHeader extends StatelessWidget {
   final PostModel post;
@@ -29,6 +34,39 @@ class PostHeader extends StatelessWidget {
         return const Color(0xFF10B981);
       default:
         return Colors.grey;
+    }
+  }
+
+  void _handleMenuAction(String value) {
+    switch (value) {
+      case 'archive':
+        Get.find<ArchivePostController>().archivePost(post.id);
+        break;
+
+      case 'edit':
+        // Get.find<EditPostController>().editPost(post.id);
+        break;
+
+      case "delete":
+        Get.dialog(
+          ConfirmDeleteDialog(
+            onConfirm: () {
+              Get.find<ArchivePostController>().forceDeletePost(
+                post.id,
+                removeFromMyPosts: true,
+              );
+            },
+          ),
+          barrierDismissible: false,
+        );
+        break;
+      case 'pin':
+        Get.find<EditPostController>().pinnedPost(post.id);
+        break;
+
+      case 'save':
+        // Get.find<SavePostController>().savePost(post.id);
+        break;
     }
   }
 
@@ -89,7 +127,8 @@ class PostHeader extends StatelessWidget {
             ],
           ),
         ),
-        const Icon(Icons.more_horiz, color: Colors.grey),
+
+        PostOptionsMenu(isPinned: post.isPinned, onSelected: _handleMenuAction),
       ],
     );
   }

@@ -5,7 +5,7 @@ import 'package:programmers_network_app/controller/Home/posts/my_posts_controlle
 import 'package:programmers_network_app/controller/Home/posts/posts_controller.dart';
 import 'package:get/get.dart';
 import 'package:programmers_network_app/core/const/color_const.dart';
-import 'package:programmers_network_app/view/screen/profile/profile_page.dart';
+
 import 'package:programmers_network_app/view/widget/Home/posts/create_post_steperr_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/posts/publish_option_card_widget.dart';
 
@@ -71,7 +71,12 @@ class _PublishPageState extends State<PublishPage> {
 
                   const SizedBox(height: 20),
 
-                  const Center(child: CreatePostSteperrWidget(currentStep: 4)),
+                  Center(
+                    child: CreatePostSteperrWidget(
+                      currentStep: controller.selectedType == "poll" ? 4 : 5,
+                      totalSteps: controller.totalSteps,
+                    ),
+                  ),
 
                   const SizedBox(height: 24),
 
@@ -192,13 +197,24 @@ class _PublishPageState extends State<PublishPage> {
                                                 ? null
                                                 : controller.scheduledAt
                                                       ?.toIso8601String(),
+                                            tagIDS: controller.tagIDS,
                                             media: controller.mediaFiles,
                                           );
-
                                       if (success) {
-                                        Get.find<MyPostsController>()
-                                            .fetchPosts();
-                                        Get.offAll(() => const ProfilePage());
+                                        if (Get.isSnackbarOpen) {
+                                          Get.closeCurrentSnackbar();
+                                        }
+
+                                        if (Get.isRegistered<
+                                          MyPostsController
+                                        >()) {
+                                          Get.find<MyPostsController>()
+                                              .fetchPosts(refresh: true);
+                                        }
+
+                                        await Future.delayed(
+                                          const Duration(milliseconds: 200),
+                                        );
                                       }
                                     }
                                   : null,

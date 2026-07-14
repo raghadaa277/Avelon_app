@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:programmers_network_app/controller/Home/posts/posts_controller.dart';
+
 import 'package:programmers_network_app/core/const/color_const.dart';
-import 'package:programmers_network_app/view/screen/Home/posts/add_your_content_page.dart';
-import 'package:programmers_network_app/view/screen/Home/posts/poll_page.dart';
+import 'package:programmers_network_app/view/screen/Home/posts/tage_post_page.dart';
 import 'package:programmers_network_app/view/widget/Home/posts/create_post_steperr_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/posts/type_post_widget.dart';
 
@@ -32,7 +32,7 @@ class _TypePostPageState extends State<TypePostPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 10),
-            const CreatePostSteperrWidget(currentStep: 0),
+            const CreatePostSteperrWidget(currentStep: 0, totalSteps: 6),
             const SizedBox(height: 24),
 
             Container(
@@ -121,11 +121,7 @@ class _TypePostPageState extends State<TypePostPage> {
                   onPressed: controller.selectedType == null
                       ? null
                       : () {
-                          if (controller.selectedType == "poll") {
-                            Get.to(() => const PollPage());
-                          } else {
-                            Get.to(() => const AddYourContentPage());
-                          }
+                          Get.to(() => const TagPostPage());
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF84CC16),

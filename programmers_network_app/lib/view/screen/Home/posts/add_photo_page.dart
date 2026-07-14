@@ -80,7 +80,12 @@ class _AddPhotoPageState extends State<AddPhotoPage> {
 
                   const SizedBox(height: 20),
 
-                  const Center(child: CreatePostSteperrWidget(currentStep: 2)),
+                  const Center(
+                    child: CreatePostSteperrWidget(
+                      currentStep: 3,
+                      totalSteps: 6,
+                    ),
+                  ),
 
                   const SizedBox(height: 24),
 

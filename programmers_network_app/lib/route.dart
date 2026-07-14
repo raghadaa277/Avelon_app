@@ -4,6 +4,7 @@ import 'package:programmers_network_app/core/const/routesPage.dart';
 import 'package:programmers_network_app/view/screen/Home/home_page.dart';
 import 'package:programmers_network_app/view/screen/Home/posts/create_post_page.dart';
 import 'package:programmers_network_app/view/screen/Home/ready_page.dart';
+import 'package:programmers_network_app/view/screen/Home/search_page.dart';
 import 'package:programmers_network_app/view/screen/Home/source_page.dart';
 import 'package:programmers_network_app/view/screen/auth/complete_page.dart';
 import 'package:programmers_network_app/view/screen/auth/forget_page.dart';
@@ -27,4 +28,5 @@ Map<String, Widget Function(BuildContext)> routes = {
   AppRoute.userSession: (context) => UserActivityScreen(),
   AppRoute.userStatus: (context) => UserStatusHistoryScreen(),
   AppRoute.CreatePost: (context) => CreatePostPage(),
+  AppRoute.searchPage: (context) => SearchPage(),
 };

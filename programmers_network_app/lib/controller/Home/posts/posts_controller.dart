@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:programmers_network_app/data/models/Home/posts/create_post_model.dart';
+
 import 'package:programmers_network_app/data/services/Home/posts/posts_services.dart';
 
 class PostsController extends GetxController {
   final PostsServices _postsServices = PostsServices();
   final titleController = TextEditingController();
   final contentController = TextEditingController();
+
+  int get totalSteps => selectedType == "poll" ? 5 : 6;
 
   bool isLoading = false;
   String? errorMessage;
@@ -40,6 +43,24 @@ class PostsController extends GetxController {
     update();
   }
 
+  List<String> tagIDS = [];
+
+  void toggleTag(String id) {
+    print("Before: $tagIDS");
+
+    if (tagIDS.contains(id)) {
+      tagIDS.remove(id);
+    } else {
+      tagIDS.add(id);
+    }
+
+    print("After: $tagIDS");
+
+    update();
+  }
+
+  bool get canContinueTags => tagIDS.isNotEmpty;
+
   CreatePostModel? createPostModel;
 
   Future<bool> createPost({
@@ -53,6 +74,8 @@ class PostsController extends GetxController {
     required bool hideReactionsCount,
     required bool hideViews,
     required bool hideViewsCount,
+    required List<String> tagIDS,
+
     String? publishedAt,
     List<File>? media,
   }) async {
@@ -74,6 +97,7 @@ class PostsController extends GetxController {
         hideViewsCount: hideViewsCount,
         publishedAt: publishedAt,
         media: media,
+        tagIDS: tagIDS,
 
         pollQuestion: type == "poll" ? pollQuestion : null,
         pollOptions: type == "poll" ? pollOptions : null,
@@ -99,14 +123,7 @@ class PostsController extends GetxController {
     }
   }
 
-  bool get canSubmitSettings {
-    return allowComments ||
-        hideCommentsCount ||
-        hideReactions ||
-        hideReactionsCount ||
-        hideViews ||
-        hideViewsCount;
-  }
+  bool get canSubmitSettings => true;
 
   bool get canContinue {
     return selectedType != null &&
@@ -115,17 +132,33 @@ class PostsController extends GetxController {
   }
 
   Future<void> pickImage() async {
-    final List<XFile> images = await _picker.pickMultiImage();
+    try {
+      final List<XFile> images = await _picker.pickMultiImage();
 
-    if (images.isNotEmpty) {
-      if (mediaFiles.length + images.length > 10) {
+      if (images.isEmpty) return;
+
+      final newFiles = images
+          .map((e) => File(e.path))
+          .where(
+            (file) => !mediaFiles.any((oldFile) => oldFile.path == file.path),
+          )
+          .toList();
+
+      if (mediaFiles.length + newFiles.length > 10) {
         errorMessage = "You can upload up to 10 images only";
         update();
         return;
       }
 
-      mediaFiles.addAll(images.map((e) => File(e.path)));
+      mediaFiles.addAll(newFiles);
+
+      errorMessage = null;
       update();
+    } catch (e, s) {
+      debugPrint(e.toString());
+      debugPrint(s.toString());
+
+      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
     }
   }
 
@@ -145,6 +178,8 @@ class PostsController extends GetxController {
     titleController.clear();
     contentController.clear();
     mediaFiles.clear();
+
+    tagIDS.clear();
 
     allowComments = false;
     hideCommentsCount = false;

@@ -68,7 +68,7 @@ class LoginController extends GetxController {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: ColorConst.colorApp,
+                        backgroundColor: ColorConst.colorButton,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),

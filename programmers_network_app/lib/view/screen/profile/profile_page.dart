@@ -5,6 +5,7 @@ import 'package:programmers_network_app/controller/Home/posts/my_posts_controlle
 
 import 'package:programmers_network_app/controller/auth/logout_controller.dart';
 import 'package:programmers_network_app/view/screen/profile/PrivacySettingsPage.dart';
+import 'package:programmers_network_app/view/screen/Home/posts/archived_post_page.dart';
 import 'package:programmers_network_app/view/screen/profile/user_activity/user_activity_page.dart';
 import 'package:programmers_network_app/view/screen/profile/user_status_history/user_status_history_page.dart';
 import 'package:programmers_network_app/view/widget/Home/posts/getPost/post_card_widget.dart';
@@ -198,6 +199,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   await Future.delayed(const Duration(milliseconds: 280));
                   Get.to(() => UserStatusHistoryScreen());
                 },
+                onArchive: () async {
+                  AvelonHomeShell.of(context)?.closeMenu();
+                  await Future.delayed(const Duration(milliseconds: 280));
+                  Get.to(() => ArchivedPage(profileData: profileData));
+                },
                 onLogout: () {
                   _showLogoutDialog(context);
                 },
@@ -215,29 +221,46 @@ class _ProfilePageState extends State<ProfilePage> {
                     }
                     return false;
                   },
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 10),
-                        UserHeaderCard(data: profileData),
-                        const SizedBox(height: 16),
-                        ActionButtonsRow(profileData: profileData),
-                        const SizedBox(height: 20),
-                        _buildTabBar(context, state.activeTabIndex),
-                        const SizedBox(height: 16),
-                        if (state.activeTabIndex == 0) ...[
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: PostInputSection(),
-                          ),
+                  child: RefreshIndicator(
+                    color: const Color(0xffB8FF1A),
+                    backgroundColor: Colors.white,
+                    onRefresh: () async {
+                      await context.read<ProfileCubit>().fetchProfile();
+
+                      if (Get.isRegistered<MyPostsController>()) {
+                        Get.find<MyPostsController>().refreshPosts();
+                      }
+                    },
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 10),
+                          UserHeaderCard(data: profileData),
                           const SizedBox(height: 16),
+                          ActionButtonsRow(profileData: profileData),
+                          const SizedBox(height: 20),
+                          _buildTabBar(context, state.activeTabIndex),
+                          const SizedBox(height: 16),
+
+                          if (state.activeTabIndex == 0) ...[
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: PostInputSection(profileData: profileData),
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: activeContent,
+                          ),
+
+                          const SizedBox(height: 40),
                         ],
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: activeContent,
-                        ),
-                        const SizedBox(height: 40),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -368,60 +391,69 @@ class PostsTabContent extends StatefulWidget {
 
 class _PostsTabContentState extends State<PostsTabContent> {
   late MyPostsController ctrl;
+  final ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    ctrl = Get.put(MyPostsController());
+
+    if (!Get.isRegistered<MyPostsController>()) {
+      Get.put(MyPostsController());
+    }
+
+    ctrl = Get.find<MyPostsController>();
+
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 200) {
+        ctrl.loadMore();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<MyPostsController>(
-      builder: (ctrl) {
-        if (ctrl.isLoading) {
+      builder: (controller) {
+        if (controller.isLoading) {
           return const Center(
             child: CircularProgressIndicator(color: Color(0xffB8FF1A)),
           );
         }
 
-        if (ctrl.posts.isEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 60),
-              child: Column(
-                children: [
-                  const Icon(
-                    Icons.sticky_note_2_outlined,
-                    size: 48,
-                    color: Color(0xffB8FF1A),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No posts yet',
-                    style: TextStyle(color: Colors.grey[400], fontSize: 13),
-                  ),
-                ],
-              ),
-            ),
+        if (controller.posts.isEmpty) {
+          return const Center(
+            child: Text("No posts yet", style: TextStyle(color: Colors.grey)),
           );
         }
 
         return ListView.builder(
+          controller: scrollController,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: ctrl.posts.length + (ctrl.hasMore ? 1 : 0),
+
+          itemCount:
+              controller.posts.length + (controller.isLoadingMore ? 1 : 0),
+
           itemBuilder: (context, index) {
-            if (index == ctrl.posts.length) {
+            if (index == controller.posts.length) {
               return const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.all(20),
                 child: Center(
                   child: CircularProgressIndicator(color: Color(0xffB8FF1A)),
                 ),
               );
             }
+
             return PostCard(
-              post: ctrl.posts[index],
+              key: ValueKey(controller.posts[index].id),
+              post: controller.posts[index],
               profileData: widget.profileData,
             );
           },
