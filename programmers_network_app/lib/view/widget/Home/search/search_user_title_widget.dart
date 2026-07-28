@@ -27,10 +27,9 @@ class SearchUserTileWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                // ignore: deprecated_member_use
-                color: Colors.grey,
+                color: Colors.black,
                 blurRadius: 10,
-                offset: const Offset(0, 3),
+                offset: const Offset(7, 7),
               ),
             ],
           ),

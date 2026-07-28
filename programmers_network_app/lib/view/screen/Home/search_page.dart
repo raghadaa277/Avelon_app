@@ -1,11 +1,16 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:programmers_network_app/controller/Home/posts/edit_post_controller.dart';
+import 'package:programmers_network_app/controller/Home/reactions_controller.dart';
 import 'package:programmers_network_app/controller/Home/search_controller.dart';
+import 'package:programmers_network_app/view/widget/Home/search/empty_search_widget.dart';
+import 'package:programmers_network_app/view/widget/Home/search/loading_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/search/search_result_header_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/search/search_tap_item_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/search/search_top_bar_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/search/search_user_title_widget.dart';
+import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_card_widget.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -15,12 +20,18 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   late SearchPageController controller;
+  final ReactionsController reactionsController = Get.put(
+    ReactionsController(),
+  );
 
+  final EditPostController editPostController = Get.put(EditPostController());
   final TextEditingController _searchTextController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
   int _selectedTabIndex = 0;
   Timer? _debounce;
+
+  bool get _isUsersTab => _selectedTabIndex == 0;
 
   @override
   void initState() {
@@ -36,6 +47,7 @@ class _SearchPageState extends State<SearchPage> {
     _scrollController.dispose();
 
     Get.delete<SearchPageController>(force: true);
+    Get.delete<ReactionsController>(force: true);
 
     super.dispose();
   }
@@ -43,7 +55,11 @@ class _SearchPageState extends State<SearchPage> {
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      controller.loadMore();
+      if (_isUsersTab) {
+        controller.loadMore();
+      } else {
+        controller.loadMorePosts();
+      }
     }
   }
 
@@ -57,11 +73,20 @@ class _SearchPageState extends State<SearchPage> {
 
   void _runSearch(String query) {
     if (query.trim().isEmpty) return;
-    controller.search(
-      user: SearchTabsWidget.tabs[_selectedTabIndex].apiType,
-      search: query.trim(),
-      refresh: true,
-    );
+
+    if (_isUsersTab) {
+      controller.search(
+        user: SearchTabsWidget.tabs[_selectedTabIndex].apiType,
+        search: query.trim(),
+        refresh: true,
+      );
+    } else {
+      controller.searchPost(
+        type: SearchTabsWidget.tabs[_selectedTabIndex].apiType,
+        search: query.trim(),
+        refresh: true,
+      );
+    }
   }
 
   void _onTabChanged(int index) {
@@ -72,8 +97,12 @@ class _SearchPageState extends State<SearchPage> {
   void _onClearSearch() {
     setState(() => _searchTextController.clear());
     controller.users.clear();
+    controller.posts.clear();
     controller.update();
   }
+
+  int get _resultsCount =>
+      _isUsersTab ? controller.users.length : controller.posts.length;
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +125,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
                 SearchResultsHeaderWidget(
                   title: SearchTabsWidget.tabs[_selectedTabIndex].label,
-                  total: controller.users.length,
+                  total: _resultsCount,
                 ),
                 Expanded(child: _buildBody(controller)),
               ],
@@ -108,45 +137,161 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildBody(SearchPageController controller) {
+    return _isUsersTab
+        ? _buildUsersBody(controller)
+        : _buildPostsBody(controller);
+  }
+
+  Widget _buildUsersBody(SearchPageController controller) {
     if (controller.isLoading && controller.users.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: SearchLoadingWidget());
     }
 
     if (controller.errorMessage.value.isNotEmpty && controller.users.isEmpty) {
       return Center(child: Text(controller.errorMessage.value));
     }
 
-    if (controller.users.isEmpty) {
-      return Center(
-        child: Text(
-          _searchTextController.text.isEmpty
-              ? "Search developers or problems..."
-              : "No result found",
-          style: TextStyle(color: Colors.grey.shade500),
-        ),
-      );
+    if (!controller.hasSearchedPosts) {
+      return _emptyState("Search developers or problems...");
     }
 
-    return ListView.separated(
-      controller: _scrollController,
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-      itemCount: controller.users.length + (controller.isLoadingMore ? 1 : 0),
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        if (index >= controller.users.length) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Center(child: CircularProgressIndicator()),
+    if (controller.isLoadingPosts) {
+      return const Center(child: SearchLoadingWidget());
+    }
+
+    if (controller.errorMessage.value.isNotEmpty && controller.posts.isEmpty) {
+      return Center(child: Text(controller.errorMessage.value));
+    }
+
+    if (controller.posts.isEmpty) {
+      return const EmptySearchWidget();
+    }
+
+    return RefreshIndicator(
+      onRefresh: () => controller.search(
+        user: SearchTabsWidget.tabs[_selectedTabIndex].apiType,
+        search: _searchTextController.text.trim(),
+        refresh: true,
+      ),
+      child: ListView.separated(
+        controller: _scrollController,
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+        itemCount: controller.users.length + (controller.isLoadingMore ? 1 : 0),
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, index) {
+          if (index >= controller.users.length) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+          final user = controller.users[index];
+          return SearchUserTileWidget(
+            user: user,
+            onTap: () {
+              // Get.toNamed(AppRoute.userProfilePage, arguments: user.id);
+            },
           );
-        }
-        final user = controller.users[index];
-        return SearchUserTileWidget(
-          user: user,
-          onTap: () {
-            // Get.toNamed(AppRoute.userProfilePage, arguments: user.id);
-          },
-        );
-      },
+        },
+      ),
+    );
+  }
+
+  Widget _buildPostsBody(SearchPageController controller) {
+    if (!controller.hasSearchedPosts) {
+      return _emptyState("Search developers or problems...");
+    }
+
+    if (controller.isLoadingPosts) {
+      return const Center(child: SearchLoadingWidget());
+    }
+
+    if (controller.errorMessage.value.isNotEmpty && controller.posts.isEmpty) {
+      return Center(child: Text(controller.errorMessage.value));
+    }
+
+    if (controller.posts.isEmpty) {
+      return const EmptySearchWidget();
+    }
+
+    return RefreshIndicator(
+      onRefresh: () => controller.searchPost(
+        type: SearchTabsWidget.tabs[_selectedTabIndex].apiType,
+        search: _searchTextController.text.trim(),
+        refresh: true,
+      ),
+      child: ListView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        itemCount:
+            controller.posts.length + (controller.isLoadingMorePosts ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index >= controller.posts.length) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          final post = controller.posts[index];
+
+          return PostCardWidget(
+            key: ValueKey(post.id),
+            post: post,
+            media: post.postMedia,
+            onLike: () async {
+              controller.updateReaction(postId: post.id, reaction: "like");
+
+              final success = await reactionsController.reactions(
+                targetUserId: post.user.id,
+                postId: post.id,
+                type: "like",
+              );
+
+              if (!success) {
+                controller.searchPost(
+                  type: controller.currentPostType!,
+                  search: controller.currentPostSearch!,
+                  refresh: true,
+                );
+              }
+            },
+            onDislike: () async {
+              controller.updateReaction(postId: post.id, reaction: "dislike");
+
+              final success = await reactionsController.reactions(
+                targetUserId: post.user.id,
+                postId: post.id,
+                type: "dislike",
+              );
+
+              if (!success) {
+                controller.searchPost(
+                  type: controller.currentPostType!,
+                  search: controller.currentPostSearch!,
+                  refresh: true,
+                );
+              }
+            },
+            onComment: () {},
+            onShare: () {},
+            onSave: () async {
+              final post = controller.posts[index];
+              await editPostController.savePost(
+                targetUserId: post.user.id,
+                postId: post.id,
+              );
+            },
+            onTap: () {},
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _emptyState(String message) {
+    return Center(
+      child: Text(message, style: TextStyle(color: Colors.grey.shade500)),
     );
   }
 }

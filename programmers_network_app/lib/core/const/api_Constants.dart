@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String baseurl = "https://94f6-31-14-252-6.ngrok-free.app";
+  static const String baseurl = "https://7c3f-5-0-79-186.ngrok-free.app";
   static const String login = "/api/mobile/login";
   static const String register = "/api/register";
   static const String resendtoken = "/api/resend/verification/link";
@@ -23,6 +23,10 @@ class ApiConstants {
   static const String pinnedPost = "/api/toggle/pinned/post";
   static const String deletePostMedia = "/api/delete/post/media";
   static const String search = "/api/search";
+  static const String searchPost = "/api/search";
+  static const String postReactions = "/api/toggle/post/reaction";
+  static const String getPostReactions = "/api/get/post/reactions";
+  static const String savePost = "/api/toggle/saved/post";
 
   //Zenab
   static const String userProfile = "/api/get/user/profile";

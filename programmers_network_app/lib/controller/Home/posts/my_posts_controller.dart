@@ -7,6 +7,7 @@ class MyPostsController extends GetxController {
   final PostsServices _services = PostsServices();
 
   List<PostModel> posts = [];
+
   int currentPage = 1;
   int lastPage = 1;
   bool isLoading = false;
@@ -66,7 +67,6 @@ class MyPostsController extends GetxController {
 
       posts = result.data.posts;
 
-      // إزالة التكرار
       final uniquePosts = <int, PostModel>{};
 
       for (var post in posts) {

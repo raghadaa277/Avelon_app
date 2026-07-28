@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:programmers_network_app/controller/Home/posts/my_posts_controller.dart';
+import 'package:programmers_network_app/controller/Home/search_controller.dart';
 import 'package:programmers_network_app/data/models/Home/posts/get_my_posts_model.dart';
 import 'package:programmers_network_app/data/services/Home/posts/edit_post_services.dart';
 
@@ -56,6 +57,35 @@ class EditPostController extends GetxController {
       }
     } catch (e) {
       Get.snackbar("Error", e.toString());
+    }
+  }
+
+  Future<void> savePost({
+    required int targetUserId,
+    required int postId,
+  }) async {
+    isLoading.value = true;
+    errorMessage.value = '';
+
+    try {
+      final result = await _editPostServices.savePost(
+        targetUserId: targetUserId,
+        postId: postId,
+      );
+
+      if (result.success) {
+        if (Get.isRegistered<SearchPageController>()) {
+          Get.find<SearchPageController>().updateSavedPost(postId);
+        }
+        Get.snackbar("Success", result.message);
+      } else {
+        Get.snackbar("Error", result.message);
+      }
+    } catch (e) {
+      errorMessage.value = e.toString();
+      Get.snackbar("Error", errorMessage.value);
+    } finally {
+      isLoading.value = false;
     }
   }
 }
