@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:programmers_network_app/controller/Home/posts/edit_post_controller.dart';
 import 'package:programmers_network_app/data/models/Home/search_post_model.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class PostViewedBadge extends StatelessWidget {
   final Post post;
@@ -45,6 +48,38 @@ class PostViewedBadge extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class PostViewTrackerWrapper extends StatelessWidget {
+  final Post post;
+  final Widget child;
+  final String source;
+
+  const PostViewTrackerWrapper({
+    super.key,
+    required this.post,
+    required this.child,
+    required this.source,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final EditPostController tracker = Get.find<EditPostController>();
+
+    return VisibilityDetector(
+      key: ValueKey('post-view-${post.id}'),
+      onVisibilityChanged: (VisibilityInfo info) {
+        if (info.visibleFraction >= 0.6) {
+          tracker.registerView(
+            targetUserId: post.user.id,
+            postId: post.id,
+            source: source,
+          );
+        }
+      },
+      child: child,
     );
   }
 }

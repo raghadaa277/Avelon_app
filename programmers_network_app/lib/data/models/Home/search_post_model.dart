@@ -201,6 +201,8 @@ class Post {
     int? disLikesCount,
     String reactionStatus = _notSetSentinel,
     bool? isSaved,
+    bool? isViewed,
+    List<Viewer>? viewers,
   }) {
     return Post(
       id: id,
@@ -234,11 +236,11 @@ class Post {
           ? this.reactionStatus
           : (reactionStatus.isEmpty ? null : reactionStatus),
       isSaved: isSaved ?? this.isSaved,
-      isViewed: isViewed,
+      isViewed: isViewed ?? this.isViewed,
       followStatus: followStatus,
       postMedia: postMedia,
       poll: poll,
-      viewers: viewers,
+      viewers: viewers ?? this.viewers,
       user: user,
     );
   }
@@ -257,10 +259,6 @@ class Post {
         reactionStatus == 'nolike') {
       reactionStatus = null;
     }
-
-    print("reaction_status = $reactionStatus");
-    print("likes_count = ${json['likes_count']}");
-    print("dislikes_count = ${json['dislikes_count']}");
 
     return Post(
       id: json['id'],
@@ -459,6 +457,20 @@ class Viewer extends PostUser {
          userProfile: userProfile,
        );
 
+  Viewer copyWith({ViewerPivot? pivot}) {
+    return Viewer(
+      id: id,
+      roleId: roleId,
+      fullName: fullName,
+      email: email,
+      onboardingCompletedAt: onboardingCompletedAt,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      userProfile: userProfile,
+      pivot: pivot ?? this.pivot,
+    );
+  }
+
   factory Viewer.fromJson(Map<String, dynamic> json) {
     return Viewer(
       id: json['id'],
@@ -499,6 +511,19 @@ class ViewerPivot {
     this.createdAt,
     this.updatedAt,
   });
+
+  ViewerPivot copyWith({int? viewCount, DateTime? lastViewedAt}) {
+    return ViewerPivot(
+      postId: postId,
+      userId: userId,
+      isFollower: isFollower,
+      source: source,
+      lastViewedAt: lastViewedAt ?? this.lastViewedAt,
+      viewCount: viewCount ?? this.viewCount,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
 
   factory ViewerPivot.fromJson(Map<String, dynamic> json) {
     return ViewerPivot(

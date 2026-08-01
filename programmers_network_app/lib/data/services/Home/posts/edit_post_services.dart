@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'package:programmers_network_app/core/const/api_Constants.dart';
 import 'package:programmers_network_app/core/storage/api_client.dart';
+
 import 'package:programmers_network_app/data/models/Home/posts/delete_post_media_model.dart';
+import 'package:programmers_network_app/data/models/Home/posts/get_post_views_model.dart';
 import 'package:programmers_network_app/data/models/Home/posts/pinned_post_model.dart';
 import 'package:programmers_network_app/data/models/Home/posts/save_post_model.dart';
+import 'package:programmers_network_app/data/models/Home/posts/save_record_post_model.dart';
 
 class EditPostServices {
   final ApiClient api = ApiClient(baseUrl: ApiConstants.baseurl);
@@ -53,6 +56,51 @@ class EditPostServices {
         return SavePostModel.fromJson(decodedResponse);
       }
       throw Exception(decodedResponse['message'] ?? 'Failed to save post');
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<SaveRecoedPostModel> saveRecoredPost({
+    int? targetUserId,
+    int? postId,
+    String? source,
+  }) async {
+    try {
+      final response = await api.post(
+        '${ApiConstants.saveRecordPost}/$targetUserId/$postId',
+        body: {'source': source},
+      );
+      final decodedResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return SaveRecoedPostModel.fromJSon(decodedResponse);
+      }
+
+      throw Exception(
+        decodedResponse['message'] ?? 'Failed to save record post',
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<PostViewModel> getPostView({
+    int? targetUserId,
+    int? postId,
+    int page = 1,
+  }) async {
+    try {
+      final response = await api.get(
+        "${ApiConstants.getPostViews}/$targetUserId/$postId/?page=$page",
+      );
+      final decodeResponse = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return PostViewModel.fromJson(decodeResponse);
+      } else if (response.statusCode == 403) {
+        throw Exception('Count is hidden by post author');
+      }
+      throw Exception(decodeResponse['message'] ?? 'Failed to get reactions');
     } catch (e) {
       rethrow;
     }

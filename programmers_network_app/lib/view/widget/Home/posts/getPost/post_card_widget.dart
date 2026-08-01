@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 class PostCard extends StatelessWidget {
   final PostModel post;
   final ProfileData profileData;
+
   const PostCard({super.key, required this.post, required this.profileData});
 
   @override

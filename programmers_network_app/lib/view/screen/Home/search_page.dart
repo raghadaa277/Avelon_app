@@ -4,8 +4,10 @@ import 'package:get/get.dart';
 import 'package:programmers_network_app/controller/Home/posts/edit_post_controller.dart';
 import 'package:programmers_network_app/controller/Home/reactions_controller.dart';
 import 'package:programmers_network_app/controller/Home/search_controller.dart';
+import 'package:programmers_network_app/view/widget/Home/comment_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/search/empty_search_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/search/loading_widget.dart';
+import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_viewed.dart';
 import 'package:programmers_network_app/view/widget/Home/search/search_result_header_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/search/search_tap_item_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/search/search_top_bar_widget.dart';
@@ -26,6 +28,7 @@ class _SearchPageState extends State<SearchPage> {
 
   final EditPostController editPostController = Get.put(EditPostController());
   final TextEditingController _searchTextController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
 
   int _selectedTabIndex = 0;
@@ -44,6 +47,7 @@ class _SearchPageState extends State<SearchPage> {
   void dispose() {
     _debounce?.cancel();
     _searchTextController.dispose();
+    _searchFocusNode.dispose();
     _scrollController.dispose();
 
     Get.delete<SearchPageController>(force: true);
@@ -74,6 +78,8 @@ class _SearchPageState extends State<SearchPage> {
   void _runSearch(String query) {
     if (query.trim().isEmpty) return;
 
+    _searchFocusNode.unfocus();
+
     if (_isUsersTab) {
       controller.search(
         user: SearchTabsWidget.tabs[_selectedTabIndex].apiType,
@@ -90,6 +96,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _onTabChanged(int index) {
+    _searchFocusNode.unfocus();
     setState(() => _selectedTabIndex = index);
     _runSearch(_searchTextController.text);
   }
@@ -116,6 +123,7 @@ class _SearchPageState extends State<SearchPage> {
               children: [
                 SearchTopBarWidget(
                   textController: _searchTextController,
+                  focusNode: _searchFocusNode,
                   onChanged: _onSearchChanged,
                   onClear: _onClearSearch,
                 ),
@@ -235,54 +243,68 @@ class _SearchPageState extends State<SearchPage> {
 
           final post = controller.posts[index];
 
-          return PostCardWidget(
-            key: ValueKey(post.id),
+          return PostViewTrackerWrapper(
+            source: "search",
             post: post,
-            media: post.postMedia,
-            onLike: () async {
-              controller.updateReaction(postId: post.id, reaction: "like");
+            child: PostCardWidget(
+              key: ValueKey(post.id),
+              post: post,
+              media: post.postMedia,
+              onLike: () async {
+                _searchFocusNode.unfocus();
+                controller.updateReaction(postId: post.id, reaction: "like");
 
-              final success = await reactionsController.reactions(
-                targetUserId: post.user.id,
-                postId: post.id,
-                type: "like",
-              );
-
-              if (!success) {
-                controller.searchPost(
-                  type: controller.currentPostType!,
-                  search: controller.currentPostSearch!,
-                  refresh: true,
+                final success = await reactionsController.reactions(
+                  targetUserId: post.user.id,
+                  postId: post.id,
+                  type: "like",
                 );
-              }
-            },
-            onDislike: () async {
-              controller.updateReaction(postId: post.id, reaction: "dislike");
 
-              final success = await reactionsController.reactions(
-                targetUserId: post.user.id,
-                postId: post.id,
-                type: "dislike",
-              );
+                if (!success) {
+                  controller.searchPost(
+                    type: controller.currentPostType!,
+                    search: controller.currentPostSearch!,
+                    refresh: true,
+                  );
+                }
+              },
+              onDislike: () async {
+                _searchFocusNode.unfocus();
+                controller.updateReaction(postId: post.id, reaction: "dislike");
 
-              if (!success) {
-                controller.searchPost(
-                  type: controller.currentPostType!,
-                  search: controller.currentPostSearch!,
-                  refresh: true,
+                final success = await reactionsController.reactions(
+                  targetUserId: post.user.id,
+                  postId: post.id,
+                  type: "dislike",
                 );
-              }
-            },
-            onComment: () {},
-            onShare: () {},
-            onSave: () async {
-              final post = controller.posts[index];
-              await editPostController.savePost(
-                targetUserId: post.user.id,
-                postId: post.id,
-              );
-            },
-            onTap: () {},
+
+                if (!success) {
+                  controller.searchPost(
+                    type: controller.currentPostType!,
+                    search: controller.currentPostSearch!,
+                    refresh: true,
+                  );
+                }
+              },
+              onComment: () {
+                _searchFocusNode.unfocus();
+                showCommentsPage(
+                  context,
+                  postId: post.id,
+                  targetUserId: post.user.id,
+                );
+              },
+              onShare: () {},
+              onSave: () async {
+                _searchFocusNode.unfocus();
+                final post = controller.posts[index];
+                await editPostController.savePost(
+                  targetUserId: post.user.id,
+                  postId: post.id,
+                );
+              },
+              onTap: () {},
+            ),
           );
         },
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:programmers_network_app/core/const/post_color.dart';
 import 'package:programmers_network_app/data/models/Home/search_post_model.dart';
+import 'package:programmers_network_app/view/widget/Home/post_view_bottom_sheet_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/reaction_bottom_sheet_widget.dart';
 import 'package:programmers_network_app/view/widget/shared/hidden_count_dialog.dart';
 
@@ -30,7 +31,7 @@ class _ActionItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: disabled ? null : onTap,
-      onLongPress: (disabled || count == null) ? null : onLongPress,
+      onLongPress: disabled ? null : onLongPress,
       borderRadius: BorderRadius.circular(6),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
@@ -103,24 +104,22 @@ class PostEngagementBar extends StatelessWidget {
           ),
           color: PostColors.like,
           active: isLiked,
-          disabled: post.hideReactions,
-          count: post.hideReactions || post.hideReactionsCount
-              ? null
-              : post.likesCount,
+          disabled: false,
+          count: post.hideReactionsCount ? null : post.likesCount,
           onTap: onLike,
           onLongPress: () {
-            // Check if likes count is hidden
-            if (post.hideReactionsCount) {
-              showHiddenCountDialog(context, countType: 'Likes');
-            } else {
-              showReactionsSheet(
-                context,
-                postId: post.id,
-                targetUserId: post.user.id,
-                type: 'like',
-                post: post,
-              );
+            if (post.hideReactions) {
+              showHiddenCountDialog(context, countType: 'People who liked');
+              return;
             }
+
+            showReactionsSheet(
+              context,
+              postId: post.id,
+              targetUserId: post.user.id,
+              type: 'like',
+              post: post,
+            );
           },
         ),
 
@@ -138,18 +137,23 @@ class PostEngagementBar extends StatelessWidget {
           ),
           color: PostColors.dislike,
           active: isDisliked,
-          disabled: post.hideReactions,
-          count: post.hideReactions || post.hideReactionsCount
-              ? null
-              : post.disLikesCount,
+          disabled: false,
+          count: post.hideReactionsCount ? null : post.disLikesCount,
           onTap: onDislike,
-          onLongPress: () => showReactionsSheet(
-            context,
-            postId: post.id,
-            targetUserId: post.user.id,
-            type: 'dislike',
-            post: post,
-          ),
+          onLongPress: () {
+            if (post.hideReactions) {
+              showHiddenCountDialog(context, countType: 'People who disliked');
+              return;
+            }
+
+            showReactionsSheet(
+              context,
+              postId: post.id,
+              targetUserId: post.user.id,
+              type: 'dislike',
+              post: post,
+            );
+          },
         ),
 
         // Comments
@@ -185,9 +189,21 @@ class PostEngagementBar extends StatelessWidget {
             color: PostColors.neutralIcon,
           ),
           color: PostColors.views,
-          disabled: post.hideViews,
-          count: post.hideViews || post.hideViewsCount ? null : post.viewsCount,
+          disabled: false,
+          count: post.hideViewsCount ? null : post.viewsCount,
           onTap: null,
+          onLongPress: () {
+            if (post.hideViews) {
+              showHiddenCountDialog(context, countType: 'Viewers');
+              return;
+            }
+            showViewsSheet(
+              context,
+              postId: post.id,
+              targetUserId: post.user.id,
+              post: post,
+            );
+          },
         ),
 
         // Save

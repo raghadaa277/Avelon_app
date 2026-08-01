@@ -1,29 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:programmers_network_app/core/const/post_color.dart';
 
 void showHiddenCountDialog(
   BuildContext context, {
   required String countType,
-  List<List>? iconStyle,
+  String? message,
 }) {
+  final config = _getConfigByType(countType);
+
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.transparent,
-      icon: HugeIcon(
-        icon: _getIconByType(countType),
-        size: 56,
-        color: Colors.grey.shade600,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      icon: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: config.color.withOpacity(0.1),
+          shape: BoxShape.circle,
+        ),
+        child: HugeIcon(icon: config.icon, size: 40, color: config.color),
       ),
-      iconColor: Colors.grey.shade600,
       title: Text(
         'Cannot View $countType',
         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         textAlign: TextAlign.center,
       ),
       content: Text(
-        'The post author has hidden the $countType count from other users.',
+        message?.isNotEmpty == true
+            ? message!
+            : 'The post author has hidden the $countType count from other users.',
         style: TextStyle(
           fontSize: 14,
           color: Colors.grey.shade700,
@@ -31,25 +39,22 @@ void showHiddenCountDialog(
         ),
         textAlign: TextAlign.center,
       ),
+      actionsAlignment: MainAxisAlignment.center,
       actions: [
-        Center(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey.shade800,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: config.color,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 12),
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'OK',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+          ),
+          onPressed: () => Navigator.pop(context),
+          child: const Text(
+            'OK',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
         ),
       ],
@@ -63,54 +68,88 @@ Future<bool> handleViewCount({
   required bool isHidden,
   required Future<Response> Function() apiCall,
 }) async {
-  // If count is not hidden, allow viewing
   if (!isHidden) {
     return true;
   }
 
-  // If count is hidden, make API call to validate permission
   try {
     final response = await apiCall();
 
     if (response.statusCode == 200) {
-      // Permission granted - can view count
       return true;
     } else {
-      // Permission denied - show dialog
+      // نجيب الرسالة من الـ body إذا موجودة
+      final backendMessage = response.body is Map
+          ? response.body['message'] as String?
+          : null;
+
       if (context.mounted) {
         showHiddenCountDialog(
           context,
           countType: countType,
-          iconStyle: HugeIcons.strokeRoundedSettingError03,
+          message: backendMessage,
         );
       }
       return false;
     }
   } catch (e) {
-    // Error occurred - show dialog
     if (context.mounted) {
-      showHiddenCountDialog(
-        context,
-        countType: countType,
-        iconStyle: HugeIcons.strokeRoundedSettingError03,
-      );
+      showHiddenCountDialog(context, countType: countType);
     }
     return false;
   }
 }
 
-List<List> _getIconByType(String countType) {
+class _HiddenCountConfig {
+  final List<List> icon;
+  final Color color;
+
+  const _HiddenCountConfig({required this.icon, required this.color});
+}
+
+_HiddenCountConfig _getConfigByType(String countType) {
   switch (countType.toLowerCase()) {
     case 'likes':
-      return HugeIcons.strokeRoundedThumbsUp;
-    case 'views':
-      return HugeIcons.strokeRoundedEye;
-    case 'comments':
-      return HugeIcons.strokeRoundedComment01;
+      return _HiddenCountConfig(
+        icon: HugeIcons.strokeRoundedThumbsUp,
+        color: PostColors.like,
+      );
     case 'dislikes':
-      return HugeIcons.strokeRoundedThumbsDown;
+      return _HiddenCountConfig(
+        icon: HugeIcons.strokeRoundedThumbsDown,
+        color: PostColors.dislike,
+      );
+    case 'comments':
+      return _HiddenCountConfig(
+        icon: HugeIcons.strokeRoundedComment01,
+        color: PostColors.comment,
+      );
+    case 'views':
+    case 'viewers':
+      return _HiddenCountConfig(
+        icon: HugeIcons.strokeRoundedEye,
+        color: PostColors.views,
+      );
+    case 'people who liked':
+      return _HiddenCountConfig(
+        icon: HugeIcons.strokeRoundedUserGroup,
+        color: PostColors.like,
+      );
+    case 'people who disliked':
+      return _HiddenCountConfig(
+        icon: HugeIcons.strokeRoundedUserGroup,
+        color: PostColors.dislike,
+      );
+    case 'people who view':
+      return _HiddenCountConfig(
+        icon: HugeIcons.strokeRoundedUser,
+        color: PostColors.views,
+      );
     default:
-      return HugeIcons.strokeRoundedEye;
+      return _HiddenCountConfig(
+        icon: HugeIcons.strokeRoundedEye,
+        color: Colors.grey.shade700,
+      );
   }
 }
 

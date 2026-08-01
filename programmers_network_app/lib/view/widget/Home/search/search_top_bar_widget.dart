@@ -5,12 +5,14 @@ import 'package:programmers_network_app/core/const/color_const.dart';
 
 class SearchTopBarWidget extends StatelessWidget {
   final TextEditingController textController;
+  final FocusNode focusNode;
   final ValueChanged<String> onChanged;
   final VoidCallback onClear;
 
   const SearchTopBarWidget({
     super.key,
     required this.textController,
+    required this.focusNode,
     required this.onChanged,
     required this.onClear,
   });
@@ -38,9 +40,12 @@ class SearchTopBarWidget extends StatelessWidget {
                         color: Colors.grey.shade500,
                         size: 22,
                       ),
+
                       const SizedBox(width: 10),
+
                       Expanded(
                         child: TextFormField(
+                          focusNode: focusNode,
                           controller: textController,
                           onChanged: onChanged,
                           style: const TextStyle(fontSize: 15),
@@ -51,6 +56,7 @@ class SearchTopBarWidget extends StatelessWidget {
                           ),
                         ),
                       ),
+
                       if (textController.text.isNotEmpty)
                         GestureDetector(
                           onTap: onClear,
@@ -64,9 +70,14 @@ class SearchTopBarWidget extends StatelessWidget {
                   ),
                 ),
               ),
+
               const SizedBox(width: 10),
+
               GestureDetector(
-                onTap: () => Get.back(),
+                onTap: () {
+                  focusNode.unfocus();
+                  Get.back();
+                },
                 child: Text(
                   "Cancel",
                   style: TextStyle(

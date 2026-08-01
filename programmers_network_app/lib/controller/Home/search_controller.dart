@@ -174,13 +174,6 @@ class SearchPageController extends GetxController {
 
     final post = posts[index];
 
-    print("========== BEFORE UPDATE ==========");
-    print("Post ID: ${post.id}");
-    print("likesCount: ${post.likesCount}");
-    print("disLikesCount: ${post.disLikesCount}");
-    print("reactionStatus: ${post.reactionStatus}");
-    print("====================================");
-
     int likes = post.likesCount;
     int dislikes = post.disLikesCount;
 
@@ -227,13 +220,6 @@ class SearchPageController extends GetxController {
       reactionStatus: status ?? "",
     );
 
-    print("========== AFTER UPDATE ==========");
-    print("Post ID: ${posts[index].id}");
-    print("likesCount: ${posts[index].likesCount}");
-    print("disLikesCount: ${posts[index].disLikesCount}");
-    print("reactionStatus: ${posts[index].reactionStatus}");
-    print("====================================");
-
     update();
   }
 
@@ -244,6 +230,32 @@ class SearchPageController extends GetxController {
 
     final post = posts[index];
     posts[index] = post.copyWith(isSaved: !post.isSaved);
+
+    update();
+  }
+
+  void incrementLocalViewCount(int postId) {
+    final index = posts.indexWhere((p) => p.id == postId);
+    if (index == -1) return;
+
+    final post = posts[index];
+
+    if (post.viewers.isEmpty) {
+      posts[index] = post.copyWith(isViewed: true);
+    } else {
+      final myViewer = post.viewers.first;
+      final updatedViewer = myViewer.copyWith(
+        pivot: myViewer.pivot.copyWith(
+          viewCount: myViewer.pivot.viewCount + 1,
+          lastViewedAt: DateTime.now(),
+        ),
+      );
+
+      final updatedViewers = List<Viewer>.from(post.viewers);
+      updatedViewers[0] = updatedViewer;
+
+      posts[index] = post.copyWith(isViewed: true, viewers: updatedViewers);
+    }
 
     update();
   }

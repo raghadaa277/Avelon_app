@@ -16,6 +16,7 @@ class PostHeaderWidget extends StatelessWidget {
     final PostUser author = post.user;
     final type = postTypeInfo(post.type);
     final visibility = postVisibilityInfo(post.visibility);
+    final followStatus = followStatusInfo(post.followStatus);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,6 +34,7 @@ class PostHeaderWidget extends StatelessWidget {
                   : null,
             ),
             const SizedBox(width: 10),
+
             Expanded(
               child: Row(
                 children: [
@@ -44,24 +46,17 @@ class PostHeaderWidget extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-
-                  InfoPill(
-                    icon: visibility.icon,
-                    color: visibility.color,
-                    label: visibility.label,
-                    iconOnly: true,
-                  ),
                   const SizedBox(width: 5),
                   InfoPill(
-                    icon: type.icon,
-                    color: type.color,
-                    label: type.label,
-                    iconOnly: true,
+                    icon: followStatus.icon,
+                    color: followStatus.color,
+                    label: followStatus.label,
+                    iconOnly: false,
                   ),
-                  const SizedBox(width: 8),
                 ],
               ),
             ),
+
             IconButton(
               icon: HugeIcon(
                 icon: HugeIcons.strokeRoundedMoreHorizontal,
@@ -80,6 +75,23 @@ class PostHeaderWidget extends StatelessWidget {
               post.publishedAt != null ? timeago.format(post.publishedAt!) : '',
               style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
             ),
+            const SizedBox(width: 5),
+            InfoPill(
+              icon: visibility.icon,
+              color: visibility.color,
+              label: visibility.label,
+              iconOnly: true,
+            ),
+
+            const SizedBox(width: 5),
+            InfoPill(
+              icon: type.icon,
+              color: type.color,
+              label: type.label,
+              iconOnly: true,
+            ),
+            const SizedBox(width: 8),
+            const SizedBox(width: 5),
             if (post.isEdited) ...[
               const SizedBox(width: 6),
               Tooltip(

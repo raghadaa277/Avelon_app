@@ -3,7 +3,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:programmers_network_app/core/const/post_color.dart';
 
 class PillInfo {
-  final List<List<dynamic>> icon;
+  final List<List> icon;
   final Color color;
   final String label;
   const PillInfo(this.icon, this.color, this.label);
@@ -25,7 +25,7 @@ PillInfo postTypeInfo(String type) {
       );
     case 'question':
       return const PillInfo(
-        HugeIcons.strokeRoundedHelpCircle,
+        HugeIcons.strokeRoundedMessageQuestion,
         PostColors.typeQuestion,
         'Question',
       );
