@@ -7,6 +7,7 @@ import 'package:programmers_network_app/controller/Home/profile/user_session_con
 import 'package:programmers_network_app/core/const/routesPage.dart';
 import 'package:programmers_network_app/core/storage/token_storage.dart';
 import 'package:programmers_network_app/view/screen/Home/home_page.dart';
+import 'package:programmers_network_app/view/screen/Home/personalPage/other_user_profile_page.dart';
 import 'package:programmers_network_app/view/screen/Home/posts/create_post_page.dart';
 import 'package:programmers_network_app/view/screen/Home/ready_page.dart';
 import 'package:programmers_network_app/view/screen/Home/search_page.dart';
@@ -155,6 +156,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         ),
         GetPage(name: AppRoute.CreatePost, page: () => CreatePostPage()),
         GetPage(name: AppRoute.searchPage, page: () => SearchPage()),
+        GetPage(
+          name: AppRoute.otherUserProfilePage,
+          page: () => OtherUserProfilePage(targetUserId: Get.arguments as int),
+        ),
       ],
     );
   }

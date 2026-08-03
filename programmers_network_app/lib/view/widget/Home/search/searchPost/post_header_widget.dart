@@ -8,8 +8,9 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class PostHeaderWidget extends StatelessWidget {
   final Post post;
+  final VoidCallback? onUserTap;
 
-  const PostHeaderWidget({super.key, required this.post});
+  const PostHeaderWidget({super.key, required this.post, this.onUserTap});
 
   @override
   Widget build(BuildContext context) {
@@ -23,37 +24,46 @@ class PostHeaderWidget extends StatelessWidget {
       children: [
         Row(
           children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundColor: Colors.grey.shade200,
-              backgroundImage: author.userProfile?.avatarFullUrl != null
-                  ? NetworkImage(author.userProfile!.avatarFullUrl!)
-                  : null,
-              child: author.userProfile?.avatarFullUrl == null
-                  ? Text(author.fullName.isNotEmpty ? author.fullName[0] : '?')
-                  : null,
-            ),
-            const SizedBox(width: 10),
-
             Expanded(
-              child: Row(
-                children: [
-                  Text(
-                    author.fullName,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: onUserTap,
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundColor: Colors.grey.shade200,
+                      backgroundImage: author.userProfile?.avatarFullUrl != null
+                          ? NetworkImage(author.userProfile!.avatarFullUrl!)
+                          : null,
+                      child: author.userProfile?.avatarFullUrl == null
+                          ? Text(
+                              author.fullName.isNotEmpty
+                                  ? author.fullName[0]
+                                  : '?',
+                            )
+                          : null,
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  const SizedBox(width: 5),
-                  InfoPill(
-                    icon: followStatus.icon,
-                    color: followStatus.color,
-                    label: followStatus.label,
-                    iconOnly: false,
-                  ),
-                ],
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: Text(
+                        author.fullName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    InfoPill(
+                      icon: followStatus.icon,
+                      color: followStatus.color,
+                      label: followStatus.label,
+                      iconOnly: false,
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -82,7 +92,6 @@ class PostHeaderWidget extends StatelessWidget {
               label: visibility.label,
               iconOnly: true,
             ),
-
             const SizedBox(width: 5),
             InfoPill(
               icon: type.icon,
@@ -91,7 +100,6 @@ class PostHeaderWidget extends StatelessWidget {
               iconOnly: true,
             ),
             const SizedBox(width: 8),
-            const SizedBox(width: 5),
             if (post.isEdited) ...[
               const SizedBox(width: 6),
               Tooltip(

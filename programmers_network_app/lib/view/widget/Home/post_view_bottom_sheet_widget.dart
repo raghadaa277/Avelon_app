@@ -5,6 +5,7 @@ import 'package:programmers_network_app/controller/Home/posts/edit_post_controll
 import 'package:programmers_network_app/core/const/post_color.dart';
 import 'package:programmers_network_app/data/models/Home/search_post_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:programmers_network_app/core/const/routesPage.dart';
 
 Future<void> showViewsSheet(
   BuildContext context, {
@@ -177,6 +178,10 @@ class _ViewsSheetContentState extends State<ViewsSheetContent> {
             side: BorderSide(color: Colors.grey.shade200),
           ),
           child: ListTile(
+            onTap: () {
+              Navigator.pop(context);
+              Get.toNamed(AppRoute.otherUserProfilePage, arguments: user.id);
+            },
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 12,
               vertical: 6,
@@ -205,24 +210,6 @@ class _ViewsSheetContentState extends State<ViewsSheetContent> {
                   ),
 
                 const SizedBox(height: 4),
-
-                // Row(
-                //   children: [
-                //     const HugeIcon(
-                //       icon: HugeIcons.strokeRoundedView,
-                //       size: 14,
-                //       color: Colors.blueGrey,
-                //     ),
-                //     const SizedBox(width: 4),
-                //     // Text(
-                //     //   '${user.pivot.viewCount} views',
-                //     //   style: TextStyle(
-                //     //     color: Colors.grey.shade600,
-                //     //     fontSize: 12,
-                //     //   ),
-                //     // ),
-                //   ],
-                // ),
               ],
             ),
             trailing: Text(

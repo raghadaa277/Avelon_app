@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:programmers_network_app/controller/Home/posts/edit_post_controller.dart';
 import 'package:programmers_network_app/controller/Home/reactions_controller.dart';
 import 'package:programmers_network_app/controller/Home/search_controller.dart';
+import 'package:programmers_network_app/core/const/routesPage.dart';
 import 'package:programmers_network_app/view/widget/Home/comment_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/search/empty_search_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/search/loading_widget.dart';
@@ -197,7 +198,7 @@ class _SearchPageState extends State<SearchPage> {
           return SearchUserTileWidget(
             user: user,
             onTap: () {
-              // Get.toNamed(AppRoute.userProfilePage, arguments: user.id);
+              Get.toNamed(AppRoute.otherUserProfilePage, arguments: user.id);
             },
           );
         },
@@ -250,6 +251,13 @@ class _SearchPageState extends State<SearchPage> {
               key: ValueKey(post.id),
               post: post,
               media: post.postMedia,
+              onUserTap: () {
+                _searchFocusNode.unfocus();
+                Get.toNamed(
+                  AppRoute.otherUserProfilePage,
+                  arguments: post.user.id,
+                );
+              },
               onLike: () async {
                 _searchFocusNode.unfocus();
                 controller.updateReaction(postId: post.id, reaction: "like");

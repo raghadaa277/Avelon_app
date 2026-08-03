@@ -27,6 +27,7 @@ class CommentCard extends StatefulWidget {
   final bool isLoadingMoreReplies;
 
   final void Function(DataPostComments comment)? onLoadMoreReplies;
+  final void Function(DataPostComments comment)? onUserTap;
 
   final int depth;
 
@@ -70,6 +71,8 @@ class CommentCard extends StatefulWidget {
     required this.getLoading,
     required this.getHasMore,
     required this.getLoadingMore,
+
+    this.onUserTap,
   });
 
   @override
@@ -132,22 +135,27 @@ class _CommentCardState extends State<CommentCard> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  radius: 18,
-                  backgroundColor: Colors.grey.shade200,
-                  backgroundImage: avatar.isNotEmpty
-                      ? NetworkImage(avatar)
-                      : null,
-                  child: avatar.isEmpty
-                      ? Text(
-                          fullName[0].toUpperCase(),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
-                          ),
-                        )
-                      : null,
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => widget.onUserTap?.call(widget.comment),
+                  child: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Colors.grey.shade200,
+                    backgroundImage: avatar.isNotEmpty
+                        ? NetworkImage(avatar)
+                        : null,
+                    child: avatar.isEmpty
+                        ? Text(
+                            fullName[0].toUpperCase(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          )
+                        : null,
+                  ),
                 ),
+
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
@@ -156,15 +164,21 @@ class _CommentCardState extends State<CommentCard> {
                       Row(
                         children: [
                           Expanded(
-                            child: Text(
-                              fullName,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13.5,
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () =>
+                                  widget.onUserTap?.call(widget.comment),
+                              child: Text(
+                                fullName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13.5,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
+
                           if (widget.comment.isBest)
                             Container(
                               margin: const EdgeInsets.only(left: 4),
@@ -261,16 +275,12 @@ class _CommentCardState extends State<CommentCard> {
 
                   GestureDetector(
                     onTap: () => widget.onLike(widget.comment),
-
                     onLongPress: () {
                       showCommentReactionsSheet(
                         context,
-
                         targetUserId: widget.targetUserId,
                         postId: widget.postId,
-
                         commentId: widget.comment.id,
-
                         type: 'like',
                       );
                     },
@@ -303,16 +313,12 @@ class _CommentCardState extends State<CommentCard> {
 
                   GestureDetector(
                     onTap: () => widget.onDislike(widget.comment),
-
                     onLongPress: () {
                       showCommentReactionsSheet(
                         context,
-
                         targetUserId: widget.targetUserId,
                         postId: widget.postId,
-
                         commentId: widget.comment.id,
-
                         type: 'dislike',
                       );
                     },
@@ -416,26 +422,23 @@ class _CommentCardState extends State<CommentCard> {
                       targetUserId: widget.targetUserId,
                       postId: widget.postId,
                       replies: widget.getReplies(reply.id),
-
                       isExpanded: widget.getExpanded(reply.id),
-
                       isLoadingReplies: widget.getLoading(reply.id),
-
                       hasMoreReplies: widget.getHasMore(reply.id),
-
                       isLoadingMoreReplies: widget.getLoadingMore(reply.id),
-
                       getReplies: widget.getReplies,
                       getExpanded: widget.getExpanded,
                       getLoading: widget.getLoading,
                       getHasMore: widget.getHasMore,
                       getLoadingMore: widget.getLoadingMore,
-
                       onReply: widget.onReply,
                       onLike: widget.onLike,
                       onDislike: widget.onDislike,
                       onToggleExpand: widget.onToggleExpand,
                       onLoadMoreReplies: widget.onLoadMoreReplies,
+                      onEdit: widget.onEdit,
+                      onDelete: widget.onDelete,
+                      onUserTap: widget.onUserTap,
                     ),
                   ),
                 ),

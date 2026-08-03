@@ -4,6 +4,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:programmers_network_app/controller/Home/posts/comments/edit_comment_controller.dart';
 import 'package:programmers_network_app/core/const/color_const.dart';
 import 'package:programmers_network_app/core/const/post_color.dart';
+import 'package:programmers_network_app/core/const/routesPage.dart';
 import 'package:programmers_network_app/view/widget/Home/comment_card_widget.dart';
 import 'package:programmers_network_app/controller/Home/posts/comments/comments_controller.dart';
 
@@ -318,6 +319,13 @@ class _CommentsPageState extends State<CommentsPage> {
                 type: 'dislike',
               );
             },
+            onUserTap: (target) {
+              Navigator.pop(context);
+              Get.toNamed(
+                AppRoute.otherUserProfilePage,
+                arguments: target.userPostComment.id,
+              );
+            },
             onToggleExpand: (target) {
               controller.toggleReplies(
                 targetUserId: widget.targetUserId,
@@ -379,6 +387,7 @@ class _CommentsPageState extends State<CommentsPage> {
                 commentId: target.id,
                 content: newContent,
               );
+              print('Edit success: $success');
 
               if (success) {
                 controller.updateCommentContent(

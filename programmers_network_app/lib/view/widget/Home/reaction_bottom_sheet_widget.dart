@@ -5,6 +5,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:programmers_network_app/core/const/post_color.dart';
 
 import 'package:programmers_network_app/controller/Home/reactions_controller.dart';
+import 'package:programmers_network_app/core/const/routesPage.dart';
 
 Future<void> showReactionsSheet(
   BuildContext context, {
@@ -191,6 +192,10 @@ class _ReactionsSheetContentState extends State<ReactionsSheetContent> {
             side: BorderSide(color: Colors.grey.shade200),
           ),
           child: ListTile(
+            onTap: () {
+              Navigator.pop(context);
+              Get.toNamed(AppRoute.otherUserProfilePage, arguments: user.id);
+            },
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 12,
               vertical: 6,

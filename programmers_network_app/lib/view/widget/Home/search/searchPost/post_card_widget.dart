@@ -17,6 +17,7 @@ class PostCardWidget extends StatelessWidget {
   final VoidCallback? onShare;
   final VoidCallback? onSave;
   final VoidCallback? onTap;
+  final VoidCallback? onUserTap;
 
   const PostCardWidget({
     super.key,
@@ -28,6 +29,7 @@ class PostCardWidget extends StatelessWidget {
     this.onShare,
     this.onSave,
     this.onTap,
+    this.onUserTap,
   });
 
   @override
@@ -54,7 +56,7 @@ class PostCardWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            PostHeaderWidget(post: post),
+            PostHeaderWidget(post: post, onUserTap: onUserTap),
             const SizedBox(height: 10),
 
             Column(
