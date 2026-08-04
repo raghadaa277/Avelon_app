@@ -70,7 +70,12 @@ class _PostSettingPageState extends State<PostSettingPage> {
 
                   const SizedBox(height: 20),
 
-                  const Center(child: CreatePostSteperrWidget(currentStep: 3)),
+                  Center(
+                    child: CreatePostSteperrWidget(
+                      currentStep: controller.selectedType == "poll" ? 3 : 4,
+                      totalSteps: controller.totalSteps,
+                    ),
+                  ),
 
                   const SizedBox(height: 24),
 

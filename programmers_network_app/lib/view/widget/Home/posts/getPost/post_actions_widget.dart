@@ -39,10 +39,6 @@ class PostActions extends StatelessWidget {
             onTap: () {},
           ),
         const Spacer(),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.bookmark_border, size: 20, color: Colors.grey),
-        ),
       ],
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:programmers_network_app/controller/Home/onBoarding_controller.dart';
 import 'package:programmers_network_app/core/const/color_const.dart';
 import 'package:programmers_network_app/view/screen/Home/inspir_page.dart';
@@ -82,8 +83,8 @@ class _GoalsPageState extends State<GoalsPage> {
                                     width: 1.5,
                                   ),
                                 ),
-                                child: const Icon(
-                                  Icons.flag_rounded,
+                                child: HugeIcon(
+                                  icon: HugeIcons.strokeRoundedFlag02,
                                   color: Color(0xFF16A34A),
                                   size: 26,
                                 ),

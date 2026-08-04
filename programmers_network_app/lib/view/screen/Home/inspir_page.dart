@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:programmers_network_app/controller/Home/onBoarding_controller.dart';
 import 'package:programmers_network_app/core/const/color_const.dart';
 import 'package:programmers_network_app/view/screen/Home/tags_page.dart';
@@ -87,8 +88,8 @@ class _InspirationPageState extends State<InspirationPage> {
                                     width: 1.5,
                                   ),
                                 ),
-                                child: const Icon(
-                                  Icons.lightbulb_rounded,
+                                child: HugeIcon(
+                                  icon: HugeIcons.strokeRoundedIdea,
                                   color: Color(0xFF16A34A),
                                   size: 26,
                                 ),
@@ -228,7 +229,7 @@ class _InspirationPageState extends State<InspirationPage> {
                                   selectedGoals: widget.selectedGoals,
                                   selectedInspirations: _selectedIds.toList(),
                                 ),
-                                  arguments: Get.arguments,
+                                arguments: Get.arguments,
                               );
                             },
                       style: ElevatedButton.styleFrom(

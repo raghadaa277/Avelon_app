@@ -167,7 +167,7 @@ class ProfileSideMenu extends StatelessWidget {
                   ),
                   _MenuItem(
                     icon: Icons.person_2,
-                    label: 'Status User',
+                    label: 'Account Status',
                     tint: _tint,
                     onTap: onStatusUser,
                   ),

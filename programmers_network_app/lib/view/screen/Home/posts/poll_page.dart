@@ -91,7 +91,12 @@ class _PollPageState extends State<PollPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Center(child: CreatePostSteperrWidget(currentStep: 2)),
+                  const Center(
+                    child: CreatePostSteperrWidget(
+                      currentStep: 2,
+                      totalSteps: 5,
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   Container(
                     padding: const EdgeInsets.all(24),
@@ -287,7 +292,7 @@ class _PollPageState extends State<PollPage> {
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton(
-                        onPressed: controller.allowMultipleAnswers
+                        onPressed: controller.canContinuePoll
                             ? () {
                                 Get.to(() => PostSettingPage());
                               }

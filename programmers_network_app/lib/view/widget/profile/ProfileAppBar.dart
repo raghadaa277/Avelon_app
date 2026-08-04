@@ -58,7 +58,6 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
                     final shell = AvelonHomeShell.of(innerContext);
                     print("Shell context initialized: $shell");
                     shell?.toggleMenu();
-
                   },
                 );
               },

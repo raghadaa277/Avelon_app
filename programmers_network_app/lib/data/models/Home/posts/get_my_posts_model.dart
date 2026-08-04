@@ -68,7 +68,7 @@ class PostModel {
   final bool hideViews;
   final bool hideViewsCount;
   final bool isEdited;
-  final bool isPinned;
+  bool isPinned;
   final String? publishedAt;
   final int likesCount;
   final int commentsCount;

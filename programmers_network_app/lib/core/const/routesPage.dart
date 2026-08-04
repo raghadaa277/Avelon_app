@@ -13,4 +13,6 @@ class AppRoute {
   static const String userSession = "/userSession";
   static const String userStatus = "/userStatusHistoryScreen";
   static const String CreatePost = "/createPost";
+  static const String searchPage = "/SearchPage";
+  static const String otherUserProfilePage = "/OtherUserProfilePage";
 }

@@ -3,30 +3,26 @@ import 'package:programmers_network_app/core/const/color_const.dart';
 
 class CreatePostSteperrWidget extends StatelessWidget {
   final int currentStep;
-  const CreatePostSteperrWidget({super.key, required this.currentStep});
+  final int totalSteps;
+
+  const CreatePostSteperrWidget({
+    super.key,
+    required this.currentStep,
+    this.totalSteps = 6,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _StepItem(isActive: currentStep >= 0),
+    final List<Widget> children = [];
 
-        _StepLine(isActive: currentStep >= 1),
-        _StepItem(isActive: currentStep >= 1),
+    for (int i = 0; i < totalSteps; i++) {
+      if (i > 0) {
+        children.add(_StepLine(isActive: currentStep >= i));
+      }
+      children.add(_StepItem(isActive: currentStep >= i));
+    }
 
-        _StepLine(isActive: currentStep >= 2),
-        _StepItem(isActive: currentStep >= 2),
-
-        _StepLine(isActive: currentStep >= 3),
-        _StepItem(isActive: currentStep >= 3),
-
-        _StepLine(isActive: currentStep >= 4),
-        _StepItem(isActive: currentStep >= 4),
-
-        _StepLine(isActive: currentStep >= 5),
-        _StepItem(isActive: currentStep >= 5),
-      ],
-    );
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: children);
   }
 }
 

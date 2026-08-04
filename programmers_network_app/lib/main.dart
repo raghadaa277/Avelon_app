@@ -2,12 +2,16 @@ import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:programmers_network_app/app_binding.dart';
 import 'package:programmers_network_app/controller/Home/profile/user_session_controller.dart';
 import 'package:programmers_network_app/core/const/routesPage.dart';
 import 'package:programmers_network_app/core/storage/token_storage.dart';
+import 'package:programmers_network_app/data/models/Home/personalPage/follower/get_follows_model.dart';
 import 'package:programmers_network_app/view/screen/Home/home_page.dart';
+import 'package:programmers_network_app/view/screen/Home/personalPage/other_user_profile_page.dart';
 import 'package:programmers_network_app/view/screen/Home/posts/create_post_page.dart';
 import 'package:programmers_network_app/view/screen/Home/ready_page.dart';
+import 'package:programmers_network_app/view/screen/Home/search_page.dart';
 import 'package:programmers_network_app/view/screen/Home/source_page.dart';
 import 'package:programmers_network_app/view/screen/auth/complete_page.dart';
 import 'package:programmers_network_app/view/screen/auth/forget_page.dart';
@@ -21,6 +25,7 @@ import 'package:programmers_network_app/view/widget/welcome_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const MyApp());
 }
 
@@ -128,7 +133,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: AppRoute.homePage,
+      initialRoute: initialRoute,
+      initialBinding: AppBinding(),
       getPages: [
         GetPage(name: AppRoute.login, page: () => LoginPage()),
         GetPage(name: AppRoute.register, page: () => RegisterPage()),
@@ -137,7 +143,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         GetPage(name: AppRoute.resetpassword, page: () => ForgetPasswordPage()),
         GetPage(name: AppRoute.homePage, page: () => HomePage()),
         GetPage(name: AppRoute.source, page: () => SourcePage()),
-        GetPage(name: AppRoute.profilePage, page: () => ProfilePage()),
+        GetPage(
+          name: AppRoute.profilePage,
+          page: () => ProfilePage(),
+          binding: ProfileBinding(),
+        ),
         GetPage(name: AppRoute.readyPage, page: () => ReadyPage()),
         GetPage(name: AppRoute.welcomePage, page: () => WelcomeWidget()),
         GetPage(name: AppRoute.userSession, page: () => UserActivityScreen()),
@@ -146,6 +156,19 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           page: () => UserStatusHistoryScreen(),
         ),
         GetPage(name: AppRoute.CreatePost, page: () => CreatePostPage()),
+        GetPage(name: AppRoute.searchPage, page: () => SearchPage()),
+        GetPage(
+          name: AppRoute.otherUserProfilePage,
+          page: () => OtherUserProfilePage(targetUserId: Get.arguments as int),
+        ),
+        GetPage(
+          name: AppRoute.otherUserProfilePage,
+          page: () {
+            final user = Get.arguments as FollowerUser;
+
+            return OtherUserProfilePage(targetUserId: user.id);
+          },
+        ),
       ],
     );
   }

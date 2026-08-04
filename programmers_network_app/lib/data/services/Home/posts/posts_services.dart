@@ -20,6 +20,7 @@ class PostsServices {
     required bool hideReactionsCount,
     required bool hideViews,
     required bool hideViewsCount,
+    List<String>? tagIDS,
     String? publishedAt,
     List<File>? media,
 
@@ -31,28 +32,40 @@ class PostsServices {
       final Map<String, String> fields = {
         "type": type,
         "visibility": visibility,
+
         "allow_comments": allowComments ? "1" : "0",
         "hide_comments_count": hideCommentsCount ? "1" : "0",
         "hide_reactions": hideReactions ? "1" : "0",
         "hide_reactions_count": hideReactionsCount ? "1" : "0",
         "hide_views": hideViews ? "1" : "0",
         "hide_views_count": hideViewsCount ? "1" : "0",
+
         if (publishedAt != null) "published_at": publishedAt,
 
         if (type != "poll") "title": title,
+
         if (type != "poll") "content": content,
 
-        if (pollQuestion != null) "question": pollQuestion,
-        if (allowMultipleAnswers != null)
+        if (type == "poll" && pollQuestion != null) "question": pollQuestion,
+
+        if (type == "poll" && allowMultipleAnswers != null)
           "allow_multiple_answers": allowMultipleAnswers ? "1" : "0",
       };
-      if (pollOptions != null) {
+
+      if (type == "poll" && pollOptions != null) {
         for (int i = 0; i < pollOptions.length; i++) {
-          if (pollOptions[i].trim().isNotEmpty) {
-            fields["options[$i]"] = pollOptions[i];
-          }
+          fields["options[$i]"] = pollOptions[i];
         }
       }
+
+      if (tagIDS != null && tagIDS.isNotEmpty) {
+        for (int i = 0; i < tagIDS.length; i++) {
+          fields["tagIDs[$i]"] = tagIDS[i];
+        }
+      }
+
+      print("CREATE POST FIELDS:");
+      print(fields);
 
       final response = await api.multipartPost(
         endpoint: ApiConstants.createPost,
@@ -75,9 +88,11 @@ class PostsServices {
   Future<GetMyPostsModel> getMyPosts({int page = 1}) async {
     try {
       final response = await api.get(
-        "${ApiConstants.getMyPosts}?posts_page=$page",
+        "${ApiConstants.getMyPosts}?post_page=$page",
       );
+
       final decodedResponse = jsonDecode(response.body);
+
       if (response.statusCode == 200) {
         return GetMyPostsModel.fromJson(decodedResponse);
       }

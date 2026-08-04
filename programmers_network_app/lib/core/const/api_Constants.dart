@@ -14,7 +14,37 @@ class ApiConstants {
   static const String getUserStatusesHistory =
       "/api/get/user/status/history/and/summary";
   static const String createPost = "/api/create/post";
+  static const String tagePost = "/api/get/tags";
   static const String getMyPosts = "/api/get/my/posts";
+  static const String archivePost = "/api/archive/post";
+  static const String getArchivedPosts = "/api/get/archived/posts";
+  static const String restorePost = "/api/restore/post";
+  static const String forceDeletePost = "/api/force/delete/post";
+  static const String pinnedPost = "/api/toggle/pinned/post";
+  static const String deletePostMedia = "/api/delete/post/media";
+  static const String search = "/api/search";
+  static const String searchPost = "/api/search";
+  static const String postReactions = "/api/toggle/post/reaction";
+  static const String getPostReactions = "/api/get/post/reactions";
+  static const String savePost = "/api/toggle/saved/post";
+  static const String saveRecordPost = "/api/record/post/view";
+  static const String getPostViews = "/api/get/post/views";
+  static const String getPostComments = "/api/get/post/comments";
+  static const String repliesComment = "/api/get/comment/replies";
+  static const String createComment = "/api/create/comment";
+  static const String deleteComment = "/api/delete/comment";
+  static const String commentReactions = "/api/toggle/comment/reaction";
+  static const String getCommentReactions = "/api/get/comment/reactions";
+  static const String editComment = "/api/update/comment";
+  static const String getTargetUserCount = "/api/get/target/user/counts";
+  static const String getOtherUserProfile = "/api/get/target/user/profile";
+  static const String toggleFollowing = "/api/toggle/following";
+  static const String getFollows = "/api/get";
+  static const String toggleCloseFriend = "/api/toggle/close/friend";
+  static const String getMyCloseFriends = "/api/get/my/close/friends";
+  static const String toggleMute = "/api/toggle/mute";
+  static const String userFlag = "/api/flag/user";
+  static const String recordProfileView = "/api/record/profile/view";
 
   //Zenab
   static const String userProfile = "/api/get/user/profile";
@@ -27,8 +57,8 @@ class ApiConstants {
   static const String addUserSkill = "/api/create/user/skill";
   static const String deleteUserSkill = "/api/delete/user/skill/";
 
-  static const String getCloseFriends = "/api/get/my/close/friends"; // جلب قائمة الأصدقاء المقربين
-  static const String toggleCloseFriend = "/api/toggle/close/friend/"; // إضافة أو حذف صديق مقرب (نمرر الـ ID في النهاية)
+  static const String getCloseFriends = "/api/get/my/close/friends";
+  static const String toggleCloseFriend = "/api/toggle/close/friend/";
   static const String getCloseFriendsHistory = "/api/get/close/friends/history";
   static const String toggleFollow = "/api/toggle/following/";
   static const String getFollowers = "/api/get/";

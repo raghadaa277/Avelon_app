@@ -69,7 +69,12 @@ class _AddYourContentPageState extends State<AddYourContentPage> {
 
                   const SizedBox(height: 20),
 
-                  const Center(child: CreatePostSteperrWidget(currentStep: 1)),
+                  const Center(
+                    child: CreatePostSteperrWidget(
+                      currentStep: 2,
+                      totalSteps: 6,
+                    ),
+                  ),
 
                   const SizedBox(height: 24),
 

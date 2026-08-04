@@ -7,6 +7,7 @@ class MyPostsController extends GetxController {
   final PostsServices _services = PostsServices();
 
   List<PostModel> posts = [];
+
   int currentPage = 1;
   int lastPage = 1;
   bool isLoading = false;
@@ -14,25 +15,76 @@ class MyPostsController extends GetxController {
 
   @override
   void onInit() {
-    fetchPosts();
     super.onInit();
+    fetchPosts();
   }
 
-  Future<void> fetchPosts() async {
-    isLoading = true;
+  Future<void> refreshPosts() async {
     currentPage = 1;
-    posts = [];
+    posts.clear();
+
+    await fetchPosts();
+
+    update();
+  }
+
+  void updatePinnedPost(int postId) {
+    final index = posts.indexWhere((post) => post.id == postId);
+
+    if (index != -1) {
+      posts[index].isPinned = !posts[index].isPinned;
+
+      posts.sort((a, b) {
+        if (a.isPinned && !b.isPinned) {
+          return -1;
+        }
+
+        if (!a.isPinned && b.isPinned) {
+          return 1;
+        }
+
+        return b.createdAt.compareTo(a.createdAt);
+      });
+
+      update();
+    }
+  }
+
+  Future<void> fetchPosts({bool refresh = false}) async {
+    if (isLoading) return;
+
+    if (refresh) {
+      currentPage = 1;
+      lastPage = 1;
+      posts.clear();
+    }
+
+    isLoading = true;
     update();
 
     try {
       final result = await _services.getMyPosts(page: 1);
+
       posts = result.data.posts;
+
+      final uniquePosts = <int, PostModel>{};
+
+      for (var post in posts) {
+        uniquePosts[post.id] = post;
+      }
+
+      posts = uniquePosts.values.toList();
+
       posts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
       currentPage = result.data.currentPage;
       lastPage = result.data.lastPage;
+
+      debugPrint("POSTS REFRESHED");
     } catch (e) {
       debugPrint(e.toString());
     }
+
     isLoading = false;
     update();
   }
@@ -45,15 +97,38 @@ class MyPostsController extends GetxController {
 
     try {
       final result = await _services.getMyPosts(page: currentPage + 1);
-      posts.addAll(result.data.posts);
+
+      for (var post in result.data.posts) {
+        if (!posts.any((p) => p.id == post.id)) {
+          posts.add(post);
+        }
+      }
+
       posts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
       currentPage = result.data.currentPage;
       lastPage = result.data.lastPage;
     } catch (e) {
       debugPrint(e.toString());
     }
+
     isLoadingMore = false;
     update();
+  }
+
+  void removePostById(int postId) {
+    posts.removeWhere((post) => post.id == postId);
+    update();
+  }
+
+  void removeMediaFromPost(int postId, int mediaId) {
+    final index = posts.indexWhere((post) => post.id == postId);
+
+    if (index != -1) {
+      posts[index].postMedia.removeWhere((media) => media.id == mediaId);
+
+      update();
+    }
   }
 
   bool get hasMore => currentPage < lastPage;
