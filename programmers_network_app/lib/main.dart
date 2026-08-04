@@ -6,6 +6,7 @@ import 'package:programmers_network_app/controller/Home/profile/user_session_con
 import 'package:programmers_network_app/core/const/routesPage.dart';
 import 'package:programmers_network_app/core/storage/token_storage.dart';
 import 'package:programmers_network_app/view/screen/Home/home_page.dart';
+import 'package:programmers_network_app/view/screen/Home/posts/create_post_page.dart';
 import 'package:programmers_network_app/view/screen/Home/ready_page.dart';
 import 'package:programmers_network_app/view/screen/Home/source_page.dart';
 import 'package:programmers_network_app/view/screen/auth/complete_page.dart';
@@ -97,7 +98,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     _deepLinkSubscription = _appLinks.uriLinkStream.listen(
       (uri) {
         debugPrint("🔗 Deep Link Received => $uri");
-        // _handleDeepLink(uri);
       },
       onError: (err) {
         debugPrint("❌ Deep Link Error => $err");
@@ -135,10 +135,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         GetPage(name: AppRoute.verify, page: () => VerifyPage()),
         GetPage(name: AppRoute.complete, page: () => CompletePage()),
         GetPage(name: AppRoute.resetpassword, page: () => ForgetPasswordPage()),
-        GetPage(
-          name: AppRoute.homePage,
-          page: () => HomePage(),
-        ),
+        GetPage(name: AppRoute.homePage, page: () => HomePage()),
         GetPage(name: AppRoute.source, page: () => SourcePage()),
         GetPage(name: AppRoute.profilePage, page: () => ProfilePage()),
         GetPage(name: AppRoute.readyPage, page: () => ReadyPage()),
@@ -148,6 +145,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           name: AppRoute.userStatus,
           page: () => UserStatusHistoryScreen(),
         ),
+        GetPage(name: AppRoute.CreatePost, page: () => CreatePostPage()),
       ],
     );
   }

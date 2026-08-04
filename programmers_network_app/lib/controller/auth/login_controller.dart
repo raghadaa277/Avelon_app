@@ -109,7 +109,7 @@ class LoginController extends GetxController {
       final deviceData = await DeviceHelper.getDeviceData();
 
       final result = await _loginServices.login(
-        fcmToken: "du1277",
+        fcmToken: "du14454641",
         email: email.text.trim(),
         password: password.text,
       );
@@ -121,11 +121,30 @@ class LoginController extends GetxController {
       await TokenStorage.saveDeviceId(deviceData["device_id"]!);
       Get.snackbar("Success", result.message);
 
-      if (result.data.onboardingCompletedAt != null) {
-        Get.offAllNamed(AppRoute.userStatus);
+      final onboardingDone = await TokenStorage.isOnboardingDone();
+      final completion = result.data.profileCompletion;
+      final completionValue = int.tryParse(completion.replaceAll('%', '')) ?? 0;
+
+      if (onboardingDone || completionValue > 0) {
+        await TokenStorage.setOnboardingDone();
+        Get.offAllNamed(AppRoute.homePage);
       } else {
         Get.offNamed(AppRoute.source, arguments: result.data.profileCompletion);
       }
+
+      // await TokenStorage.saveTokens(
+      //   accessToken: result.data.accessToken,
+      //   refreshToken: result.data.refreshToken,
+      // );
+      // await TokenStorage.saveDeviceId(deviceData["device_id"]!);
+      // Get.snackbar("Success", result.message);
+
+      // if (result.data.user.onboardingCompletedAt != null) {
+      //   await TokenStorage.setOnboardingDone();
+      //   Get.offAllNamed(AppRoute.homePage);
+      // } else {
+      //   Get.offNamed(AppRoute.source, arguments: result.data.profileCompletion);
+      // }
     } on LoginException catch (e) {
       switch (e.statusCode) {
         case 401:

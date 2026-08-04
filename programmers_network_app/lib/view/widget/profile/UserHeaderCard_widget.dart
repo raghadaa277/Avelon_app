@@ -24,10 +24,11 @@ class UserHeaderCard extends StatelessWidget {
                   CircleAvatar(
                     radius: 60,
                     backgroundColor: const Color(0xFFEFEFEF),
-                    backgroundImage: data.avatarFullUrl != null
+                    // ⭕ الفحص يتأكد أن الرابط ليس null وليس نصاً فارغاً
+                    backgroundImage: (data.avatarFullUrl != null && data.avatarFullUrl!.trim().isNotEmpty)
                         ? NetworkImage(data.avatarFullUrl!)
                         : null,
-                    child: data.avatarFullUrl == null
+                    child: (data.avatarFullUrl == null || data.avatarFullUrl!.trim().isEmpty)
                         ? const Icon(Icons.person, size: 40, color: Colors.grey)
                         : null,
                   ),
@@ -71,7 +72,7 @@ class UserHeaderCard extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
@@ -93,7 +94,7 @@ class UserHeaderCard extends StatelessWidget {
                           Text(
                             data.specialization,
                             style: const TextStyle(
-                              fontSize: 11,
+                              fontSize: 10,
                               fontWeight: FontWeight.bold,
                               color: Colors.black87,
                             ),

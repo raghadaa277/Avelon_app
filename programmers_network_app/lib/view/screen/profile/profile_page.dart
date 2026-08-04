@@ -2,20 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:programmers_network_app/controller/auth/logout_controller.dart';
+import 'package:programmers_network_app/cubit/profile/Follow_cubit.dart';
+import 'package:programmers_network_app/view/screen/profile/FollowScreen.dart';
 import 'package:programmers_network_app/view/screen/profile/PrivacySettingsPage.dart';
 import 'package:programmers_network_app/view/widget/profile/slider_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../cubit/PrivacySettings/privacy_settings_cubit.dart';
+import '../../../cubit/profile/close_friends_cubit.dart';
+import '../../../cubit/profile/muted_users_cubit.dart';
+import '../../../data/services/profile/FollowService.dart';
+import '../../../data/services/profile/MutedUsersService.dart';
+import '../../../data/services/profile/close_friends_service.dart';
 import '../../../data/services/profile/profile_services.dart';
 import '../../../cubit/profile/profile_cubit.dart';
 import '../../../cubit/profile/profile_state.dart';
 import '../../../data/models/Profile/profile_model.dart';
 import '../../widget/profile/ActionButtonsRow_widget.dart';
+import '../../widget/profile/PostInputSection.dart';
 import '../../widget/profile/PostsTabContent_widget.dart';
 import '../../widget/profile/ProfileAppBar.dart';
 import '../../widget/profile/UserHeaderCard_widget.dart';
-import '../../widget/profile/post_input_section.dart';
+
 import 'EditPhotoScreen.dart';
+import 'close_friends_screen.dart';
+import 'muted_users_screen.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -26,6 +36,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final LogoutController logoutController = Get.put(LogoutController());
+
   void _showLogoutDialog(BuildContext context) {
     showGeneralDialog(
       context: context,
@@ -59,29 +70,25 @@ class _ProfilePageState extends State<ProfilePage> {
                     color: Color(0xffB8FF1A),
                   ),
                   const SizedBox(height: 12),
-
                   const Text(
                     "Logout",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-
                   const SizedBox(height: 8),
-
                   Text(
                     "Are you sure you want to log out?",
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
                   ),
-
                   const SizedBox(height: 20),
-
                   Row(
                     children: [
                       Expanded(
                         child: TextButton(
                           onPressed: () {
                             Navigator.pop(context);
-                            logoutController.logout();},
+                            logoutController.logout();
+                          },
                           style: TextButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
@@ -97,9 +104,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                       ),
-
                       const SizedBox(width: 10),
-
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
@@ -131,7 +136,6 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         );
       },
-
       transitionBuilder: (context, animation, _, child) {
         return ScaleTransition(
           scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
@@ -144,11 +148,8 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ProfileCubit>(
-      create: (context) =>
-      ProfileCubit(ProfileServices())..fetchProfile(),
-
+      create: (context) => ProfileCubit(ProfileServices())..fetchProfile(),
       child: BlocBuilder<ProfileCubit, ProfileState>(
-
         builder: (context, state) {
           if (state is ProfileLoading) {
             return Scaffold(
@@ -163,12 +164,11 @@ class _ProfilePageState extends State<ProfilePage> {
               backgroundColor: const Color(0xFFF1FDE1),
               appBar: const ProfileAppBar(),
               body: Center(child: Text(state.errorMessage)),
-
-
             );
           } else if (state is ProfileLoaded) {
             final profileData = state.profileModel.data;
-            final completionPercentage = state.profileModel.profileCompletion ?? "0%";
+            final completionPercentage =
+                state.profileModel.profileCompletion ?? "0%";
             Widget activeContent;
             if (state.activeTabIndex == 0) {
               activeContent = PostsTabContent(isActive: true);
@@ -180,26 +180,61 @@ class _ProfilePageState extends State<ProfilePage> {
             return AvelonHomeShell(
               menu: ProfileSideMenu(
                 data: profileData,
-
                 onSettings: () {
-
                   AvelonHomeShell.of(context)?.closeMenu();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => BlocProvider<PrivacySettingsCubit>(
-                        create: (context) => PrivacySettingsCubit(services: ProfileServices()),
+                        create: (context) =>
+                            PrivacySettingsCubit(services: ProfileServices()),
                         child: const PrivacySettingsPage(),
                       ),
                     ),
                   );
                 },
+                onFavoritePeople: () {
+                  AvelonHomeShell.of(context)?.closeMenu();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider<CloseFriendsCubit>(
+                        create: (context) =>
+                        CloseFriendsCubit(CloseFriendsService())
+                          ..fetchCloseFriends(),
+                        child: const CloseFriendsScreen(),
+                      ),
+                    ),
+                  );
+                },
+                onFollowingTracking: () {
+                  AvelonHomeShell.of(context)?.closeMenu();
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => FollowScreen(userId: profileData.id),
+                    ),
+                  );
+                },
+                onMutedPeople: () {
+                  AvelonHomeShell.of(context)?.closeMenu();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider<MutedUsersCubit>(
+                        create: (context) =>
+                        MutedUsersCubit(MutedUsersService())..fetchMutedUsers(),
+                        child: const MutedUsersScreen(),
+                      ),
+                    ),
+                  );
+                },
+
                 onLogout: () {
                   _showLogoutDialog(context);
                 },
               ),
-
-
               body: Scaffold(
                 backgroundColor: const Color(0xFFF1FDE1),
                 appBar: const ProfileAppBar(),
@@ -234,7 +269,7 @@ class _ProfilePageState extends State<ProfilePage> {
           return const SizedBox.shrink();
         },
       ),
-        );
+    );
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
@@ -274,26 +309,23 @@ class _ProfilePageState extends State<ProfilePage> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-              child: Builder(
-              builder: (innerContext) {
-                   return IconButton(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: Builder(builder: (innerContext) {
+                return IconButton(
                     icon: const Icon(
-                   Icons.more_horiz,
-                    color: Colors.black54,
-                   size: 20,
-                   ),
-                       onPressed: () {
-                    final shell = AvelonHomeShell.of(context);
-                    print(shell);
-                 shell?.toggleMenu();
-                        }
-                    );
-               })
-          ),
+                      Icons.more_horiz,
+                      color: Colors.black54,
+                      size: 20,
+                    ),
+                    onPressed: () {
+                      final shell = AvelonHomeShell.of(context);
+                      print(shell);
+                      shell?.toggleMenu();
+                    });
+              })),
         ),
       ],
     );
@@ -401,5 +433,3 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
-
-

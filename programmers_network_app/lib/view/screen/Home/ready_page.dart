@@ -5,6 +5,7 @@ import 'package:get/utils.dart';
 import 'package:programmers_network_app/core/const/color_const.dart';
 import 'package:programmers_network_app/core/const/font.dart';
 import 'package:programmers_network_app/core/const/routesPage.dart';
+import 'package:programmers_network_app/core/storage/token_storage.dart';
 
 import 'package:programmers_network_app/view/widget/Home/card_ready_widget.dart';
 import 'package:programmers_network_app/view/widget/auth/button_customer.dart';
@@ -93,10 +94,13 @@ class _ReadyPageState extends State<ReadyPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 32),
                   child: ButtonCustomer(
                     text: "Enter Avelon",
-                    onTap: () {
+                    onTap: () async {
+                      await TokenStorage.setOnboardingDone();
+
                       Get.offAllNamed(
-                          AppRoute.homePage,
-                          arguments: Get.arguments,);
+                        AppRoute.homePage,
+                        arguments: Get.arguments,
+                      );
                     },
                   ),
                 ),

@@ -61,7 +61,6 @@ class SourceChip extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // أيقونة ملونة
             Container(
               width: 36,
               height: 36,
@@ -73,7 +72,6 @@ class SourceChip extends StatelessWidget {
             ),
             const SizedBox(width: 10),
 
-            // اسم المصدر
             Expanded(
               child: Text(
                 source.label.isNotEmpty ? source.label : source.name,
@@ -87,7 +85,6 @@ class SourceChip extends StatelessWidget {
               ),
             ),
 
-            // علامة التحديد
             if (isSelected)
               Container(
                 width: 20,

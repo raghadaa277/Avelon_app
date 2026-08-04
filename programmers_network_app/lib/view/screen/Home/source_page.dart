@@ -166,39 +166,6 @@ class _SourcePageState extends State<SourcePage> {
                         ),
 
                         const SizedBox(height: 20),
-
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.center,
-                        //   children: const [
-                        //     Icon(
-                        //       Icons.shield_outlined,
-                        //       size: 15,
-                        //       color: Color(0xFF9CA3AF),
-                        //     ),
-                        //     SizedBox(width: 6),
-                        //     Column(
-                        //       crossAxisAlignment: CrossAxisAlignment.start,
-                        //       children: [
-                        //         Text(
-                        //           'Your data is safe with Avelon',
-                        //           style: TextStyle(
-                        //             fontSize: 12,
-                        //             fontWeight: FontWeight.w600,
-                        //             color: Color(0xFF374151),
-                        //           ),
-                        //         ),
-                        //         Text(
-                        //           'We use industry-standard encryption\nto protect your information.',
-                        //           style: TextStyle(
-                        //             fontSize: 11,
-                        //             color: Color(0xFF9CA3AF),
-                        //             height: 1.4,
-                        //           ),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ],
-                        // ),
                       ],
                     ),
                   ),

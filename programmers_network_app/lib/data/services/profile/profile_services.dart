@@ -1,16 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:get/get_connect/http/src/response/response.dart';
-import 'package:http/http.dart';
 import 'package:programmers_network_app/core/const/api_Constants.dart';
 import 'package:programmers_network_app/core/storage/api_client.dart';
 import 'package:programmers_network_app/core/storage/token_storage.dart';
 import '../../models/Profile/AvatarActionResponseModel.dart';
 import '../../models/Profile/UpdateProfileResponse.dart';
+import '../../models/Profile/UserSkillModel.dart';
 import '../../models/Profile/profile_model.dart';
 
 class ProfileServices {
-
   final ApiClient profileApi = ApiClient(baseUrl: ApiConstants.baseurl);
 
   Future<UserProfileModel?> getUserProfile() async {
@@ -94,7 +92,8 @@ class ProfileServices {
         return UpdateProfileResponseModel.fromJson(decodedResponse);
       } else {
         throw Exception(
-            decodedResponse['message'] ?? 'Failed to update profile');
+          decodedResponse['message'] ?? 'Failed to update profile',
+        );
       }
     } catch (e) {
       throw Exception(e.toString());
@@ -120,17 +119,20 @@ class ProfileServices {
         return decodedResponse as Map<String, dynamic>;
       } else {
         throw Exception(
-            decodedResponse['message'] ?? 'Failed to load privacy settings');
+          decodedResponse['message'] ?? 'Failed to load privacy settings',
+        );
       }
     } catch (e) {
       throw Exception(e.toString());
     }
   }
+
   Future<bool> updatePrivacySettings(Map<String, dynamic> bodyData) async {
     try {
-      final response = await profileApi.post(ApiConstants.updatePrivacySettings,
-        body: bodyData,);
-
+      final response = await profileApi.post(
+        ApiConstants.updatePrivacySettings,
+        body: bodyData,
+      );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
@@ -143,7 +145,6 @@ class ProfileServices {
     }
   }
 
-
   Future<AvatarActionResponseModel?> updateAvatar(File imageFile) async {
     final token = await TokenStorage.getToken();
 
@@ -153,7 +154,6 @@ class ProfileServices {
     }
 
     try {
-
       final response = await profileApi.postMultipart(
         ApiConstants.updateAvatar,
         imageFile,
@@ -168,13 +168,14 @@ class ProfileServices {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return AvatarActionResponseModel.fromJson(decodedResponse);
       } else {
-        throw Exception(decodedResponse['message'] ?? 'Failed to update avatar');
+        throw Exception(
+          decodedResponse['message'] ?? 'Failed to update avatar',
+        );
       }
     } catch (e) {
       throw Exception(e.toString());
     }
   }
-
 
   Future<AvatarActionResponseModel?> removeAvatar() async {
     final token = await TokenStorage.getToken();
@@ -198,11 +199,104 @@ class ProfileServices {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return AvatarActionResponseModel.fromJson(decodedResponse);
       } else {
-        throw Exception(decodedResponse['message'] ?? 'Failed to remove avatar');
+        throw Exception(
+          decodedResponse['message'] ?? 'Failed to remove avatar',
+        );
       }
     } catch (e) {
       throw Exception(e.toString());
     }
   }
 
+  Future<Map<String, dynamic>?> addUserSkill({
+    required String name,
+    required String level,
+  }) async {
+    final token = await TokenStorage.getToken();
+    if (token == null) {
+      await TokenStorage.clearTokens();
+      return null;
+    }
+    try {
+      final Map<String, dynamic> bodyData = {
+        'skill': name,
+        'level': level.toLowerCase(),
+      };
+
+      final response = await profileApi.post(
+        ApiConstants.addUserSkill,
+        body: bodyData,
+      );
+
+      print("📡 ADD SKILL STATUS => ${response.statusCode}");
+      print("📡 ADD SKILL BODY => ${response.body}");
+
+      final decodedResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return decodedResponse as Map<String, dynamic>;
+      } else {
+        throw Exception(
+          decodedResponse['message'] ?? 'Failed to add skill',
+        );
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<Map<String, dynamic>?> deleteUserSkill({
+    required String skillId,
+  }) async {
+    final token = await TokenStorage.getToken();
+    if (token == null) {
+      await TokenStorage.clearTokens();
+      return null;
+    }
+
+    try {
+      final response = await profileApi.post(
+        "${ApiConstants.deleteUserSkill}$skillId",
+        body: {},
+      );
+      print("📡 DELETE SKILL STATUS => ${response.statusCode}");
+      print("📡 DELETE SKILL BODY => ${response.body}");
+
+      final decodedResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return decodedResponse as Map<String, dynamic>;
+      } else {
+        throw Exception(
+          decodedResponse['message'] ?? 'Failed to delete skill',
+        );
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+
+  Future<List<UserSkillModel>> getUserSkills() async {
+    final token = await TokenStorage.getToken();
+    if (token == null) return [];
+
+    try {
+      final response = await profileApi.get(ApiConstants.getUserSkills);
+
+      print("📡 GET SKILLS STATUS => ${response.statusCode}");
+      print("📡 GET SKILLS BODY => ${response.body}");
+
+      final decodedResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200 && decodedResponse['success'] == true) {
+        final List listData = decodedResponse['data'] ?? [];
+        return listData.map((item) => UserSkillModel.fromJson(item)).toList();
+      }
+      return [];
+    } catch (e) {
+      print("❌ Exception in getUserSkills: $e");
+      return [];
+    }
+  }
 }

@@ -42,4 +42,14 @@ class TokenStorage {
     await prefs.remove(_refreshTokenKey);
     await prefs.remove(_deviceIdKey);
   }
+
+  static Future<void> setOnboardingDone() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('onboarding_done', true);
+  }
+
+  static Future<bool> isOnboardingDone() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('onboarding_done') ?? false;
+  }
 }

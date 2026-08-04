@@ -46,7 +46,8 @@ dependencies:
   hugeicons: ^1.1.7
   flutter_bloc: ^9.1.1
   bloc: ^9.2.1
-  image_picker: ^1.2.2
+  image_picker: ^1.2.3
+  intl: ^0.20.3
 
 dev_dependencies:
   flutter_test:

@@ -23,7 +23,7 @@ class InfoColumn extends StatelessWidget {
 
         Text(
           value,
-          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
         ),
 
         if (sub != null)
