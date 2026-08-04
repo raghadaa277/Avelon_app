@@ -6,6 +6,7 @@ import 'package:programmers_network_app/app_binding.dart';
 import 'package:programmers_network_app/controller/Home/profile/user_session_controller.dart';
 import 'package:programmers_network_app/core/const/routesPage.dart';
 import 'package:programmers_network_app/core/storage/token_storage.dart';
+import 'package:programmers_network_app/data/models/Home/personalPage/follower/get_follows_model.dart';
 import 'package:programmers_network_app/view/screen/Home/home_page.dart';
 import 'package:programmers_network_app/view/screen/Home/personalPage/other_user_profile_page.dart';
 import 'package:programmers_network_app/view/screen/Home/posts/create_post_page.dart';
@@ -159,6 +160,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         GetPage(
           name: AppRoute.otherUserProfilePage,
           page: () => OtherUserProfilePage(targetUserId: Get.arguments as int),
+        ),
+        GetPage(
+          name: AppRoute.otherUserProfilePage,
+          page: () {
+            final user = Get.arguments as FollowerUser;
+
+            return OtherUserProfilePage(targetUserId: user.id);
+          },
         ),
       ],
     );

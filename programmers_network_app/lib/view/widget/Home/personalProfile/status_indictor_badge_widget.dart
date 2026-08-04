@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:programmers_network_app/view/widget/Home/personalProfile/profile_theme_widget.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 enum IndicatorKind { closeFriend, muted, reported }
 
 class StatusIndicatorBadgeWidget extends StatelessWidget {
   final IndicatorKind kind;
-
   final bool actionTakenByMe;
-
   final bool showLabel;
 
   const StatusIndicatorBadgeWidget({
@@ -17,25 +15,25 @@ class StatusIndicatorBadgeWidget extends StatelessWidget {
     this.showLabel = false,
   });
 
-  IconData get _icon {
+  dynamic get _hugeIcon {
     switch (kind) {
       case IndicatorKind.closeFriend:
-        return Icons.star;
+        return HugeIcons.strokeRoundedStar;
       case IndicatorKind.muted:
-        return Icons.volume_off;
+        return HugeIcons.strokeRoundedVolumeMute02;
       case IndicatorKind.reported:
-        return Icons.flag;
+        return HugeIcons.strokeRoundedFlag01;
     }
   }
 
   Color get _color {
     switch (kind) {
       case IndicatorKind.closeFriend:
-        return ProfileTheme.closeFriendGold;
+        return Colors.pinkAccent;
       case IndicatorKind.muted:
-        return ProfileTheme.mutedOrange;
+        return Colors.deepPurple;
       case IndicatorKind.reported:
-        return ProfileTheme.reportedRed;
+        return Colors.red;
     }
   }
 
@@ -55,22 +53,19 @@ class StatusIndicatorBadgeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!showLabel) {
-      return Icon(_icon, size: 16, color: _color);
+      return HugeIcon(icon: _hugeIcon, size: 16, color: _color);
     }
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        // ignore: deprecated_member_use
         color: _color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
-        // ignore: deprecated_member_use
         border: Border.all(color: _color.withOpacity(0.4)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(_icon, size: 13, color: _color),
+          HugeIcon(icon: _hugeIcon, size: 13, color: _color),
           const SizedBox(width: 4),
           Text(
             _label,

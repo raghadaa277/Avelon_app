@@ -519,16 +519,17 @@ class _CommentCardState extends State<CommentCard> {
                   widget.onDelete?.call(widget.comment);
                 },
               ),
-            ] else
-              ListTile(
-                leading: HugeIcon(
-                  icon: HugeIcons.strokeRoundedFlag02,
-                  size: 20,
-                  color: Colors.grey.shade700,
-                ),
-                title: const Text('Report'),
-                onTap: () => Navigator.pop(context),
-              ),
+            ],
+            //else
+            //   ListTile(
+            //     leading: HugeIcon(
+            //       icon: HugeIcons.strokeRoundedFlag02,
+            //       size: 20,
+            //       color: Colors.grey.shade700,
+            //     ),
+            //     title: const Text('Report'),
+            //     onTap: () => Navigator.pop(context),
+            //   ),
           ],
         ),
       ),

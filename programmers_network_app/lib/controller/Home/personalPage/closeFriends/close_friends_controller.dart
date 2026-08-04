@@ -81,14 +81,9 @@ class CloseFriendsController extends GetxController {
 
         return newState ? CloseFriendAction.added : CloseFriendAction.removed;
       }
-
-      Get.snackbar("Error", result.message);
-
       return null;
     } catch (e) {
       errorMessage.value = e.toString();
-
-      Get.snackbar("Error", errorMessage.value);
 
       return null;
     } finally {

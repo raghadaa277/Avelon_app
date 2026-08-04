@@ -16,7 +16,7 @@ class CloseFriendServices {
         "${ApiConstants.toggleCloseFriend}/$targetUserId",
       );
       final decodedResponse = jsonDecode(response.body);
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         return ToggleCloseFriendModel.fromJson(decodedResponse);
       }
       throw Exception(

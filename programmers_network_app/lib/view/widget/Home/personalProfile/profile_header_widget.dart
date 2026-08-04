@@ -35,6 +35,10 @@ class ProfileHeaderWidget extends StatelessWidget {
   final VoidCallback onShare;
   final ValueChanged<ProfileMenuAction> onMenuSelected;
 
+  final VoidCallback? onFollowersTap;
+  final VoidCallback? onFollowingTap;
+  final VoidCallback? onPostsTap;
+
   const ProfileHeaderWidget({
     super.key,
     required this.fullName,
@@ -46,6 +50,9 @@ class ProfileHeaderWidget extends StatelessWidget {
     required this.onMenuSelected,
     this.avatarUrl,
     this.username,
+    this.onFollowersTap,
+    this.onFollowingTap,
+    this.onPostsTap,
     this.isVerified = true,
     this.isOnline = false,
     this.specialization,
@@ -97,6 +104,7 @@ class ProfileHeaderWidget extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+
                         if (isVerified) ...[
                           const SizedBox(width: 4),
                           const Icon(
@@ -105,14 +113,18 @@ class ProfileHeaderWidget extends StatelessWidget {
                             color: ProfileTheme.primaryGreen,
                           ),
                         ],
+
                         const SizedBox(width: 6),
-                        StatusIndicatorRow(
-                          isCloseFriend: isCloseFriend,
-                          isMuted: isMuted,
-                          isFlagged: isFlagged,
-                          isCloseFriendOf: isCloseFriendOf,
-                          isMutedBy: isMutedBy,
-                          isFlaggedBy: isFlaggedBy,
+
+                        Flexible(
+                          child: StatusIndicatorRow(
+                            isCloseFriend: isCloseFriend,
+                            isMuted: isMuted,
+                            isFlagged: isFlagged,
+                            isCloseFriendOf: isCloseFriendOf,
+                            isMutedBy: isMutedBy,
+                            isFlaggedBy: isFlaggedBy,
+                          ),
                         ),
                       ],
                     ),
@@ -148,6 +160,9 @@ class ProfileHeaderWidget extends StatelessWidget {
             postsCount: postsCount,
             followersCount: followersCount,
             followingCount: followingCount,
+            onFollowersTap: onFollowersTap,
+            onPostsTap: onPostsTap,
+            onFollowingTap: onFollowingTap,
           ),
           const SizedBox(height: 14),
           ProfileActionButtonsWidget(
@@ -179,7 +194,8 @@ class _Avatar extends StatelessWidget {
     return Stack(
       children: [
         CircleAvatar(
-          radius: 34,
+          radius: 60,
+
           backgroundColor: ProfileTheme.pageBg,
           backgroundImage: (url != null && url!.isNotEmpty)
               ? NetworkImage(url!)
@@ -209,32 +225,47 @@ class _Avatar extends StatelessWidget {
 
 class _Tag extends StatelessWidget {
   final String text;
+
   const _Tag({required this.text});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      constraints: const BoxConstraints(maxWidth: 180),
+
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+
       decoration: BoxDecoration(
         color: ProfileTheme.lightGreenBg,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: ProfileTheme.lightGreenBorder),
       ),
+
       child: Row(
         mainAxisSize: MainAxisSize.min,
+
         children: [
           HugeIcon(
             icon: HugeIcons.strokeRoundedCode,
             size: 13,
             color: ProfileTheme.primaryGreenDark,
           ),
+
           const SizedBox(width: 4),
-          Text(
-            text,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: ProfileTheme.primaryGreenDark,
+
+          Flexible(
+            child: Text(
+              text,
+
+              overflow: TextOverflow.ellipsis,
+
+              maxLines: 1,
+
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: ProfileTheme.primaryGreenDark,
+              ),
             ),
           ),
         ],

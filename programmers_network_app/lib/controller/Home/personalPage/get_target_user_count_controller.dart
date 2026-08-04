@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+
 import 'package:programmers_network_app/data/models/Home/personalPage/get_other_user_profile_model.dart';
 import 'package:programmers_network_app/data/models/Home/personalPage/get_target_user_count_model.dart';
 import 'package:programmers_network_app/data/services/Home/personalPage/get_target_user_count_services.dart';
@@ -97,5 +98,11 @@ class GetTargetUserCountController extends GetxController {
     if (userProfile.value == null) return;
 
     userProfile.value = userProfile.value!.copyWith(followStatus: value);
+  }
+
+  void setMute(bool value) {
+    if (userProfile.value == null) return;
+
+    userProfile.value = userProfile.value!.copyWith(isMuted: value);
   }
 }

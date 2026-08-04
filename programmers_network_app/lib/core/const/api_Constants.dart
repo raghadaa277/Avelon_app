@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String baseurl = "https://b83e-185-132-176-182.ngrok-free.app";
+  static const String baseurl = "https://e7d2-93-88-156-51.ngrok-free.app";
   static const String login = "/api/mobile/login";
   static const String register = "/api/register";
   static const String resendtoken = "/api/resend/verification/link";
@@ -42,6 +42,9 @@ class ApiConstants {
   static const String getFollows = "/api/get";
   static const String toggleCloseFriend = "/api/toggle/close/friend";
   static const String getMyCloseFriends = "/api/get/my/close/friends";
+  static const String toggleMute = "/api/toggle/mute";
+  static const String userFlag = "/api/flag/user";
+  static const String recordProfileView = "/api/record/profile/view";
 
   //Zenab
   static const String userProfile = "/api/get/user/profile";
