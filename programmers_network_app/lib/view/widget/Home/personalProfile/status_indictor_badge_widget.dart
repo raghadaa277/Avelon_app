@@ -143,14 +143,15 @@ class StatusIndicatorRow extends StatelessWidget {
 
     if (badges.isEmpty) return const SizedBox.shrink();
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (int i = 0; i < badges.length; i++) ...[
-          if (i > 0) const SizedBox(width: 4),
-          badges[i],
-        ],
-      ],
-    );
+    // return Row(
+    //   mainAxisSize: MainAxisSize.min,
+    //   children: [
+    //     for (int i = 0; i < badges.length; i++) ...[
+    //       if (i > 0) const SizedBox(width: 4),
+    //       badges[i],
+    //     ],
+    //   ],
+    // );
+    return Wrap(spacing: 4, runSpacing: 4, children: badges);
   }
 }
