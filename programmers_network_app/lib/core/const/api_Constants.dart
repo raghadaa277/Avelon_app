@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String baseurl = "https://e7d2-93-88-156-51.ngrok-free.app";
+  static const String baseurl = "https://45e8-169-150-218-131.ngrok-free.app";
   static const String login = "/api/mobile/login";
   static const String register = "/api/register";
   static const String resendtoken = "/api/resend/verification/link";
@@ -45,13 +45,29 @@ class ApiConstants {
   static const String toggleMute = "/api/toggle/mute";
   static const String userFlag = "/api/flag/user";
   static const String recordProfileView = "/api/record/profile/view";
+  static const String mutualFollowers = "/api/mutual/followers";
+  static const String connentionAnalysis = "/api/connection/analysis";
+  static const String getTargetUserPost = "/api/get/target/user/posts";
+  static const String getTargetUserSkills = "/api/get/target/user/skills";
 
   //Zenab
   static const String userProfile = "/api/get/user/profile";
   static const String updateProfile = "/api/update/user/profile";
-  static const String getPrivacySettings = "/api/get/user/privacy/settings";
+  static const String getPrivacySettings = "/api/get/user/pivacy/setting";
   static const String updatePrivacySettings =
-      "/api/update/user/privacy/settings";
+      "/api/assign/user/privacy/setting";
   static const String updateAvatar = "/api/update/avatar";
   static const String removeAvatar = "/api/remove/avatar";
+  static const String getUserSkills = "/api/get/user/skills";
+  static const String addUserSkill = "/api/create/user/skill";
+  static const String deleteUserSkill = "/api/delete/user/skill/";
+  static const String getCloseFriends = "/api/get/my/close/friends";
+  static const String getCloseFriendsHistory = "/api/get/close/friends/history";
+  static const String toggleFollow = "/api/toggle/following/";
+  static const String getFollowers = "/api/get/";
+  static const String getFollowHistory = "/api/get/follow/history/";
+  static const String toggleMuteUser = "/api/toggle/mute/";
+  static const String getMutedUsers = "/api/get/my/muted/users";
+  static const String getMutedUserHistoryMy = "/api/get/muted/user/history/my";
+  static const String getMutedUserHistoryBy = "/api/get/muted/user/history/by";
 }

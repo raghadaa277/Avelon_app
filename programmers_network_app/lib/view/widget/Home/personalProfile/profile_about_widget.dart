@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:programmers_network_app/view/widget/Home/personalProfile/profile_theme_widget.dart';
 
 class ProfileAboutSectionWidget extends StatelessWidget {
@@ -53,45 +54,71 @@ class ProfileAboutSectionWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SectionTitle(icon: Icons.person_outline, text: 'About'),
+          const _SectionTitle(
+            icon: HugeIcons.strokeRoundedUserCircle,
+            text: 'About',
+            color: Color(0xff6366F1),
+          ),
           const SizedBox(height: 8),
           _InfoRow(
-            icon: Icons.school_outlined,
+            icon: HugeIcons.strokeRoundedSchool,
+            iconColor: Color(0xff2563EB),
             label: 'Education',
             value: educationStatus,
           ),
           _InfoRow(
-            icon: Icons.account_balance_outlined,
+            icon: HugeIcons.strokeRoundedUniversity,
+            iconColor: const Color(0xff7C3AED),
             label: 'University',
             value: university,
           ),
-          _InfoRow(icon: Icons.edit_note, label: 'Major', value: major),
           _InfoRow(
-            icon: Icons.calendar_today_outlined,
+            icon: HugeIcons.strokeRoundedBookOpen01,
+            iconColor: const Color(0xff0891B2),
+            label: 'Major',
+            value: major,
+          ),
+          _InfoRow(
+            icon: HugeIcons.strokeRoundedCalendar03,
+            iconColor: const Color(0xffF59E0B),
             label: 'Study Year',
             value: studyYear,
           ),
           const Divider(height: 24, color: ProfileTheme.divider),
-          _InfoRow(icon: Icons.public, label: 'Country', value: country),
-          _InfoRow(icon: Icons.location_city, label: 'City', value: city),
+          _InfoRow(
+            icon: HugeIcons.strokeRoundedGlobe02,
+            iconColor: const Color(0xff16A34A),
+            label: 'Country',
+            value: country,
+          ),
+          _InfoRow(
+            icon: HugeIcons.strokeRoundedLocation01,
+            iconColor: const Color(0xffEF4444),
+            label: 'City',
+            value: city,
+          ),
           const Divider(height: 24, color: ProfileTheme.divider),
           _InfoRow(
-            icon: Icons.workspace_premium_outlined,
+            icon: HugeIcons.strokeRoundedBrain02,
+            iconColor: const Color(0xff9333EA),
             label: 'Specialization',
             value: specialization,
           ),
           _InfoRow(
-            icon: Icons.badge_outlined,
+            icon: HugeIcons.strokeRoundedBriefcase01,
+            iconColor: const Color(0xffEA580C),
             label: 'Job Title',
             value: jobTitle,
           ),
           _InfoRow(
-            icon: Icons.apartment_outlined,
+            icon: HugeIcons.strokeRoundedOffice,
+            iconColor: const Color(0xff0F766E),
             label: 'Company',
             value: company,
           ),
           _InfoRow(
-            icon: Icons.timeline_outlined,
+            icon: HugeIcons.strokeRoundedAnalytics01,
+            iconColor: const Color(0xff0284C7),
             label: 'Experience',
             value: experienceYears != null ? '$experienceYears years' : null,
           ),
@@ -123,15 +150,28 @@ class ProfileAboutSectionWidget extends StatelessWidget {
 }
 
 class _SectionTitle extends StatelessWidget {
-  final IconData icon;
+  final List<List> icon;
+  final Color color;
+
+  const _SectionTitle({
+    required this.icon,
+    required this.text,
+    required this.color,
+  });
   final String text;
-  const _SectionTitle({required this.icon, required this.text});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: ProfileTheme.textDark),
+        Container(
+          padding: const EdgeInsets.all(7),
+          decoration: BoxDecoration(
+            color: color.withOpacity(.12),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: HugeIcon(icon: icon, size: 18, color: color),
+        ),
         const SizedBox(width: 8),
         Text(
           text,
@@ -147,13 +187,15 @@ class _SectionTitle extends StatelessWidget {
 }
 
 class _InfoRow extends StatelessWidget {
-  final IconData icon;
+  final List<List> icon;
+  final Color iconColor;
   final String label;
   final String? value;
   const _InfoRow({
     required this.icon,
     required this.label,
     required this.value,
+    required this.iconColor,
   });
 
   @override
@@ -163,7 +205,14 @@ class _InfoRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: ProfileTheme.textGrey),
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(.12),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: HugeIcon(icon: icon, size: 16, color: iconColor),
+          ),
           const SizedBox(width: 10),
           Expanded(
             flex: 4,
@@ -205,21 +254,27 @@ class _LinksCard extends StatelessWidget {
         children: [
           const Row(
             children: [
-              Icon(Icons.link, size: 15, color: ProfileTheme.textDark),
+              HugeIcon(
+                icon: HugeIcons.strokeRoundedLink01,
+                size: 16,
+                color: const Color(0xff3B82F6),
+              ),
               SizedBox(width: 6),
               Text('Links', style: TextStyle(fontWeight: FontWeight.w700)),
             ],
           ),
           const SizedBox(height: 10),
           _LinkTile(
-            icon: Icons.code,
+            icon: HugeIcons.strokeRoundedGithub,
+            iconColor: Colors.black87,
             label: 'GitHub',
             url: githubUrl,
             onTap: onOpenLink,
           ),
           const SizedBox(height: 8),
           _LinkTile(
-            icon: Icons.business_center,
+            icon: HugeIcons.strokeRoundedLinkedin02,
+            iconColor: const Color(0xff0A66C2),
             label: 'LinkedIn',
             url: linkedinUrl,
             onTap: onOpenLink,
@@ -231,15 +286,18 @@ class _LinksCard extends StatelessWidget {
 }
 
 class _LinkTile extends StatelessWidget {
-  final IconData icon;
+  final List<List> icon;
   final String label;
   final String? url;
   final ValueChanged<String>? onTap;
+  final Color iconColor;
+
   const _LinkTile({
     required this.icon,
     required this.label,
     this.url,
     this.onTap,
+    required this.iconColor,
   });
 
   @override
@@ -249,10 +307,14 @@ class _LinkTile extends StatelessWidget {
       onTap: hasUrl ? () => onTap?.call(url!) : null,
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 12,
-            backgroundColor: Colors.black87,
-            child: Icon(icon, size: 13, color: Colors.white),
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: HugeIcon(icon: icon, color: iconColor, size: 18),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -303,10 +365,10 @@ class _StatusCard extends StatelessWidget {
         children: [
           const Row(
             children: [
-              Icon(
-                Icons.shield_outlined,
+              HugeIcon(
+                icon: HugeIcons.strokeRoundedShield01,
                 size: 15,
-                color: ProfileTheme.textDark,
+                color: const Color(0xff10B981),
               ),
               SizedBox(width: 6),
               Text('Status', style: TextStyle(fontWeight: FontWeight.w700)),
@@ -339,8 +401,10 @@ class _StatusRow extends StatelessWidget {
               style: ProfileTheme.subtleStyle.copyWith(fontSize: 12),
             ),
           ),
-          Icon(
-            value ? Icons.circle : Icons.circle_outlined,
+          HugeIcon(
+            icon: value
+                ? HugeIcons.strokeRoundedCheckmarkCircle02
+                : HugeIcons.strokeRoundedCancelCircle,
             size: 8,
             color: value ? ProfileTheme.primaryGreen : ProfileTheme.textGrey,
           ),

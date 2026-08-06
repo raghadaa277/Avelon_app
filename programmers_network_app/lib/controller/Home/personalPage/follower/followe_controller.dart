@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:programmers_network_app/core/helper/api_error_dialog.dart';
 import 'package:programmers_network_app/data/models/Home/personalPage/follower/get_follows_model.dart';
 import 'package:programmers_network_app/data/services/Home/personalPage/follower/followe_services.dart';
 
@@ -55,9 +56,10 @@ class FolloweController extends GetxController {
         Get.snackbar("Error", result.message);
       }
     } catch (e) {
-      errorMessage.value = e.toString();
+      errorMessage.value = e.toString().replaceFirst("Exception: ", "");
 
-      Get.snackbar("Error", errorMessage.value);
+      ApiErrorDialog.show(errorMessage.value);
+
       return null;
     } finally {
       isLoading.value = false;

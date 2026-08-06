@@ -8,8 +8,8 @@ class UserHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.all(26),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(25),
@@ -24,15 +24,16 @@ class UserHeaderCard extends StatelessWidget {
                   CircleAvatar(
                     radius: 60,
                     backgroundColor: const Color(0xFFEFEFEF),
-                    backgroundImage: data.avatarFullUrl != null
+                    // ⭕ الفحص يتأكد أن الرابط ليس null وليس نصاً فارغاً
+                    backgroundImage: (data.avatarFullUrl != null && data.avatarFullUrl!.trim().isNotEmpty)
                         ? NetworkImage(data.avatarFullUrl!)
                         : null,
-                    child: data.avatarFullUrl == null
+                    child: (data.avatarFullUrl == null || data.avatarFullUrl!.trim().isEmpty)
                         ? const Icon(Icons.person, size: 40, color: Colors.grey)
                         : null,
                   ),
                   Positioned(
-                    bottom: 6,
+                    bottom: 4,
                     right: 6,
                     child: Container(
                       padding: const EdgeInsets.all(1.5),
@@ -49,7 +50,7 @@ class UserHeaderCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 7),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,12 +58,12 @@ class UserHeaderCard extends StatelessWidget {
                     Text(
                       data.fullName,
                       style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 13,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 12),
                     Text(
                       '@${data.username}',
                       style: TextStyle(
@@ -71,26 +72,37 @@ class UserHeaderCard extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 2,
-                        vertical: 8,
+                        horizontal: 10,
+                        vertical: 6,
                       ),
                       decoration: BoxDecoration(
                         color: const Color(0xffB8FF1A).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: Text(
-                        data.specialization,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.code_rounded,
+                            size: 14,
+                            color: Colors.black87,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            data.specialization,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 12),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -99,7 +111,7 @@ class UserHeaderCard extends StatelessWidget {
                           color: Colors.grey[400],
                           size: 14,
                         ),
-                        const SizedBox(width: 1),
+                        const SizedBox(width: 3),
                         Text(
                           '${data.city}, ${data.country}',
                           style: TextStyle(
@@ -110,15 +122,30 @@ class UserHeaderCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      data.bio,
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 11,
-                        height: 2,
-                      ),
+                    const SizedBox(height: 12),
+
+
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.article_outlined,
+                          color: Colors.grey[400],
+                          size: 14,
+                        ),
+                        const SizedBox(width: 3),
+                        Flexible(
+                          child: Text(
+                            data.bio,
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 11,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

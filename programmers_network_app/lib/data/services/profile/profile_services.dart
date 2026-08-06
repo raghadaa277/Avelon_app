@@ -5,6 +5,7 @@ import 'package:programmers_network_app/core/storage/api_client.dart';
 import 'package:programmers_network_app/core/storage/token_storage.dart';
 import '../../models/Profile/AvatarActionResponseModel.dart';
 import '../../models/Profile/UpdateProfileResponse.dart';
+import '../../models/Profile/UserSkillModel.dart';
 import '../../models/Profile/profile_model.dart';
 
 class ProfileServices {
@@ -204,6 +205,98 @@ class ProfileServices {
       }
     } catch (e) {
       throw Exception(e.toString());
+    }
+  }
+
+  Future<Map<String, dynamic>?> addUserSkill({
+    required String name,
+    required String level,
+  }) async {
+    final token = await TokenStorage.getToken();
+    if (token == null) {
+      await TokenStorage.clearTokens();
+      return null;
+    }
+    try {
+      final Map<String, dynamic> bodyData = {
+        'skill': name,
+        'level': level.toLowerCase(),
+      };
+
+      final response = await profileApi.post(
+        ApiConstants.addUserSkill,
+        body: bodyData,
+      );
+
+      print("📡 ADD SKILL STATUS => ${response.statusCode}");
+      print("📡 ADD SKILL BODY => ${response.body}");
+
+      final decodedResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return decodedResponse as Map<String, dynamic>;
+      } else {
+        throw Exception(
+          decodedResponse['message'] ?? 'Failed to add skill',
+        );
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<Map<String, dynamic>?> deleteUserSkill({
+    required String skillId,
+  }) async {
+    final token = await TokenStorage.getToken();
+    if (token == null) {
+      await TokenStorage.clearTokens();
+      return null;
+    }
+
+    try {
+      final response = await profileApi.post(
+        "${ApiConstants.deleteUserSkill}$skillId",
+        body: {},
+      );
+      print("📡 DELETE SKILL STATUS => ${response.statusCode}");
+      print("📡 DELETE SKILL BODY => ${response.body}");
+
+      final decodedResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return decodedResponse as Map<String, dynamic>;
+      } else {
+        throw Exception(
+          decodedResponse['message'] ?? 'Failed to delete skill',
+        );
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+
+  Future<List<UserSkillModel>> getUserSkills() async {
+    final token = await TokenStorage.getToken();
+    if (token == null) return [];
+
+    try {
+      final response = await profileApi.get(ApiConstants.getUserSkills);
+
+      print("📡 GET SKILLS STATUS => ${response.statusCode}");
+      print("📡 GET SKILLS BODY => ${response.body}");
+
+      final decodedResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200 && decodedResponse['success'] == true) {
+        final List listData = decodedResponse['data'] ?? [];
+        return listData.map((item) => UserSkillModel.fromJson(item)).toList();
+      }
+      return [];
+    } catch (e) {
+      print("❌ Exception in getUserSkills: $e");
+      return [];
     }
   }
 }

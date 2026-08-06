@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:programmers_network_app/core/helper/api_error_dialog.dart';
 import 'package:programmers_network_app/data/services/Home/personalPage/mute/mute_services.dart';
 
 enum MuteAction { muted, unmuted }
@@ -40,9 +41,9 @@ class MuteController extends GetxController {
 
       return null;
     } catch (e) {
-      errorMessage.value = e.toString();
+      errorMessage.value = e.toString().replaceFirst("Exception: ", "");
 
-      Get.snackbar("Error", errorMessage.value);
+      ApiErrorDialog.show(errorMessage.value);
 
       return null;
     } finally {

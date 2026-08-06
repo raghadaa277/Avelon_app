@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:programmers_network_app/core/helper/api_error_dialog.dart';
 import 'package:programmers_network_app/data/models/Home/personalPage/closeFriends/get_my_close_friends_model.dart';
 import 'package:programmers_network_app/data/services/Home/personalPage/closeFreinds/close_friend_services.dart';
 
@@ -48,7 +49,9 @@ class CloseFriendsController extends GetxController {
         errorMessage.value = result.message;
       }
     } catch (e) {
-      errorMessage.value = e.toString();
+      errorMessage.value = e.toString().replaceFirst("Exception: ", "");
+
+      ApiErrorDialog.show(errorMessage.value);
     } finally {
       isLoadingList.value = false;
     }
@@ -83,7 +86,9 @@ class CloseFriendsController extends GetxController {
       }
       return null;
     } catch (e) {
-      errorMessage.value = e.toString();
+      errorMessage.value = e.toString().replaceFirst("Exception: ", "");
+
+      ApiErrorDialog.show(errorMessage.value);
 
       return null;
     } finally {

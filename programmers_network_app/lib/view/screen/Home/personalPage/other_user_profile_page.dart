@@ -4,11 +4,15 @@ import 'package:programmers_network_app/controller/Home/personalPage/closeFriend
 import 'package:programmers_network_app/controller/Home/personalPage/follower/followe_controller.dart';
 import 'package:programmers_network_app/controller/Home/personalPage/get_target_user_count_controller.dart';
 import 'package:programmers_network_app/controller/Home/personalPage/mute/mute_controller.dart';
+import 'package:programmers_network_app/controller/Home/personalPage/mutualFollowers/mutual_followers_controller.dart';
 import 'package:programmers_network_app/controller/Home/personalPage/profile_view_controller.dart';
 import 'package:programmers_network_app/controller/Home/personalPage/user%20Flag/user_flag_controller.dart';
 import 'package:programmers_network_app/core/const/color_const.dart';
+import 'package:programmers_network_app/view/screen/Home/personalPage/connection_analysis_page.dart';
 import 'package:programmers_network_app/view/screen/Home/personalPage/followers_page.dart';
+import 'package:programmers_network_app/view/screen/Home/personalPage/mutual_followers_page.dart';
 import 'package:programmers_network_app/view/screen/Home/personalPage/report_page.dart';
+import 'package:programmers_network_app/view/widget/Home/personalProfile/other_user_post_tap_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/personalProfile/profile_about_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/personalProfile/profile_action_buttons_widget.dart';
 
@@ -33,6 +37,7 @@ class _OtherUserProfilePageState extends State<OtherUserProfilePage>
   late final TabController _tabController;
 
   late final ProfileViewController profileViewController;
+  late final MutualFollowersController mutualFollowers;
 
   @override
   void initState() {
@@ -50,6 +55,8 @@ class _OtherUserProfilePageState extends State<OtherUserProfilePage>
     profileViewController = Get.put(ProfileViewController());
 
     muteController = Get.put(MuteController());
+
+    // mutualFollowers = Get.put(MutualFollowersController());
 
     Get.put(UserFlagController());
 
@@ -139,6 +146,23 @@ class _OtherUserProfilePageState extends State<OtherUserProfilePage>
                     }
                     break;
 
+                  case SettingAction.mutual:
+                    Get.to(
+                      () => MutualFollowersPage(
+                        targetUserId: widget.targetUserId,
+                      ),
+                    );
+
+                    break;
+
+                  case SettingAction.connection:
+                    Get.to(
+                      () => ConnectionAnalysisPage(
+                        targetUserId: widget.targetUserId,
+                      ),
+                    );
+
+                    break;
                   case SettingAction.report:
                     Get.to(() => ReportUserPage(userId: widget.targetUserId));
                     break;
@@ -317,7 +341,7 @@ class _OtherUserProfilePageState extends State<OtherUserProfilePage>
             body: TabBarView(
               controller: _tabController,
               children: [
-                const Center(child: Text('Posts grid goes here')),
+                OtherUserPostsTab(targetUserId: widget.targetUserId),
                 SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
                   child: ProfileAboutSectionWidget(

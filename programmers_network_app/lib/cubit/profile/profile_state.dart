@@ -33,3 +33,12 @@ class AvatarActionFailure extends ProfileState {
   final String message;
   AvatarActionFailure(this.message);
 }
+class SkillOperationLoading extends ProfileState {}
+class SkillOperationSuccess extends ProfileState {
+  final String message;
+  SkillOperationSuccess(this.message);
+}
+class SkillOperationError extends ProfileState {
+  final String error;
+  SkillOperationError(this.error);
+}

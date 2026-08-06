@@ -4,7 +4,6 @@ import '../../../cubit/profile/profile_cubit.dart';
 import '../../../cubit/profile/profile_state.dart';
 import '../../../data/models/Profile/profile_model.dart';
 import 'EditPhotoScreen.dart';
-import 'package:programmers_network_app/view/widget/auth/snackBar_controller_widget.dart'; // 👈 استيراد التنبيه الشفاف
 
 class EditInformationScreen extends StatefulWidget {
   final ProfileData profileData;
@@ -31,6 +30,7 @@ class _EditInformationScreenState extends State<EditInformationScreen> {
   late TextEditingController _githubController;
   late TextEditingController _linkedinController;
   bool _isUpdating = false;
+
   // Dropdown States
   String? _educationStatus;
   String? _studyYear;
@@ -104,30 +104,35 @@ class _EditInformationScreenState extends State<EditInformationScreen> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
     return BlocConsumer<ProfileCubit, ProfileState>(
-
-      listenWhen: (previous, current) => previous is ProfileLoading,
+      listenWhen: (previous, current) => _isUpdating,
       listener: (context, state) {
-        if (_isUpdating) {
-          if (state is ProfileLoaded) {
+        if (state is ProfileLoaded) {
+          setState(() {
             _isUpdating = false;
-            showSnackbar(
-              title: "Success",
-              message: "Profile updated successfully",
-            );
-            Navigator.of(context).pop();
-          } else if (state is ProfileError) {
-            setState(() {
-              _isUpdating = false;
-            });
-            showSnackbar(
-              title: "Update Failed",
-              message: state.errorMessage,
-              isError: true,
-            );
-          }
+          });
+          // 🟢 رسالة النجاح مطابقة لأسلوب شاشة المهارات
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Profile updated successfully"),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+          Navigator.of(context).pop();
+        } else if (state is ProfileError) {
+          setState(() {
+            _isUpdating = false;
+          });
+          // 🔴 رسالة الخطأ مطابقة لأسلوب شاشة المهارات والباك إند
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.errorMessage),
+              backgroundColor: Colors.redAccent,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
         }
       },
       builder: (context, state) {
@@ -246,11 +251,11 @@ class _EditInformationScreenState extends State<EditInformationScreen> {
                               _studyYear,
                               [
                                 "school",
-                                "first year",
-                                "second year",
-                                "third year",
-                                "fourth year",
-                                "fifth year",
+                                "first_year",
+                                "second_year",
+                                "third_year",
+                                "fourth_year",
+                                "fifth_year",
                                 "graduated",
                                 "not studying",
                               ],
@@ -403,7 +408,10 @@ class _EditInformationScreenState extends State<EditInformationScreen> {
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
           value: items.contains(value) ? value : null,
-          items: items.map((e) => DropdownMenuItem(value: e, child: Text(e, style: const TextStyle(fontSize: 13)))).toList(),
+          items: items.map((e) => DropdownMenuItem(
+              value: e,
+              child: Text(e.replaceAll('_', ' '), style: const TextStyle(fontSize: 13))
+          )).toList(),
           onChanged: onChanged,
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/models/Profile/profile_model.dart';
+import '../../data/models/Profile/UserSkillModel.dart';
 import '../../data/services/profile/profile_services.dart';
 import 'profile_state.dart';
 
@@ -13,21 +14,26 @@ class ProfileCubit extends Cubit<ProfileState> {
   UserProfileModel? _cachedProfile;
   int _activeTabIndex = 0;
 
-
+  List<UserSkillModel> userSkills = [];
   Future<void> fetchProfile() async {
     emit(ProfileLoading());
     try {
       _cachedProfile = await profileServices.getUserProfile();
+      userSkills = await profileServices.getUserSkills();
       final prefs = await SharedPreferences.getInstance();
       if (_cachedProfile!.profileCompletion != null) {
         await prefs.setString(
-            'profile_completion', _cachedProfile!.profileCompletion!);
+          'profile_completion',
+          _cachedProfile!.profileCompletion!,
+        );
       }
 
-      emit(ProfileLoaded(
-        profileModel: _cachedProfile!,
-        activeTabIndex: _activeTabIndex,
-      ));
+      emit(
+        ProfileLoaded(
+          profileModel: _cachedProfile!,
+          activeTabIndex: _activeTabIndex,
+        ),
+      );
     } catch (e) {
       emit(ProfileError(errorMessage: e.toString()));
     }
@@ -36,10 +42,12 @@ class ProfileCubit extends Cubit<ProfileState> {
   void changeTab(int index) {
     _activeTabIndex = index;
     if (_cachedProfile != null) {
-      emit(ProfileLoaded(
-        profileModel: _cachedProfile!,
-        activeTabIndex: _activeTabIndex,
-      ));
+      emit(
+        ProfileLoaded(
+          profileModel: _cachedProfile!,
+          activeTabIndex: _activeTabIndex,
+        ),
+      );
     }
   }
 
@@ -60,7 +68,6 @@ class ProfileCubit extends Cubit<ProfileState> {
     required String? githubUrl,
     required String? linkedinUrl,
   }) async {
-
     emit(ProfileLoading());
 
     try {
@@ -83,23 +90,29 @@ class ProfileCubit extends Cubit<ProfileState> {
       );
 
       if (responseModel != null && responseModel.success) {
-
         await fetchProfile();
       } else {
-        emit(ProfileError(
-            errorMessage: "Failed to update profile: Response is empty"));
+        emit(
+          ProfileError(
+            errorMessage: "Failed to update profile: Response is empty",
+          ),
+        );
       }
     } catch (e) {
-      emit(ProfileError(
-          errorMessage: "Failed to update profile: ${e.toString()}"));
+      emit(
+        ProfileError(errorMessage: "Failed to update profile: ${e.toString()}"),
+      );
 
       if (_cachedProfile != null) {
-        emit(ProfileLoaded(
-            profileModel: _cachedProfile!, activeTabIndex: _activeTabIndex));
+        emit(
+          ProfileLoaded(
+            profileModel: _cachedProfile!,
+            activeTabIndex: _activeTabIndex,
+          ),
+        );
       }
     }
   }
-
 
   Future<void> updateAvatar(File imageFile) async {
     emit(AvatarUploading());
@@ -111,13 +124,14 @@ class ProfileCubit extends Cubit<ProfileState> {
 
         await fetchProfile();
       } else {
-        emit(AvatarActionFailure(response?.message ?? "Failed to update avatar"));
+        emit(
+          AvatarActionFailure(response?.message ?? "Failed to update avatar"),
+        );
       }
     } catch (e) {
       emit(AvatarActionFailure(e.toString()));
     }
   }
-
 
   Future<void> removeAvatar() async {
     emit(AvatarRemoving());
@@ -129,10 +143,86 @@ class ProfileCubit extends Cubit<ProfileState> {
 
         await fetchProfile();
       } else {
-        emit(AvatarActionFailure(response?.message ?? "Failed to remove avatar"));
+        emit(
+          AvatarActionFailure(response?.message ?? "Failed to remove avatar"),
+        );
       }
     } catch (e) {
       emit(AvatarActionFailure(e.toString()));
+    }
+  }
+
+  Future<void> addSkill({required String name, required String level}) async {
+    emit(SkillOperationLoading());
+    try {
+      final String lowerLevel = level.toLowerCase();
+      final responseData = await profileServices.addUserSkill(
+        name: name,
+        level: lowerLevel,
+      );
+
+      if (responseData != null && responseData['success'] == true) {
+        // 🚀 سحب المهارات مجدداً بالـ IDs الحقيقية من السيرفر
+        userSkills = await profileServices.getUserSkills();
+
+        emit(
+          SkillOperationSuccess(
+            responseData['message'] ?? "Skill added successfully.",
+          ),
+        );
+        // _resetToLoaded();
+      } else {
+        emit(
+          SkillOperationError(
+            responseData?['message'] ?? "Failed to add skill.",
+          ),
+        );
+        //  _resetToLoaded();
+      }
+    } catch (e) {
+      emit(SkillOperationError("Server connection error. Please try again."));
+      // _resetToLoaded();
+    }
+  }
+
+  // دالة حذف مهارة باستخدام الـ ID الحقيقي من الباك إند
+  Future<void> deleteSkill({required String skillId}) async {
+    emit(SkillOperationLoading());
+    try {
+      final responseData = await profileServices.deleteUserSkill(
+        skillId: skillId,
+      );
+
+      if (responseData != null && responseData['success'] == true) {
+        // 🚀 سحب المهارات مجدداً لتحديث الواجهة فوراً بعد الحذف الناجح
+        userSkills = await profileServices.getUserSkills();
+
+        emit(
+          SkillOperationSuccess(
+            responseData['message'] ?? "Skill deleted successfully.",
+          ),
+        );
+        //  _resetToLoaded();
+      } else {
+        emit(
+          SkillOperationError(responseData?['message'] ?? "Skill not found."),
+        );
+        _resetToLoaded();
+      }
+    } catch (e) {
+      emit(SkillOperationError("Failed to delete skill."));
+      // _resetToLoaded();
+    }
+  }
+
+  void _resetToLoaded() {
+    if (_cachedProfile != null) {
+      emit(
+        ProfileLoaded(
+          profileModel: _cachedProfile!,
+          activeTabIndex: _activeTabIndex,
+        ),
+      );
     }
   }
 }

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../data/models/Profile/profile_model.dart';
+import '../../../cubit/profile/profile_cubit.dart';
+import '../../../cubit/profile/profile_state.dart';
+import 'AddSkillPage.dart';
 
 class PostsTabContent extends StatelessWidget {
   final bool isActive;
-  const PostsTabContent({
-    super.key,
-    required this.isActive,
-    required ProfileData profileData,
-  });
+  const PostsTabContent({super.key, required this.isActive});
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +40,10 @@ class AboutTabContent extends StatelessWidget {
 
   Future<void> _launchURL(BuildContext context, String? urlString) async {
     if (urlString == null || urlString.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Link not available")));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Link not available")),
+      );
       return;
     }
     final Uri url = Uri.parse(urlString);
@@ -53,9 +54,10 @@ class AboutTabContent extends StatelessWidget {
         throw 'Could not launch $urlString';
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Could not open link: $e")));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Could not open link: $e")),
+      );
     }
   }
 
@@ -107,9 +109,7 @@ class AboutTabContent extends StatelessWidget {
               'icon': Icons.layers_outlined,
             },
             {
-              'label': data.studyYear == "fourth_year"
-                  ? "Year 4"
-                  : data.studyYear,
+              'label': data.studyYear == "fourth_year" ? "Year 4" : data.studyYear,
               'icon': Icons.timeline,
             },
           ],
@@ -177,16 +177,13 @@ class AboutTabContent extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ],
           ),
           const Divider(height: 24, color: Color(0xFFF1FDE1)),
           ...items.map(
-            (item) => Padding(
+                (item) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Row(
                 children: [
@@ -251,113 +248,198 @@ class AboutTabContent extends StatelessWidget {
   }
 }
 
+
 class SkillsTabContent extends StatelessWidget {
   final bool isActive;
   const SkillsTabContent({super.key, required this.isActive});
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> dummySkills = [
-      {'name': 'Laravel', 'level': 'Expert'},
-      {'name': 'PHP', 'level': 'Expert'},
-      {'name': 'JavaScript', 'level': 'Advanced'},
-      {'name': 'Vue.js', 'level': 'Advanced'},
-      {'name': 'MySQL', 'level': 'Advanced'},
-      {'name': 'Git', 'level': 'Intermediate'},
-    ];
+    return BlocConsumer<ProfileCubit, ProfileState>(
+      listener: (context, state) {
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                "My Skills",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.add, size: 14, color: Colors.black),
-                label: const Text(
-                  "Add Skill",
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xffB8FF1A),
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-            ],
+        if (state is ProfileError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.errorMessage),
+              backgroundColor: Colors.redAccent,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+
+
+        if (state is SkillOperationError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.error),
+              backgroundColor: Colors.redAccent,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+
+
+        if (state is SkillOperationSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        final cubit = BlocProvider.of<ProfileCubit>(context);
+
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
           ),
-          const SizedBox(height: 16),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: dummySkills.length,
-            separatorBuilder: (context, index) =>
-                const Divider(height: 20, color: Color(0xFFF1FDE1)),
-            itemBuilder: (context, index) {
-              final skill = dummySkills[index];
-              return Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(Icons.blur_circular, size: 18, color: Colors.grey),
-                  const SizedBox(width: 12),
-                  Text(
-                    skill['name']!,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
+                  const Text(
+                    "My Skills",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
                   ),
-                  const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF1FDE1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      skill['level']!,
-                      style: const TextStyle(
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BlocProvider.value(
+                            value: BlocProvider.of<ProfileCubit>(context),
+                            child: const AddSkillPage(),
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.add, size: 14, color: Colors.black),
+                    label: const Text(
+                      "Add Skill",
+                      style: TextStyle(
                         fontSize: 11,
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xffB8FF1A),
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  const Icon(Icons.more_horiz, size: 16, color: Colors.grey),
                 ],
-              );
-            },
+              ),
+              const SizedBox(height: 16),
+
+
+              if (state is SkillOperationLoading)
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 12.0),
+                  child: LinearProgressIndicator(
+                    color: Color(0xffB8FF1A),
+                    backgroundColor: Color(0xFFF1FDE1),
+                  ),
+                ),
+
+              cubit.userSkills.isEmpty
+                  ? const Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: Text(
+                    "No skills added yet.",
+                    style: TextStyle(color: Colors.grey, fontSize: 13),
+                  ),
+                ),
+              )
+                  : ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: cubit.userSkills.length,
+                separatorBuilder: (context, index) =>
+                const Divider(height: 20, color: Color(0xFFF1FDE1)),
+                itemBuilder: (context, index) {
+                  final skill = cubit.userSkills[index];
+
+                  String displayLevel = 'Expert';
+                  if (skill.level.isNotEmpty) {
+                    displayLevel = skill.level[0].toUpperCase() + skill.level.substring(1);
+                  }
+
+                  return Row(
+                    children: [
+                      const Icon(Icons.blur_circular, size: 18, color: Colors.grey),
+                      const SizedBox(width: 12),
+
+                      Text(
+                        skill.skillName,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const Spacer(),
+
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF1FDE1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          displayLevel,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xff558B00),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+
+                      GestureDetector(
+                        onTap: state is SkillOperationLoading
+                            ? null
+                            : () {
+                          cubit.deleteSkill(skillId: skill.id.toString());
+                        },
+                        child: Icon(
+                          Icons.delete_outline,
+                          size: 20,
+                          color: state is SkillOperationLoading
+                              ? Colors.grey
+                              : Colors.redAccent,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

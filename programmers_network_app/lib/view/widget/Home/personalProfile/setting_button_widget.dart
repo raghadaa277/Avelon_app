@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 
-enum SettingAction { closeFriend, mute, report }
+enum SettingAction { closeFriend, mute, report, mutual, connection }
 
 class SettingButtonWidget extends StatefulWidget {
   final bool isCloseFriend;
@@ -60,6 +60,36 @@ class _SettingButtonWidgetState extends State<SettingButtonWidget> {
               ),
               const SizedBox(width: 10),
               Text(widget.isMuted ? "Unmute User" : "Mute User"),
+            ],
+          ),
+        ),
+
+        PopupMenuItem(
+          value: SettingAction.mutual,
+          child: Row(
+            children: [
+              HugeIcon(
+                icon: HugeIcons.strokeRoundedUserGroup,
+                size: 20,
+                color: Colors.lightBlueAccent,
+              ),
+              const SizedBox(width: 10),
+              Text("Mutual Followers"),
+            ],
+          ),
+        ),
+
+        PopupMenuItem(
+          value: SettingAction.connection,
+          child: Row(
+            children: [
+              HugeIcon(
+                icon: HugeIcons.strokeRoundedAnalytics01,
+                size: 20,
+                color: Colors.orangeAccent,
+              ),
+              const SizedBox(width: 10),
+              Text("Connection Analysis"),
             ],
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:programmers_network_app/core/helper/api_error_dialog.dart';
 
 import 'package:programmers_network_app/data/models/Home/personalPage/get_other_user_profile_model.dart';
 import 'package:programmers_network_app/data/models/Home/personalPage/get_target_user_count_model.dart';
@@ -64,7 +65,11 @@ class GetTargetUserCountController extends GetxController {
         errorMessage.value = result.message;
       }
     } catch (e) {
-      errorMessage.value = e.toString();
+      errorMessage.value = e.toString().replaceFirst("Exception: ", "");
+
+      ApiErrorDialog.show(errorMessage.value);
+
+      return null;
     } finally {
       isLoading.value = false;
     }
