@@ -21,6 +21,7 @@ class DataOtherUserProfile {
   final bool isFlagged;
   final bool isMuted;
   final bool isCloseFriend;
+  final bool isBlockedBy;
   final String followStatus;
   final bool isFlaggedBy;
   final bool isMutedBy;
@@ -51,6 +52,7 @@ class DataOtherUserProfile {
     required this.isFlagged,
     required this.isMuted,
     required this.isCloseFriend,
+    required this.isBlockedBy,
     required this.followStatus,
     required this.isFlaggedBy,
     required this.isMutedBy,
@@ -92,6 +94,7 @@ class DataOtherUserProfile {
       isFlagged: isFlagged ?? this.isFlagged,
       isCloseFriendOf: isCloseFriendOf,
       isMutedBy: isMutedBy,
+      isBlockedBy: isBlockedBy,
       isFlaggedBy: isFlaggedBy,
     );
   }
@@ -123,6 +126,7 @@ class DataOtherUserProfile {
       followStatus: json['follow_status'] ?? 'none',
       isFlaggedBy: (json['is_flagged_by'] ?? 0) == 1,
       isMutedBy: (json['is_muted_by'] ?? 0) == 1,
+      isBlockedBy: json['is_blocked_by'] ?? false,
       isCloseFriendOf: (json['is_close_friend_of'] ?? 0) == 1,
       fullName: json['full_name'],
       avatarFullUrl: json['avatar_full_url'],

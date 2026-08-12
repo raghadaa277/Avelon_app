@@ -4,12 +4,11 @@ import 'package:programmers_network_app/data/services/Home/personalPage/profile_
 class ProfileViewController extends GetxController {
   final ProfileViewServices _profileViewServices = ProfileViewServices();
 
-  void recordProfileView(int targetUserId) {
-    _profileViewServices.recordProfileVeiw(targetUserId: targetUserId)
-    // ignore: body_might_complete_normally_catch_error
-    .catchError((e) {
-      // ignore: avoid_print
+  Future<void> recordProfileView(int targetUserId) async {
+    try {
+      await _profileViewServices.recordProfileVeiw(targetUserId: targetUserId);
+    } catch (e) {
       print('recordProfileView failed silently: $e');
-    });
+    }
   }
 }

@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:programmers_network_app/controller/Home/posts/archive_post_controller.dart';
 import 'package:programmers_network_app/controller/Home/posts/my_posts_controller.dart';
 
 import 'package:programmers_network_app/controller/auth/logout_controller.dart';
+import 'package:programmers_network_app/cubit/profile/close_friends_cubit.dart';
+import 'package:programmers_network_app/cubit/profile/muted_users_cubit.dart';
+import 'package:programmers_network_app/data/services/profile/MutedUsersService.dart';
+import 'package:programmers_network_app/data/services/profile/close_friends_service.dart';
+import 'package:programmers_network_app/view/screen/Home/posts/save_post_page.dart';
+import 'package:programmers_network_app/view/screen/profile/FollowScreen.dart';
+
 import 'package:programmers_network_app/view/screen/profile/PrivacySettingsPage.dart';
 import 'package:programmers_network_app/view/screen/Home/posts/archived_post_page.dart';
+import 'package:programmers_network_app/view/screen/profile/close_friends_screen.dart';
+import 'package:programmers_network_app/view/screen/profile/muted_users_screen.dart';
 import 'package:programmers_network_app/view/screen/profile/user_activity/user_activity_page.dart';
 import 'package:programmers_network_app/view/screen/profile/user_status_history/user_status_history_page.dart';
 import 'package:programmers_network_app/view/widget/Home/posts/getPost/post_card_widget.dart';
@@ -32,6 +42,9 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final LogoutController logoutController = Get.put(LogoutController());
+  final ArchivePostController archivePostController = Get.put(
+    ArchivePostController(),
+  );
 
   void _showLogoutDialog(BuildContext context) {
     showGeneralDialog(
@@ -203,6 +216,37 @@ class _ProfilePageState extends State<ProfilePage> {
                   AvelonHomeShell.of(context)?.closeMenu();
                   await Future.delayed(const Duration(milliseconds: 280));
                   Get.to(() => ArchivedPage(profileData: profileData));
+                },
+                onSave: () async {
+                  AvelonHomeShell.of(context)?.closeMenu();
+                  await Future.delayed(const Duration(milliseconds: 280));
+                  Get.to(() => SavedPostsPage());
+                },
+                onFavoritePeople: () async {
+                  AvelonHomeShell.of(context)?.closeMenu();
+                  await Future.delayed(const Duration(milliseconds: 280));
+
+                  Get.to(
+                    () => BlocProvider(
+                      create: (_) => CloseFriendsCubit(CloseFriendsService()),
+                      child: const CloseFriendsScreen(),
+                    ),
+                  );
+                },
+                onFollowingTracking: () async {
+                  AvelonHomeShell.of(context)?.closeMenu();
+                  await Future.delayed(const Duration(milliseconds: 280));
+                  Get.to(() => FollowScreen(userId: profileData.userId));
+                },
+                onMutedPeople: () async {
+                  AvelonHomeShell.of(context)?.closeMenu();
+                  await Future.delayed(const Duration(milliseconds: 280));
+                  Get.to(
+                    () => BlocProvider(
+                      create: (_) => MutedUsersCubit(MutedUsersService()),
+                      child: const MutedUsersScreen(),
+                    ),
+                  );
                 },
                 onLogout: () {
                   _showLogoutDialog(context);

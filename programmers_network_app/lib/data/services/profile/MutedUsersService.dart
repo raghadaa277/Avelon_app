@@ -8,36 +8,6 @@ class MutedUsersService {
   final ApiClient mutedUsersApi = ApiClient(baseUrl: ApiConstants.baseurl);
 
   /// 1. التبديل بين الكتم وإلغاء الكتم (Toggle Mute/Unmute)
-  Future<bool> toggleMuteUser(int userId) async {
-    final token = await TokenStorage.getToken();
-    if (token == null) {
-      await TokenStorage.clearTokens();
-      return false;
-    }
-
-    try {
-      final response = await mutedUsersApi.post(
-        "${ApiConstants.toggleMuteUser}$userId",
-        body: {},
-      );
-
-      print("📡 TOGGLE MUTE STATUS => ${response.statusCode}");
-      print("📡 TOGGLE MUTE BODY => ${response.body}");
-
-      final decodedResponse = jsonDecode(response.body);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return decodedResponse['success'] == true;
-      } else {
-        throw Exception(
-          decodedResponse['message'] ?? 'Failed to toggle mute status',
-        );
-      }
-    } catch (e) {
-      print("❌ Exception in toggleMuteUser: $e");
-      throw Exception(e.toString());
-    }
-  }
 
   /// 2. جلب قائمة المستخدمين المكتومين (Muted Users)
   Future<List<MutedUserModel>> getMutedUsers() async {
@@ -94,16 +64,15 @@ class MutedUsersService {
       final decodedResponse = jsonDecode(response.body);
 
       if (response.statusCode == 200 && decodedResponse['success'] == true) {
-        final Map<String, dynamic> paginationData = decodedResponse['data'] ?? {};
+        final Map<String, dynamic> paginationData =
+            decodedResponse['data'] ?? {};
         final List listData = paginationData['data'] ?? [];
 
-        final List<MutedUserModel> items =
-        listData.map((item) => MutedUserModel.fromJson(item)).toList();
+        final List<MutedUserModel> items = listData
+            .map((item) => MutedUserModel.fromJson(item))
+            .toList();
 
-        return {
-          'items': items,
-          'lastPage': paginationData['last_page'] ?? 1,
-        };
+        return {'items': items, 'lastPage': paginationData['last_page'] ?? 1};
       } else {
         throw Exception(
           decodedResponse['message'] ?? 'Failed to fetch muted history',

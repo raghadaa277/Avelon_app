@@ -28,6 +28,8 @@ class ProfileHeaderWidget extends StatelessWidget {
   final bool isCloseFriendOf;
   final bool isMutedBy;
   final bool isFlaggedBy;
+  final bool isBlocked;
+  final bool isBlockedBy;
 
   final VoidCallback onFollow;
   final VoidCallback onUnfollow;
@@ -68,6 +70,8 @@ class ProfileHeaderWidget extends StatelessWidget {
     this.isCloseFriendOf = false,
     this.isMutedBy = false,
     this.isFlaggedBy = false,
+    this.isBlocked = false,
+    this.isBlockedBy = false,
   });
 
   @override
@@ -124,6 +128,8 @@ class ProfileHeaderWidget extends StatelessWidget {
                             isCloseFriendOf: isCloseFriendOf,
                             isMutedBy: isMutedBy,
                             isFlaggedBy: isFlaggedBy,
+                            isBlocked: isBlocked,
+                            isBlockedBy: isBlockedBy,
                           ),
                         ),
                       ],

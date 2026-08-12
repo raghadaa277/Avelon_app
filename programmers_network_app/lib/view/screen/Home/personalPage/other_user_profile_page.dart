@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:programmers_network_app/controller/Home/personalPage/block/block_controller.dart';
 import 'package:programmers_network_app/controller/Home/personalPage/closeFriends/close_friends_controller.dart';
 import 'package:programmers_network_app/controller/Home/personalPage/follower/followe_controller.dart';
 import 'package:programmers_network_app/controller/Home/personalPage/get_target_user_count_controller.dart';
@@ -12,6 +13,7 @@ import 'package:programmers_network_app/view/screen/Home/personalPage/connection
 import 'package:programmers_network_app/view/screen/Home/personalPage/followers_page.dart';
 import 'package:programmers_network_app/view/screen/Home/personalPage/mutual_followers_page.dart';
 import 'package:programmers_network_app/view/screen/Home/personalPage/report_page.dart';
+import 'package:programmers_network_app/view/screen/Home/personalPage/target_user_skills_view_page.dart';
 import 'package:programmers_network_app/view/widget/Home/personalProfile/other_user_post_tap_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/personalProfile/profile_about_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/personalProfile/profile_action_buttons_widget.dart';
@@ -34,6 +36,7 @@ class _OtherUserProfilePageState extends State<OtherUserProfilePage>
   late final GetTargetUserCountController controller;
   late final CloseFriendsController closeFriendController;
   late final MuteController muteController;
+  late final BlockController blockController;
   late final TabController _tabController;
 
   late final ProfileViewController profileViewController;
@@ -56,6 +59,8 @@ class _OtherUserProfilePageState extends State<OtherUserProfilePage>
 
     muteController = Get.put(MuteController());
 
+    blockController = Get.put(BlockController());
+
     // mutualFollowers = Get.put(MutualFollowersController());
 
     Get.put(UserFlagController());
@@ -75,6 +80,12 @@ class _OtherUserProfilePageState extends State<OtherUserProfilePage>
           closeFriendController.setCloseFriend(profile.isCloseFriend);
 
           muteController.setMuteStatus(profile.isMuted);
+
+          if (profile.isBlockedBy) {
+            blockController.blockedUserIds.add(widget.targetUserId);
+          } else {
+            blockController.blockedUserIds.remove(widget.targetUserId);
+          }
         }
       });
     });
@@ -103,7 +114,7 @@ class _OtherUserProfilePageState extends State<OtherUserProfilePage>
         centerTitle: true,
         leading: const BackButton(color: ProfileTheme.textDark),
         title: Text(
-          'AVELON',
+          'A V E L O N',
           style: TextStyle(
             color: ColorConst.colorApp,
             fontWeight: FontWeight.w800,
@@ -116,6 +127,7 @@ class _OtherUserProfilePageState extends State<OtherUserProfilePage>
               isCloseFriend:
                   controller.userProfile.value?.isCloseFriend ?? false,
               isMuted: controller.userProfile.value?.isMuted ?? false,
+              isBlocked: blockController.isBlocked(widget.targetUserId),
               onSelected: (action) async {
                 switch (action) {
                   case SettingAction.closeFriend:
@@ -163,6 +175,19 @@ class _OtherUserProfilePageState extends State<OtherUserProfilePage>
                     );
 
                     break;
+
+                  case SettingAction.block:
+                    await blockController.toggleBlock(
+                      targetUserId: widget.targetUserId,
+                      currentlyBlocked: blockController.isBlocked(
+                        widget.targetUserId,
+                      ),
+                    );
+                    // blockedUserIds is an RxSet, so the Obx() around this
+                    // whole action button already rebuilds on its own —
+                    // no extra controller.setX(...) call needed here.
+                    break;
+
                   case SettingAction.report:
                     Get.to(() => ReportUserPage(userId: widget.targetUserId));
                     break;
@@ -224,6 +249,11 @@ class _OtherUserProfilePageState extends State<OtherUserProfilePage>
 
                       isFlaggedBy:
                           controller.userProfile.value?.isFlaggedBy ?? false,
+
+                      isBlocked: blockController.isBlocked(widget.targetUserId),
+
+                      isBlockedBy:
+                          controller.userProfile.value?.isBlockedBy ?? false,
 
                       onFollow: () async {
                         final action = await followController.toggleFollowing(
@@ -365,7 +395,7 @@ class _OtherUserProfilePageState extends State<OtherUserProfilePage>
                     },
                   ),
                 ),
-                const Center(child: Text('Skills go here')),
+                TargetUserSkillsView(targetUserId: widget.targetUserId),
                 const Center(child: Text('Highlights go here')),
               ],
             ),

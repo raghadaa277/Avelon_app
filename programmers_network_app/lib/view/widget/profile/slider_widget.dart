@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../../data/models/Profile/profile_model.dart';
 
 class AvelonHomeShell extends StatefulWidget {
@@ -104,6 +105,7 @@ class ProfileSideMenu extends StatelessWidget {
     this.onDashboard,
     this.onLogout,
     this.onStatusUser,
+    this.onSave,
   });
 
   final ProfileData data;
@@ -118,6 +120,7 @@ class ProfileSideMenu extends StatelessWidget {
   final VoidCallback? onMutedPeople;
   final VoidCallback? onDashboard;
   final VoidCallback? onLogout;
+  final VoidCallback? onSave;
 
   static const _accent = Color(0xffB8FF1A);
   static const _tint = Color(0xFFF1FDE1);
@@ -142,64 +145,74 @@ class ProfileSideMenu extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 children: [
                   _MenuItem(
-                    icon: Icons.settings_outlined,
+                    icon: HugeIcons.strokeRoundedSettings01,
                     label: 'Settings',
-                    tint: _tint,
+                    tint: const Color(0xFFF1F1F1),
+                    iconColor: Colors.blueGrey,
                     onTap: onSettings,
                   ),
+
                   _MenuItem(
-                    icon: Icons.notifications_none_rounded,
-                    label: 'Activity',
-                    tint: _tint,
-                    onTap: onActivity,
-                  ),
-                  _MenuItem(
-                    icon: Icons.inventory_2_outlined,
+                    icon: HugeIcons.strokeRoundedArchive02,
                     label: 'Archive',
-                    tint: _tint,
+                    tint: const Color(0xFFFBF0E4),
+                    iconColor: Colors.brown,
                     onTap: onArchive,
                   ),
                   _MenuItem(
-                    icon: Icons.access_time_rounded,
+                    icon: HugeIcons.strokeRoundedBookmark02,
+                    label: 'Save posts',
+                    tint: const Color(0xFFF3E8FD),
+                    iconColor: Colors.purple,
+                    onTap: onSave,
+                  ),
+                  _MenuItem(
+                    icon: HugeIcons.strokeRoundedClock01,
                     label: 'User Activity',
-                    tint: _tint,
+                    tint: const Color(0xFFE1F7F3),
+                    iconColor: Colors.teal,
                     onTap: onTimeManagement,
                   ),
                   _MenuItem(
-                    icon: Icons.person_2,
+                    icon: HugeIcons.strokeRoundedUserAccount,
                     label: 'Account Status',
-                    tint: _tint,
+                    tint: const Color(0xFFE9F7E5),
+                    iconColor: Colors.green,
                     onTap: onStatusUser,
                   ),
                   _MenuItem(
-                    icon: Icons.shield_outlined,
+                    icon: HugeIcons.strokeRoundedShield01,
                     label: 'Block Tracking',
-                    tint: _tint,
+                    tint: const Color(0xFFFDEBEA),
+                    iconColor: Colors.red,
                     onTap: onBlockTracking,
                   ),
                   _MenuItem(
-                    icon: Icons.group_outlined,
+                    icon: HugeIcons.strokeRoundedUserGroup,
                     label: 'Following Tracking',
-                    tint: _tint,
+                    tint: const Color(0xFFEAEBFB),
+                    iconColor: Colors.indigo,
                     onTap: onFollowingTracking,
                   ),
                   _MenuItem(
-                    icon: Icons.star_border_rounded,
+                    icon: HugeIcons.strokeRoundedFavourite,
                     label: 'Favorite People',
                     tint: _tint,
                     iconColor: _accent,
                     onTap: onFavoritePeople,
                   ),
                   _MenuItem(
-                    icon: Icons.volume_off_outlined,
+                    icon: HugeIcons.strokeRoundedVolumeMute02,
                     label: 'Muted People',
-                    tint: _tint,
+                    tint: const Color(0xFFFEF0E4),
+                    iconColor: Colors.orange,
                     onTap: onMutedPeople,
                   ),
                   _MenuItem(
-                    icon: Icons.grid_view_rounded,
+                    icon: HugeIcons.strokeRoundedDashboardSquare01,
                     label: 'Dashboard',
-                    tint: _tint,
+                    tint: const Color(0xFFE4F6FB),
+                    iconColor: Colors.cyan,
                     onTap: onDashboard,
                   ),
                   const Padding(
@@ -341,7 +354,7 @@ class _MenuItem extends StatelessWidget {
     this.onTap,
   });
 
-  final IconData icon;
+  final List<List> icon;
   final String label;
   final Color tint;
   final Color? iconColor;
@@ -351,23 +364,32 @@ class _MenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+      minVerticalPadding: 4,
+
       leading: Container(
         width: 34,
         height: 34,
+        alignment: Alignment.center,
         decoration: BoxDecoration(
           color: tint,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Icon(icon, size: 19, color: iconColor ?? Colors.black87),
+        child: HugeIcon(
+          icon: icon,
+          size: 18,
+          color: iconColor ?? Colors.black87,
+        ),
       ),
+
       title: Text(
         label,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
       ),
-      trailing: const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
+
+      trailing: const Icon(Icons.chevron_right, color: Colors.grey, size: 18),
     );
   }
 }
@@ -387,7 +409,10 @@ class _LogoutTile extends StatelessWidget {
       ),
       child: ListTile(
         onTap: onTap,
-        leading: const Icon(Icons.logout_rounded, color: Colors.red, size: 20),
+        leading: HugeIcon(
+          icon: HugeIcons.strokeRoundedLogout01,
+          color: Colors.red,
+        ),
         title: const Text(
           'Log out',
           style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),

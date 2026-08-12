@@ -7,6 +7,7 @@ import 'package:programmers_network_app/controller/Home/search_controller.dart';
 import 'package:programmers_network_app/core/const/routesPage.dart';
 import 'package:programmers_network_app/view/widget/Home/comment_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/search/empty_search_widget.dart';
+import 'package:programmers_network_app/view/widget/Home/search/history_search_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/search/loading_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_viewed.dart';
 import 'package:programmers_network_app/view/widget/Home/search/search_result_header_widget.dart';
@@ -106,6 +107,7 @@ class _SearchPageState extends State<SearchPage> {
     setState(() => _searchTextController.clear());
     controller.users.clear();
     controller.posts.clear();
+    controller.hasSearchedPosts = false;
     controller.update();
   }
 
@@ -146,6 +148,13 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildBody(SearchPageController controller) {
+    if (_searchTextController.text.trim().isEmpty) {
+      return HistorySearchWidget(
+        searchController: _searchTextController,
+        searchType: SearchTabsWidget.tabs[_selectedTabIndex].apiType,
+      );
+    }
+
     return _isUsersTab
         ? _buildUsersBody(controller)
         : _buildPostsBody(controller);

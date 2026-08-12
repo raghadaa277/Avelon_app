@@ -30,7 +30,10 @@ class _FollowScreenState extends State<FollowScreen> {
       if (_historyScrollController.position.pixels >=
           _historyScrollController.position.maxScrollExtent - 200) {
         final type = isFollowingType ? 'followings' : 'followers';
-        context.read<FollowCubit>().fetchFollowHistory(type: type, isLoadMore: true);
+        context.read<FollowCubit>().fetchFollowHistory(
+          type: type,
+          isLoadMore: true,
+        );
       }
     });
   }
@@ -42,7 +45,8 @@ class _FollowScreenState extends State<FollowScreen> {
 
     // ⭕ تغليف الشاشة بالكامل بالـ BlocProvider يضمن توفر الـ Cubit في أي Context داخلي
     return BlocProvider<FollowCubit>(
-      create: (context) => FollowCubit(FollowService())..fetchFollowers(widget.userId),
+      create: (context) =>
+          FollowCubit(FollowService())..fetchFollowers(widget.userId),
       child: Builder(
         builder: (context) {
           _setupScrollListener(context);
@@ -79,11 +83,16 @@ class _FollowScreenState extends State<FollowScreen> {
                   indicatorWeight: 3,
                   labelColor: primaryGreen,
                   unselectedLabelColor: Colors.grey,
-                  labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  labelStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                   onTap: (index) {
                     if (index == 1) {
                       final type = isFollowingType ? 'followings' : 'followers';
-                      context.read<FollowCubit>().fetchFollowHistory(type: type);
+                      context.read<FollowCubit>().fetchFollowHistory(
+                        type: type,
+                      );
                     }
                   },
                   tabs: const [
@@ -119,9 +128,7 @@ class _FollowScreenState extends State<FollowScreen> {
       },
       builder: (context, state) {
         if (state is FollowLoading) {
-          return Center(
-            child: CircularProgressIndicator(color: primaryGreen),
-          );
+          return Center(child: CircularProgressIndicator(color: primaryGreen));
         }
 
         List<UserFollowModel> followers = [];
@@ -179,35 +186,12 @@ class _FollowScreenState extends State<FollowScreen> {
                         const SizedBox(height: 2),
                         Text(
                           user.email,
-                          style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
+                          style: TextStyle(
+                            color: Colors.grey.shade500,
+                            fontSize: 11,
+                          ),
                         ),
                       ],
-                    ),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      context.read<FollowCubit>().toggleFollow(
-                        user.id,
-                        currentProfileUserId: widget.userId,
-                      );
-                    },
-                    icon: const Icon(Icons.person_remove_outlined,
-                        size: 15, color: Colors.redAccent),
-                    label: const Text(
-                      'Unfollow',
-                      style: TextStyle(
-                        color: Colors.redAccent,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFFFFEBEE)),
-                      backgroundColor: const Color(0xFFFFF5F5),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
                   ),
                 ],
@@ -235,25 +219,34 @@ class _FollowScreenState extends State<FollowScreen> {
                   child: GestureDetector(
                     onTap: () {
                       setState(() => isFollowingType = true);
-                      context.read<FollowCubit>().fetchFollowHistory(type: 'followings');
+                      context.read<FollowCubit>().fetchFollowHistory(
+                        type: 'followings',
+                      );
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
-                        color: isFollowingType ? Colors.white : Colors.transparent,
+                        color: isFollowingType
+                            ? Colors.white
+                            : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.arrow_upward_outlined,
-                              size: 18, color: isFollowingType ? primaryGreen : Colors.grey),
+                          Icon(
+                            Icons.arrow_upward_outlined,
+                            size: 18,
+                            color: isFollowingType ? primaryGreen : Colors.grey,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             'Followings',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: isFollowingType ? primaryGreen : Colors.grey,
+                              color: isFollowingType
+                                  ? primaryGreen
+                                  : Colors.grey,
                             ),
                           ),
                         ],
@@ -265,25 +258,36 @@ class _FollowScreenState extends State<FollowScreen> {
                   child: GestureDetector(
                     onTap: () {
                       setState(() => isFollowingType = false);
-                      context.read<FollowCubit>().fetchFollowHistory(type: 'followers');
+                      context.read<FollowCubit>().fetchFollowHistory(
+                        type: 'followers',
+                      );
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
-                        color: !isFollowingType ? Colors.white : Colors.transparent,
+                        color: !isFollowingType
+                            ? Colors.white
+                            : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.arrow_downward_outlined,
-                              size: 18, color: !isFollowingType ? primaryGreen : Colors.grey),
+                          Icon(
+                            Icons.arrow_downward_outlined,
+                            size: 18,
+                            color: !isFollowingType
+                                ? primaryGreen
+                                : Colors.grey,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             'Followers',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: !isFollowingType ? primaryGreen : Colors.grey,
+                              color: !isFollowingType
+                                  ? primaryGreen
+                                  : Colors.grey,
                             ),
                           ),
                         ],
@@ -299,7 +303,9 @@ class _FollowScreenState extends State<FollowScreen> {
           child: BlocBuilder<FollowCubit, FollowState>(
             builder: (context, state) {
               if (state is FollowLoading) {
-                return Center(child: CircularProgressIndicator(color: primaryGreen));
+                return Center(
+                  child: CircularProgressIndicator(color: primaryGreen),
+                );
               }
 
               List<UserFollowModel> historyList = [];
@@ -322,7 +328,8 @@ class _FollowScreenState extends State<FollowScreen> {
                 itemCount: historyList.length,
                 itemBuilder: (context, index) {
                   final item = historyList[index];
-                  final bool isFollowAction = item.action?.toLowerCase() == 'follow';
+                  final bool isFollowAction =
+                      item.action?.toLowerCase() == 'follow';
 
                   return Container(
                     margin: const EdgeInsets.only(bottom: 10),
@@ -345,7 +352,9 @@ class _FollowScreenState extends State<FollowScreen> {
                             isFollowAction
                                 ? Icons.person_add_alt_outlined
                                 : Icons.person_remove_outlined,
-                            color: isFollowAction ? primaryGreen : Colors.redAccent,
+                            color: isFollowAction
+                                ? primaryGreen
+                                : Colors.redAccent,
                             size: 18,
                           ),
                         ),
@@ -368,12 +377,16 @@ class _FollowScreenState extends State<FollowScreen> {
                               Text(
                                 item.fullName,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 14),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
                               ),
                               Text(
                                 isFollowAction ? 'Followed' : 'Unfollowed',
                                 style: TextStyle(
-                                  color: isFollowAction ? primaryGreen : Colors.redAccent,
+                                  color: isFollowAction
+                                      ? primaryGreen
+                                      : Colors.redAccent,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -383,12 +396,19 @@ class _FollowScreenState extends State<FollowScreen> {
                         ),
                         Row(
                           children: [
-                            const Icon(Icons.access_time, size: 14, color: Colors.grey),
+                            const Icon(
+                              Icons.access_time,
+                              size: 14,
+                              color: Colors.grey,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               item.actionAt ?? '',
                               textAlign: TextAlign.right,
-                              style: const TextStyle(color: Colors.grey, fontSize: 10),
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 10,
+                              ),
                             ),
                           ],
                         ),

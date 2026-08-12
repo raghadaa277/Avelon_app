@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 
-enum SettingAction { closeFriend, mute, report, mutual, connection }
+enum SettingAction { closeFriend, mute, report, mutual, connection, block }
 
 class SettingButtonWidget extends StatefulWidget {
   final bool isCloseFriend;
   final bool isMuted;
+  final bool isBlocked;
 
   final ValueChanged<SettingAction> onSelected;
 
@@ -13,6 +14,7 @@ class SettingButtonWidget extends StatefulWidget {
     super.key,
     required this.isCloseFriend,
     required this.isMuted,
+    required this.isBlocked,
     required this.onSelected,
   });
 
@@ -90,6 +92,20 @@ class _SettingButtonWidgetState extends State<SettingButtonWidget> {
               ),
               const SizedBox(width: 10),
               Text("Connection Analysis"),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: SettingAction.block,
+          child: Row(
+            children: [
+              HugeIcon(
+                icon: HugeIcons.strokeRoundedUserBlock01,
+                size: 20,
+                color: const Color(0xFFB0575D),
+              ),
+              const SizedBox(width: 10),
+              Text(widget.isBlocked ? "Unblock user" : "Block user"),
             ],
           ),
         ),

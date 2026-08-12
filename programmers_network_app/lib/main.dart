@@ -151,6 +151,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         GetPage(name: AppRoute.readyPage, page: () => ReadyPage()),
         GetPage(name: AppRoute.welcomePage, page: () => WelcomeWidget()),
         GetPage(name: AppRoute.userSession, page: () => UserActivityScreen()),
+
         GetPage(
           name: AppRoute.userStatus,
           page: () => UserStatusHistoryScreen(),

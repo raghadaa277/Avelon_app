@@ -4,6 +4,7 @@ import 'package:programmers_network_app/core/storage/api_client.dart';
 
 import 'package:programmers_network_app/data/models/Home/posts/delete_post_media_model.dart';
 import 'package:programmers_network_app/data/models/Home/posts/get_post_views_model.dart';
+import 'package:programmers_network_app/data/models/Home/posts/get_save_post_model.dart';
 import 'package:programmers_network_app/data/models/Home/posts/pinned_post_model.dart';
 import 'package:programmers_network_app/data/models/Home/posts/save_post_model.dart';
 import 'package:programmers_network_app/data/models/Home/posts/save_record_post_model.dart';
@@ -101,6 +102,21 @@ class EditPostServices {
         throw Exception('Count is hidden by post author');
       }
       throw Exception(decodeResponse['message'] ?? 'Failed to get reactions');
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<GetSavedPostsResponse> getSavePost({int page = 1}) async {
+    try {
+      final response = await api.get("${ApiConstants.getSavePost}?page=$page");
+
+      final decodedResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return GetSavedPostsResponse.fromJson(decodedResponse);
+      }
+      throw Exception(decodedResponse['message'] ?? 'Failed to get save post');
     } catch (e) {
       rethrow;
     }

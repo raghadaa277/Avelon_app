@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 
-enum IndicatorKind { closeFriend, muted, reported, mutual, connection }
+enum IndicatorKind { closeFriend, muted, reported, mutual, connection, blocked }
 
 class StatusIndicatorBadgeWidget extends StatelessWidget {
   final IndicatorKind kind;
@@ -31,6 +31,9 @@ class StatusIndicatorBadgeWidget extends StatelessWidget {
 
       case IndicatorKind.connection:
         return HugeIcons.strokeRoundedAnalytics01;
+
+      case IndicatorKind.blocked:
+        return HugeIcons.strokeRoundedUserBlock01;
     }
   }
 
@@ -50,6 +53,9 @@ class StatusIndicatorBadgeWidget extends StatelessWidget {
 
       case IndicatorKind.connection:
         return Colors.orangeAccent;
+
+      case IndicatorKind.blocked:
+        return const Color(0xFFB0575D);
     }
   }
 
@@ -69,6 +75,9 @@ class StatusIndicatorBadgeWidget extends StatelessWidget {
 
       case IndicatorKind.connection:
         return 'Connection Analysis';
+
+      case IndicatorKind.blocked:
+        return actionTakenByMe ? 'Blocked' : 'Blocked You';
     }
   }
 
@@ -124,6 +133,9 @@ class StatusIndicatorRow extends StatelessWidget {
   final bool isMutedBy;
   final bool isFlaggedBy;
 
+  final bool isBlocked;
+  final bool isBlockedBy;
+
   const StatusIndicatorRow({
     super.key,
 
@@ -137,6 +149,9 @@ class StatusIndicatorRow extends StatelessWidget {
     this.isCloseFriendOf = false,
     this.isMutedBy = false,
     this.isFlaggedBy = false,
+
+    this.isBlocked = false,
+    this.isBlockedBy = false,
   });
 
   @override
@@ -191,6 +206,19 @@ class StatusIndicatorRow extends StatelessWidget {
       badges.add(
         const StatusIndicatorBadgeWidget(
           kind: IndicatorKind.reported,
+          actionTakenByMe: false,
+        ),
+      );
+    }
+
+    if (isBlocked) {
+      badges.add(const StatusIndicatorBadgeWidget(kind: IndicatorKind.blocked));
+    }
+
+    if (isBlockedBy) {
+      badges.add(
+        const StatusIndicatorBadgeWidget(
+          kind: IndicatorKind.blocked,
           actionTakenByMe: false,
         ),
       );

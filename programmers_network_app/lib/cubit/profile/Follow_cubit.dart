@@ -13,7 +13,6 @@ class FollowCubit extends Cubit<FollowState> {
   int _currentPage = 1;
   int _lastPage = 1;
 
-
   Future<void> fetchFollowers(int userId) async {
     emit(FollowLoading());
     try {
@@ -24,20 +23,10 @@ class FollowCubit extends Cubit<FollowState> {
     }
   }
 
-
-  Future<void> toggleFollow(int userId, {int? currentProfileUserId}) async {
-    try {
-      final success = await followService.toggleFollow(userId);
-      if (success && currentProfileUserId != null) {
-        fetchFollowers(currentProfileUserId);
-      }
-    } catch (e) {
-      emit(FollowError(e.toString()));
-    }
-  }
-
-
-  Future<void> fetchFollowHistory({required String type, bool isLoadMore = false}) async {
+  Future<void> fetchFollowHistory({
+    required String type,
+    bool isLoadMore = false,
+  }) async {
     if (isLoadMore) {
       if (_currentPage >= _lastPage) return;
       _currentPage++;
@@ -48,17 +37,22 @@ class FollowCubit extends Cubit<FollowState> {
     }
 
     try {
-      final result = await followService.getFollowHistory(type: type, page: _currentPage);
+      final result = await followService.getFollowHistory(
+        type: type,
+        page: _currentPage,
+      );
       final List<UserFollowModel> items = result['items'];
       _lastPage = result['lastPage'];
 
       _historyList.addAll(items);
 
-      emit(FollowHistoryLoaded(
-        historyItems: List.from(_historyList),
-        currentPage: _currentPage,
-        lastPage: _lastPage,
-      ));
+      emit(
+        FollowHistoryLoaded(
+          historyItems: List.from(_historyList),
+          currentPage: _currentPage,
+          lastPage: _lastPage,
+        ),
+      );
     } catch (e) {
       emit(FollowError(e.toString()));
     }

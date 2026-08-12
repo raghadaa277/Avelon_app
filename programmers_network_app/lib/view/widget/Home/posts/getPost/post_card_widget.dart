@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:programmers_network_app/controller/Home/posts/archive_post_controller.dart';
 import 'package:programmers_network_app/controller/Home/posts/edit_post_controller.dart';
 import 'package:programmers_network_app/data/models/Home/posts/get_my_posts_model.dart';
 import 'package:programmers_network_app/data/models/Profile/profile_model.dart';
@@ -16,6 +17,9 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!Get.isRegistered<ArchivePostController>()) {
+      Get.put(ArchivePostController());
+    }
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),

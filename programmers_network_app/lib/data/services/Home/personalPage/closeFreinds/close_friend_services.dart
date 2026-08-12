@@ -20,7 +20,7 @@ class CloseFriendServices {
         return ToggleCloseFriendModel.fromJson(decodedResponse);
       }
       throw Exception(
-        decodedResponse['message'] ?? 'Failed to toggle close frien',
+        decodedResponse['message'] ?? 'Failed to toggle close friend',
       );
     } catch (e) {
       rethrow;

@@ -195,10 +195,4 @@ class EditPostController extends GetxController {
       update();
     }
   }
-
-  Future<dynamic> reactions({
-    required int targetUserId,
-    required int postId,
-    required String type,
-  }) async {}
 }

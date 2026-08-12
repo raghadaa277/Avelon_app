@@ -11,12 +11,17 @@ class ArchivedPostsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ArchivePostController ctrl = Get.find<ArchivePostController>();
+    final ArchivePostController ctrl = Get.isRegistered<ArchivePostController>()
+        ? Get.find<ArchivePostController>()
+        : Get.put(ArchivePostController());
 
     return Obx(() {
       if (ctrl.isLoading.value) {
-        return const Center(
-          child: CircularProgressIndicator(color: Color(0xffB8FF1A)),
+        return const Padding(
+          padding: EdgeInsets.symmetric(vertical: 60),
+          child: Center(
+            child: CircularProgressIndicator(color: Color(0xffB8FF1A)),
+          ),
         );
       }
 
@@ -47,8 +52,11 @@ class ArchivedPostsList extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         itemCount: ctrl.archive.length,
         itemBuilder: (context, index) {
+          final post = ctrl.archive[index];
+
           return ArchivedPostCard(
-            post: ctrl.archive[index],
+            key: ValueKey(post.id),
+            post: post,
             profileData: profileData,
           );
         },

@@ -15,7 +15,14 @@ class ArchivedPage extends StatefulWidget {
 }
 
 class _ArchivedPostState extends State<ArchivedPage> {
-  final ArchivePostController controller = Get.find<ArchivePostController>();
+  late final ArchivePostController controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller = Get.put(ArchivePostController());
+  }
 
   @override
   Widget build(BuildContext context) {

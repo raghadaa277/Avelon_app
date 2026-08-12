@@ -3,34 +3,57 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../cubit/profile/muted_users_cubit.dart';
 import '../../../cubit/profile/muted_users_state.dart';
-
 import '../../../data/services/profile/MutedUsersService.dart';
 
-class MutedUsersScreen extends StatefulWidget {
+class MutedUsersScreen extends StatelessWidget {
   const MutedUsersScreen({super.key});
 
   @override
-  State<MutedUsersScreen> createState() => _MutedUsersScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => MutedUsersCubit(MutedUsersService())
+        ..fetchMutedUsers()
+        ..fetchMutedHistory(type: 'sent'),
+      child: const _MutedUsersView(),
+    );
+  }
 }
 
-class _MutedUsersScreenState extends State<MutedUsersScreen> {
+class _MutedUsersView extends StatefulWidget {
+  const _MutedUsersView();
+
+  @override
+  State<_MutedUsersView> createState() => _MutedUsersViewState();
+}
+
+class _MutedUsersViewState extends State<_MutedUsersView> {
   bool isSentType = true;
+
   final ScrollController _historyScrollController = ScrollController();
 
   @override
-  void dispose() {
-    _historyScrollController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+
+    _historyScrollController.addListener(_onHistoryScroll);
   }
 
-  void _setupScrollListener(BuildContext context) {
-    _historyScrollController.addListener(() {
-      if (_historyScrollController.position.pixels >=
-          _historyScrollController.position.maxScrollExtent - 200) {
-        final type = isSentType ? 'sent' : 'received';
-        context.read<MutedUsersCubit>().fetchMutedHistory(type: type);
-      }
-    });
+  void _onHistoryScroll() {
+    if (!_historyScrollController.hasClients) return;
+
+    final position = _historyScrollController.position;
+
+    if (position.pixels >= position.maxScrollExtent - 200) {
+      context.read<MutedUsersCubit>().loadMoreHistory();
+    }
+  }
+
+  @override
+  void dispose() {
+    _historyScrollController.removeListener(_onHistoryScroll);
+    _historyScrollController.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -38,78 +61,67 @@ class _MutedUsersScreenState extends State<MutedUsersScreen> {
     const primaryGreen = Color(0xFF4CAE47);
     const lightBg = Color(0xFFF8F9FA);
 
-    return BlocProvider<MutedUsersCubit>(
-      create: (context) => MutedUsersCubit(MutedUsersService())
-        ..fetchMutedUsers()
-        ..fetchMutedHistory(type: 'sent'),
-      child: Builder(
-        builder: (context) {
-          _setupScrollListener(context);
-
-          return DefaultTabController(
-            length: 2,
-            child: Scaffold(
-              backgroundColor: lightBg,
-              appBar: AppBar(
-                backgroundColor: Colors.white,
-                elevation: 0,
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                title: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.volume_off_outlined, color: primaryGreen),
-                    SizedBox(width: 8),
-                    Text(
-                      'Muted Accounts & History',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-                centerTitle: true,
-                bottom: TabBar(
-                  indicatorColor: primaryGreen,
-                  indicatorWeight: 3,
-                  labelColor: primaryGreen,
-                  unselectedLabelColor: Colors.grey,
-                  labelStyle: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                  onTap: (index) {
-                    if (index == 1) {
-                      final type = isSentType ? 'sent' : 'received';
-                      context.read<MutedUsersCubit>().fetchMutedHistory(
-                        type: type,
-                      );
-                    }
-                  },
-                  tabs: const [
-                    Tab(text: "Muted List"),
-                    Tab(text: "Mute History"),
-                  ],
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: lightBg,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.volume_off_outlined, color: primaryGreen),
+              SizedBox(width: 8),
+              Text(
+                'Muted Accounts & History',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
                 ),
               ),
-              body: TabBarView(
-                children: [
-                  _buildMutedTab(context, primaryGreen),
-                  _buildHistoryTab(context, primaryGreen),
-                ],
-              ),
+            ],
+          ),
+          centerTitle: true,
+          bottom: TabBar(
+            indicatorColor: primaryGreen,
+            indicatorWeight: 3,
+            labelColor: primaryGreen,
+            unselectedLabelColor: Colors.grey,
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
             ),
-          );
-        },
+            onTap: (index) {
+              if (index == 1) {
+                context.read<MutedUsersCubit>().fetchMutedHistory(
+                  type: isSentType ? 'sent' : 'received',
+                  page: 1,
+                );
+              }
+            },
+            tabs: const [
+              Tab(text: "Muted List"),
+              Tab(text: "Mute History"),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            _buildMutedTab(primaryGreen),
+            _buildHistoryTab(primaryGreen),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildMutedTab(BuildContext context, Color primaryGreen) {
+  Widget _buildMutedTab(Color primaryGreen) {
     return BlocConsumer<MutedUsersCubit, MutedUsersState>(
       listener: (context, state) {
         if (state is MutedUsersError) {
@@ -122,12 +134,13 @@ class _MutedUsersScreenState extends State<MutedUsersScreen> {
         }
       },
       builder: (context, state) {
-        if (state is MutedUsersLoading &&
-            context.read<MutedUsersCubit>().currentMutedUsers.isEmpty) {
+        final cubit = context.read<MutedUsersCubit>();
+
+        if (state is MutedUsersLoading && cubit.currentMutedUsers.isEmpty) {
           return Center(child: CircularProgressIndicator(color: primaryGreen));
         }
 
-        final mutedUsers = context.read<MutedUsersCubit>().currentMutedUsers;
+        final mutedUsers = cubit.currentMutedUsers;
 
         if (mutedUsers.isEmpty) {
           return const Center(
@@ -164,7 +177,9 @@ class _MutedUsersScreenState extends State<MutedUsersScreen> {
                         ? const Icon(Icons.person, color: Colors.grey)
                         : null,
                   ),
+
                   const SizedBox(width: 12),
+
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,37 +203,6 @@ class _MutedUsersScreenState extends State<MutedUsersScreen> {
                       ],
                     ),
                   ),
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      context.read<MutedUsersCubit>().toggleMuteUser(user.id);
-                    },
-                    icon: Icon(
-                      Icons.volume_up_outlined,
-                      size: 15,
-                      color: primaryGreen,
-                    ),
-                    label: Text(
-                      'Unmute',
-                      style: TextStyle(
-                        color: primaryGreen,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFFE8F5E9)),
-                      backgroundColor: const Color(0xFFF1F8E9),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             );
@@ -228,11 +212,11 @@ class _MutedUsersScreenState extends State<MutedUsersScreen> {
     );
   }
 
-  Widget _buildHistoryTab(BuildContext context, Color primaryGreen) {
+  Widget _buildHistoryTab(Color primaryGreen) {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16),
           child: Container(
             decoration: BoxDecoration(
               color: Colors.grey.shade200,
@@ -243,10 +227,16 @@ class _MutedUsersScreenState extends State<MutedUsersScreen> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      setState(() => isSentType = true);
-                      context.read<MutedUsersCubit>().fetchMutedHistory(
-                        type: 'sent',
-                      );
+                      if (!isSentType) {
+                        setState(() {
+                          isSentType = true;
+                        });
+
+                        context.read<MutedUsersCubit>().fetchMutedHistory(
+                          type: 'sent',
+                          page: 1,
+                        );
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -275,13 +265,20 @@ class _MutedUsersScreenState extends State<MutedUsersScreen> {
                     ),
                   ),
                 ),
+
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      setState(() => isSentType = false);
-                      context.read<MutedUsersCubit>().fetchMutedHistory(
-                        type: 'received',
-                      );
+                      if (isSentType) {
+                        setState(() {
+                          isSentType = false;
+                        });
+
+                        context.read<MutedUsersCubit>().fetchMutedHistory(
+                          type: 'received',
+                          page: 1,
+                        );
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -314,17 +311,19 @@ class _MutedUsersScreenState extends State<MutedUsersScreen> {
             ),
           ),
         ),
+
         Expanded(
           child: BlocBuilder<MutedUsersCubit, MutedUsersState>(
             builder: (context, state) {
-              if (state is MutedUsersLoading &&
-                  context.read<MutedUsersCubit>().historyList.isEmpty) {
+              final cubit = context.read<MutedUsersCubit>();
+
+              if (state is MutedHistoryLoading && cubit.historyList.isEmpty) {
                 return Center(
                   child: CircularProgressIndicator(color: primaryGreen),
                 );
               }
 
-              final historyList = context.read<MutedUsersCubit>().historyList;
+              final historyList = cubit.historyList;
 
               if (historyList.isEmpty) {
                 return const Center(
@@ -338,9 +337,20 @@ class _MutedUsersScreenState extends State<MutedUsersScreen> {
               return ListView.builder(
                 controller: _historyScrollController,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: historyList.length,
+                itemCount: historyList.length + (cubit.isLoadingMore ? 1 : 0),
                 itemBuilder: (context, index) {
+                  // Loading indicator for next page
+                  if (index == historyList.length) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    );
+                  }
+
                   final item = historyList[index];
+
                   final bool isMuteAction = item.action?.toLowerCase() == 'add';
 
                   return Container(
@@ -370,7 +380,9 @@ class _MutedUsersScreenState extends State<MutedUsersScreen> {
                             size: 18,
                           ),
                         ),
+
                         const SizedBox(width: 12),
+
                         CircleAvatar(
                           radius: 20,
                           backgroundColor: const Color(0xFFEEEEEE),
@@ -385,7 +397,9 @@ class _MutedUsersScreenState extends State<MutedUsersScreen> {
                               ? const Icon(Icons.person, color: Colors.grey)
                               : null,
                         ),
+
                         const SizedBox(width: 12),
+
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -410,6 +424,7 @@ class _MutedUsersScreenState extends State<MutedUsersScreen> {
                             ],
                           ),
                         ),
+
                         Row(
                           children: [
                             const Icon(
@@ -443,7 +458,10 @@ class _MutedUsersScreenState extends State<MutedUsersScreen> {
   String _formatDate(String rawDate) {
     try {
       final parsed = DateTime.parse(rawDate);
-      return "${parsed.year}-${parsed.month.toString().padLeft(2, '0')}-${parsed.day.toString().padLeft(2, '0')}";
+
+      return "${parsed.year}-"
+          "${parsed.month.toString().padLeft(2, '0')}-"
+          "${parsed.day.toString().padLeft(2, '0')}";
     } catch (_) {
       return rawDate;
     }

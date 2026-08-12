@@ -1,4 +1,5 @@
 import 'package:get/state_manager.dart';
+import 'package:programmers_network_app/data/models/Home/get_search_history_model.dart';
 import 'package:programmers_network_app/data/models/Home/search_model.dart';
 import 'package:programmers_network_app/data/models/Home/search_post_model.dart';
 import 'package:programmers_network_app/data/services/Home/search_services.dart';
@@ -22,8 +23,12 @@ class SearchPageController extends GetxController {
   String? currentPostType;
   String? currentPostSearch;
 
+  List<DataHistroySearch> searchHistory = [];
+  bool isLoadingHistory = false;
+  bool isLoadingMoreHistory = false;
+  int currentHistoryPage = 1;
+  int lastHistoryPage = 1;
   final RxString errorMessage = ''.obs;
-
   bool hasSearchedPosts = false;
 
   Future<void> search({
@@ -167,6 +172,53 @@ class SearchPageController extends GetxController {
     }
   }
 
+  Future<void> getSearchHistory({bool refresh = true}) async {
+    if (isLoadingHistory) return;
+    if (refresh) {
+      currentHistoryPage = 1;
+      searchHistory.clear();
+    }
+    isLoadingHistory = true;
+    errorMessage.value = '';
+    update();
+    try {
+      final result = await _searchServices.getSearchHistory(
+        page: currentHistoryPage,
+      );
+      if (result.success) {
+        searchHistory.addAll(result.data.history);
+        lastHistoryPage = result.data.lastPage;
+        currentHistoryPage = result.data.currentPage;
+      }
+    } catch (e) {
+      errorMessage.value = e.toString();
+    } finally {
+      isLoadingHistory = false;
+      update();
+    }
+  }
+
+  Future<void> loadMoreSearchHistory() async {
+    if (isLoadingMoreHistory || isLoadingHistory) return;
+    if (currentHistoryPage >= lastHistoryPage) return;
+    isLoadingMoreHistory = true;
+    update();
+    final nextPage = currentHistoryPage + 1;
+    try {
+      final result = await _searchServices.getSearchHistory(page: nextPage);
+      if (result.success) {
+        searchHistory.addAll(result.data.history);
+        currentHistoryPage = result.data.currentPage;
+        lastHistoryPage = result.data.lastPage;
+      }
+    } catch (e) {
+      errorMessage.value = e.toString();
+    } finally {
+      isLoadingMoreHistory = false;
+      update();
+    }
+  }
+
   void updateReaction({required int postId, required String reaction}) {
     final index = posts.indexWhere((e) => e.id == postId);
 
@@ -258,5 +310,54 @@ class SearchPageController extends GetxController {
     }
 
     update();
+  }
+
+  Future<void> clearOneSearchHistory({required int searchHistoryId}) async {
+    try {
+      final result = await _searchServices.clearOnHistory(
+        searchHistoryId: searchHistoryId,
+      );
+
+      if (result.success) {
+        searchHistory.removeWhere((item) => item.id == searchHistoryId);
+
+        update();
+      } else {
+        errorMessage.value = result.message;
+        update();
+      }
+    } catch (e) {
+      errorMessage.value = e.toString();
+      update();
+    }
+  }
+
+  void removePostsByUser(int userId) {
+    posts.removeWhere((post) => post.user.id == userId);
+    users.removeWhere((user) => user.id == userId);
+    update();
+  }
+
+  Future<void> clearAllSearchHistory() async {
+    try {
+      final result = await _searchServices.clearAllResult();
+
+      if (result.success) {
+        searchHistory.clear();
+
+        currentHistoryPage = 1;
+        lastHistoryPage = 1;
+
+        errorMessage.value = '';
+
+        update();
+      } else {
+        errorMessage.value = result.message;
+        update();
+      }
+    } catch (e) {
+      errorMessage.value = e.toString();
+      update();
+    }
   }
 }
