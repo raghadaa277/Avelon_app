@@ -21,6 +21,7 @@ class _OtherUserPostsTabState extends State<OtherUserPostsTab> {
       Get.find<ReactionsController>();
   final EditPostController editPostController = Get.find<EditPostController>();
   final ScrollController _scrollController = ScrollController();
+  final FocusNode _searchFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -127,6 +128,8 @@ class _OtherUserPostsTabState extends State<OtherUserPostsTab> {
                 },
                 onShare: () {},
                 onSave: () async {
+                  _searchFocusNode.unfocus();
+
                   await editPostController.savePost(
                     targetUserId: post.user.id,
                     postId: post.id,

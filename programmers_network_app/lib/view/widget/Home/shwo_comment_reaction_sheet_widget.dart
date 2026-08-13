@@ -187,7 +187,7 @@ class _CommentReactionsSheetContentState
     }
 
     if (c.reactions.isEmpty) {
-      return const Center(child: Text("No one yet"));
+      return const Center(child: Text("No comments yet"));
     }
 
     return ListView.builder(

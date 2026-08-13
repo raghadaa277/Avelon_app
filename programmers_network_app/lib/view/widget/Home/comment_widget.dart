@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:programmers_network_app/controller/Home/posts/comments/edit_comment_controller.dart';
 import 'package:programmers_network_app/core/const/color_const.dart';
-import 'package:programmers_network_app/core/const/post_color.dart';
+
 import 'package:programmers_network_app/core/const/routesPage.dart';
 import 'package:programmers_network_app/view/widget/Home/comment_card_widget.dart';
 import 'package:programmers_network_app/controller/Home/posts/comments/comments_controller.dart';
@@ -189,7 +189,7 @@ class _CommentsPageState extends State<CommentsPage> {
           HugeIcon(
             icon: HugeIcons.strokeRoundedComment01,
             size: 20,
-            color: PostColors.comment,
+            color: const Color(0xFF14B8A6),
           ),
           GetBuilder<CommentsController>(
             tag: widget.postId.toString(),

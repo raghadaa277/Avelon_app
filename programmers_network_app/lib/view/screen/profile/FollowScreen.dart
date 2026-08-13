@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:programmers_network_app/core/const/color_const.dart';
 
 import '../../../cubit/profile/follow_cubit.dart';
 import '../../../cubit/profile/follow_state.dart';
@@ -41,7 +42,6 @@ class _FollowScreenState extends State<FollowScreen> {
   @override
   Widget build(BuildContext context) {
     const primaryGreen = Color(0xFF4CAE47);
-    const lightBg = Color(0xFFF8F9FA);
 
     // ⭕ تغليف الشاشة بالكامل بالـ BlocProvider يضمن توفر الـ Cubit في أي Context داخلي
     return BlocProvider<FollowCubit>(
@@ -54,9 +54,9 @@ class _FollowScreenState extends State<FollowScreen> {
           return DefaultTabController(
             length: 2,
             child: Scaffold(
-              backgroundColor: lightBg,
+              backgroundColor: ColorConst.colorBackGroung,
               appBar: AppBar(
-                backgroundColor: Colors.white,
+                backgroundColor: ColorConst.colorBackGroung,
                 elevation: 0,
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back, color: Colors.black),

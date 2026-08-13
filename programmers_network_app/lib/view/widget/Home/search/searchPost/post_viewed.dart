@@ -52,34 +52,49 @@ class PostViewedBadge extends StatelessWidget {
   }
 }
 
-class PostViewTrackerWrapper extends StatelessWidget {
+class PostViewTrackerWrapper extends StatefulWidget {
   final Post post;
   final Widget child;
   final String source;
+  final VoidCallback? onSeen;
 
   const PostViewTrackerWrapper({
     super.key,
     required this.post,
     required this.child,
     required this.source,
+    this.onSeen,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final EditPostController tracker = Get.find<EditPostController>();
+  State<PostViewTrackerWrapper> createState() => _PostViewTrackerWrapperState();
+}
 
+class _PostViewTrackerWrapperState extends State<PostViewTrackerWrapper> {
+  final EditPostController tracker = Get.find<EditPostController>();
+
+  bool _hasRegisteredView = false;
+
+  @override
+  Widget build(BuildContext context) {
     return VisibilityDetector(
-      key: ValueKey('post-view-${post.id}'),
+      key: ValueKey('post-view-${widget.post.id}'),
+
       onVisibilityChanged: (VisibilityInfo info) {
-        if (info.visibleFraction >= 0.6) {
+        if (info.visibleFraction >= 0.6 && !_hasRegisteredView) {
+          _hasRegisteredView = true;
+
           tracker.registerView(
-            targetUserId: post.user.id,
-            postId: post.id,
-            source: source,
+            targetUserId: widget.post.user.id,
+            postId: widget.post.id,
+            source: widget.source,
           );
+
+          widget.onSeen?.call();
         }
       },
-      child: child,
+
+      child: widget.child,
     );
   }
 }

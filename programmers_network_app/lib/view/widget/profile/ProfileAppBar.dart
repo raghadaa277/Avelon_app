@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
-import 'slider_widget.dart';
+import 'package:get/route_manager.dart';
+import 'package:get/state_manager.dart';
+import 'package:hugeicons/hugeicons.dart';
+
+import '../../../data/models/Profile/profile_model.dart';
 
 class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const ProfileAppBar({super.key});
+  const ProfileAppBar({super.key, this.data, this.onMenuPressed});
+
+  final ProfileData? data;
+  final VoidCallback? onMenuPressed;
+
+  static const Color accent = Color(0xFFB8FF1A);
 
   @override
   Widget build(BuildContext context) {
@@ -10,60 +19,82 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.transparent,
       elevation: 0,
       scrolledUnderElevation: 0,
+
       leading: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8),
         child: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.white,
             shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: IconButton(
-            padding: const EdgeInsets.only(left: 6),
-            icon: const Icon(
-              Icons.arrow_back_ios,
-              color: Colors.black54,
-              size: 14,
+            padding: EdgeInsets.zero,
+            splashRadius: 20,
+            icon: const HugeIcon(
+              icon: HugeIcons.strokeRoundedArrowLeft01,
+              size: 18,
+              color: Color(0xFF4B5563),
             ),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Get.back();
+            },
           ),
         ),
       ),
+
+      // ─────────────────────────────────────
+      // TITLE
+      // ─────────────────────────────────────
       title: const Text(
         'A V E L O N',
         style: TextStyle(
-          color: Colors.black,
+          color: Color(0xFF111827),
           fontSize: 14,
           fontWeight: FontWeight.w800,
           letterSpacing: 2.5,
         ),
       ),
+
       centerTitle: true,
+
+      // ─────────────────────────────────────
+      // MENU BUTTON
+      // ─────────────────────────────────────
       actions: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-            child: Builder(
-              builder: (innerContext) {
-                return IconButton(
-                  icon: const Icon(
-                    Icons.more_horiz,
-                    color: Colors.black54,
-                    size: 20,
+        if (data != null)
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
-                  onPressed: () {
-                    final shell = AvelonHomeShell.of(innerContext);
-                    print("Shell context initialized: $shell");
-                    shell?.toggleMenu();
-                  },
-                );
-              },
+                ],
+              ),
+              child: IconButton(
+                splashRadius: 20,
+                padding: EdgeInsets.zero,
+                icon: const HugeIcon(
+                  icon: HugeIcons.strokeRoundedMoreHorizontal,
+                  size: 21,
+                  color: Color(0xFF4B5563),
+                ),
+                onPressed: onMenuPressed,
+              ),
             ),
           ),
-        ),
       ],
     );
   }

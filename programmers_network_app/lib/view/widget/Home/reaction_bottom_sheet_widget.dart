@@ -161,7 +161,7 @@ class _ReactionsSheetContentState extends State<ReactionsSheetContent> {
     }
 
     if (c.reaction.isEmpty) {
-      return const Center(child: Text('No one yet'));
+      return const Center(child: Text('No reactions yet'));
     }
 
     return ListView.builder(

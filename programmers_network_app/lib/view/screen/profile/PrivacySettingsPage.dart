@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:programmers_network_app/core/const/color_const.dart';
 import '../../../cubit/PrivacySettings/privacy_settings_cubit.dart';
 import '../../../cubit/PrivacySettings/privacy_settings_state.dart';
 import '../../../data/models/Profile/PrivacySettingsModel.dart';
@@ -16,7 +17,6 @@ class PrivacySettingsPage extends StatefulWidget {
 }
 
 class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
-
   bool hideFollowersCount = false;
   bool hideFollowingsCount = false;
   bool hideFollowersList = false;
@@ -28,7 +28,6 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
   bool allowProfileInSearch = true;
   bool allowPostsInSearch = true;
   bool allowNotifications = true;
-
 
   String messageRestriction = 'Everyone';
 
@@ -68,16 +67,20 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAF6),
+      backgroundColor: ColorConst.colorBackGroung,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: CircleAvatar(
-            backgroundColor: Colors.white,
+            backgroundColor: ColorConst.colorBackGroung,
             child: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, size: 16, color: Colors.black),
+              icon: const Icon(
+                Icons.arrow_back_ios_new,
+                size: 16,
+                color: Colors.black,
+              ),
               onPressed: () => Navigator.maybePop(context),
             ),
           ),
@@ -86,12 +89,20 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
           children: [
             Text(
               'Privacy Settings',
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
             ),
             SizedBox(height: 2),
             Text(
               'Manage your privacy and control your experience',
-              style: TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.w400),
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ],
         ),
@@ -105,20 +116,26 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
         },
         builder: (context, state) {
           if (state is PrivacySettingsLoading && !_isInitialized) {
-            return const Center(child: CircularProgressIndicator(color: _accentColor));
+            return const Center(
+              child: CircularProgressIndicator(color: _accentColor),
+            );
           } else if (state is PrivacySettingsError && !_isInitialized) {
-            return Center(child: Text(state.errorMessage, style: const TextStyle(color: Colors.red)));
+            return Center(
+              child: Text(
+                state.errorMessage,
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
           }
-
 
           return ListView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             children: [
-
               SettingsSection(
                 icon: Icons.group_outlined,
                 title: 'Followers & Following',
-                description: 'Control who can see your followers and following information',
+                description:
+                    'Control who can see your followers and following information',
                 children: [
                   SwitchTile(
                     icon: Icons.person_outline,
@@ -128,7 +145,10 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                     activeColor: _accentColor,
                     onChanged: (val) {
                       setState(() => hideFollowersCount = val);
-                      context.read<PrivacySettingsCubit>().updateSingleSetting('hide_followers_count', val ? 1 : 0);
+                      context.read<PrivacySettingsCubit>().updateSingleSetting(
+                        'hide_followers_count',
+                        val ? 1 : 0,
+                      );
                     },
                   ),
                   SwitchTile(
@@ -139,7 +159,10 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                     activeColor: _accentColor,
                     onChanged: (val) {
                       setState(() => hideFollowingsCount = val);
-                      context.read<PrivacySettingsCubit>().updateSingleSetting('hide_followings_count', val ? 1 : 0);
+                      context.read<PrivacySettingsCubit>().updateSingleSetting(
+                        'hide_followings_count',
+                        val ? 1 : 0,
+                      );
                     },
                   ),
                   SwitchTile(
@@ -150,7 +173,10 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                     activeColor: _accentColor,
                     onChanged: (val) {
                       setState(() => hideFollowersList = val);
-                      context.read<PrivacySettingsCubit>().updateSingleSetting('hide_followers_list', val ? 1 : 0);
+                      context.read<PrivacySettingsCubit>().updateSingleSetting(
+                        'hide_followers_list',
+                        val ? 1 : 0,
+                      );
                     },
                   ),
                   SwitchTile(
@@ -161,7 +187,10 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                     activeColor: _accentColor,
                     onChanged: (val) {
                       setState(() => hideFollowingsList = val);
-                      context.read<PrivacySettingsCubit>().updateSingleSetting('hide_followings_list', val ? 1 : 0);
+                      context.read<PrivacySettingsCubit>().updateSingleSetting(
+                        'hide_followings_list',
+                        val ? 1 : 0,
+                      );
                     },
                   ),
                 ],
@@ -170,7 +199,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
               SettingsSection(
                 icon: Icons.timeline_outlined,
                 title: 'Activity Status',
-                description: 'Manage your online presence and activity visibility',
+                description:
+                    'Manage your online presence and activity visibility',
                 children: [
                   SwitchTile(
                     icon: Icons.access_time_rounded,
@@ -180,7 +210,10 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                     activeColor: _accentColor,
                     onChanged: (val) {
                       setState(() => showLastSeen = val);
-                      context.read<PrivacySettingsCubit>().updateSingleSetting('show_last_seen', val ? 1 : 0);
+                      context.read<PrivacySettingsCubit>().updateSingleSetting(
+                        'show_last_seen',
+                        val ? 1 : 0,
+                      );
                     },
                   ),
                   SwitchTile(
@@ -191,12 +224,14 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                     activeColor: _accentColor,
                     onChanged: (val) {
                       setState(() => showOnlineStatus = val);
-                      context.read<PrivacySettingsCubit>().updateSingleSetting('show_online_status', val ? 1 : 0);
+                      context.read<PrivacySettingsCubit>().updateSingleSetting(
+                        'show_online_status',
+                        val ? 1 : 0,
+                      );
                     },
                   ),
                 ],
               ),
-
 
               SettingsSection(
                 icon: Icons.chat_bubble_outline_rounded,
@@ -204,18 +239,28 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                 description: 'Control who can send you messages',
                 children: [
                   ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     leading: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF1FDE1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.badge_outlined, size: 18, color: Colors.black87),
+                      child: const Icon(
+                        Icons.badge_outlined,
+                        size: 18,
+                        color: Colors.black87,
+                      ),
                     ),
                     title: const Text(
                       'Allow messages from',
-                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
                     ),
                     subtitle: const Text(
                       'Choose who can send you messages',
@@ -230,28 +275,40 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           value: messageRestriction,
-                          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.grey),
-                          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 13),
+                          icon: const Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: Colors.grey,
+                          ),
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                          ),
                           onChanged: (String? newValue) {
                             if (newValue != null) {
                               setState(() => messageRestriction = newValue);
-                              context.read<PrivacySettingsCubit>().updateSingleSetting('allow_messages_from', newValue.toLowerCase());
+                              context
+                                  .read<PrivacySettingsCubit>()
+                                  .updateSingleSetting(
+                                    'allow_messages_from',
+                                    newValue.toLowerCase(),
+                                  );
                             }
                           },
                           items: <String>['Everyone', 'Followers', 'Nobody']
                               .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              })
+                              .toList(),
                         ),
                       ),
                     ),
                   ),
                 ],
               ),
-
 
               SettingsSection(
                 icon: Icons.search_rounded,
@@ -266,7 +323,10 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                     activeColor: _accentColor,
                     onChanged: (val) {
                       setState(() => allowProfileInSearch = val);
-                      context.read<PrivacySettingsCubit>().updateSingleSetting('allow_profile_in_search', val ? 1 : 0);
+                      context.read<PrivacySettingsCubit>().updateSingleSetting(
+                        'allow_profile_in_search',
+                        val ? 1 : 0,
+                      );
                     },
                   ),
                   SwitchTile(
@@ -277,12 +337,14 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                     activeColor: _accentColor,
                     onChanged: (val) {
                       setState(() => allowPostsInSearch = val);
-                      context.read<PrivacySettingsCubit>().updateSingleSetting('allow_posts_in_search', val ? 1 : 0);
+                      context.read<PrivacySettingsCubit>().updateSingleSetting(
+                        'allow_posts_in_search',
+                        val ? 1 : 0,
+                      );
                     },
                   ),
                 ],
               ),
-
 
               SettingsSection(
                 icon: Icons.notifications_none_rounded,
@@ -297,7 +359,10 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
                     activeColor: _accentColor,
                     onChanged: (val) {
                       setState(() => allowNotifications = val);
-                      context.read<PrivacySettingsCubit>().updateSingleSetting('allow_notifications', val ? 1 : 0);
+                      context.read<PrivacySettingsCubit>().updateSingleSetting(
+                        'allow_notifications',
+                        val ? 1 : 0,
+                      );
                     },
                   ),
                 ],

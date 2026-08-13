@@ -147,7 +147,7 @@ class _ViewsSheetContentState extends State<ViewsSheetContent> {
     }
 
     if (c.viewUser.isEmpty) {
-      return const Center(child: Text('No one yet'));
+      return const Center(child: Text('No views yet'));
     }
 
     return ListView.builder(

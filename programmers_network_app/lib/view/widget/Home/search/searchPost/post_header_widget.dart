@@ -9,8 +9,14 @@ import 'package:timeago/timeago.dart' as timeago;
 class PostHeaderWidget extends StatelessWidget {
   final Post post;
   final VoidCallback? onUserTap;
+  final VoidCallback? onWhySeeing;
 
-  const PostHeaderWidget({super.key, required this.post, this.onUserTap});
+  const PostHeaderWidget({
+    super.key,
+    required this.post,
+    this.onUserTap,
+    this.onWhySeeing,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +50,9 @@ class PostHeaderWidget extends StatelessWidget {
                             )
                           : null,
                     ),
+
                     const SizedBox(width: 10),
+
                     Flexible(
                       child: Text(
                         author.fullName,
@@ -55,7 +63,9 @@ class PostHeaderWidget extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
+
                     const SizedBox(width: 8),
+
                     InfoPill(
                       icon: followStatus.icon,
                       color: followStatus.color,
@@ -67,16 +77,32 @@ class PostHeaderWidget extends StatelessWidget {
               ),
             ),
 
+            if (onWhySeeing != null)
+              IconButton(
+                onPressed: onWhySeeing,
+                tooltip: "Why you're seeing this",
+                visualDensity: VisualDensity.compact,
+                padding: const EdgeInsets.all(6),
+                icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedInformationCircle,
+                  color: Colors.grey.shade700,
+                  size: 21,
+                ),
+              ),
+
+            // More
             IconButton(
               icon: HugeIcon(
                 icon: HugeIcons.strokeRoundedMoreHorizontal,
                 color: Colors.grey.shade700,
+                size: 21,
               ),
               onPressed: () {},
               visualDensity: VisualDensity.compact,
             ),
           ],
         ),
+
         const SizedBox(height: 6),
 
         Row(
@@ -85,21 +111,27 @@ class PostHeaderWidget extends StatelessWidget {
               post.publishedAt != null ? timeago.format(post.publishedAt!) : '',
               style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
             ),
+
             const SizedBox(width: 5),
+
             InfoPill(
               icon: visibility.icon,
               color: visibility.color,
               label: visibility.label,
               iconOnly: true,
             ),
+
             const SizedBox(width: 5),
+
             InfoPill(
               icon: type.icon,
               color: type.color,
               label: type.label,
               iconOnly: true,
             ),
+
             const SizedBox(width: 8),
+
             if (post.isEdited) ...[
               const SizedBox(width: 6),
               Tooltip(
@@ -111,6 +143,7 @@ class PostHeaderWidget extends StatelessWidget {
                 ),
               ),
             ],
+
             if (post.isPinned) ...[
               const SizedBox(width: 8),
               InfoPill(

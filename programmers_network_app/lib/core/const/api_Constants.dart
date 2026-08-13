@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String baseurl = "https://1cfb-89-33-8-51.ngrok-free.app";
+  static const String baseurl = "https://3514-5-155-4-233.ngrok-free.app";
   static const String login = "/api/mobile/login";
   static const String register = "/api/register";
   static const String resendtoken = "/api/resend/verification/link";
@@ -55,6 +55,14 @@ class ApiConstants {
   static const String getSearchHistory = "/api/get/search/histories";
   static const String clearOneSearchHistory = "/api/delete/search/history";
   static const String clearAllSearchHistory = "/api/delete/all/search/history";
+  static const String getFeed = "/api/feed";
+  static const String getFeedSource = "/api/feed/sources";
+  static const String feedSeen = "/api/mark/feed/as/seen";
+  static const String getSuggestions = "/api/get/user/suggestions";
+  static const String handelIgrnore = "/api/ignore/suggestion";
+  static const String suggestionsView = "/api/view/suggestion";
+  static const String getActivities = "/api/get/user/activities";
+  static const String getTimeLine = "/api/get/timeline";
 
   //Zenab
   static const String userProfile = "/api/get/user/profile";

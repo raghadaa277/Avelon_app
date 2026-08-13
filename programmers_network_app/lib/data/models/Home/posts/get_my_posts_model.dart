@@ -1,3 +1,5 @@
+import 'package:programmers_network_app/data/models/Profile/profile_model.dart';
+
 class GetMyPostsModel {
   final bool success;
   final String message;
@@ -52,6 +54,85 @@ class PostsPaginationModel {
   }
 }
 
+// class PostModel {
+//   final String createdAt;
+//   final int id;
+//   final int userId;
+//   final String status;
+//   final String type;
+//   final String? title;
+//   final String? content;
+//   final String visibility;
+//   final bool allowComments;
+//   final bool hideCommentsCount;
+//   final bool hideReactions;
+//   final bool hideReactionsCount;
+//   final bool hideViews;
+//   final bool hideViewsCount;
+//   final bool isEdited;
+//   bool isPinned;
+//   final String? publishedAt;
+//   final int likesCount;
+//   final int commentsCount;
+//   final int viewsCount;
+//   final List<PostMediaModel> postMedia;
+//   final PollModel? poll;
+
+//   PostModel({
+//     required this.id,
+//     required this.userId,
+//     required this.status,
+//     required this.type,
+//     this.title,
+//     this.content,
+//     required this.visibility,
+//     required this.allowComments,
+//     required this.hideCommentsCount,
+//     required this.hideReactions,
+//     required this.hideReactionsCount,
+//     required this.hideViews,
+//     required this.hideViewsCount,
+//     required this.isEdited,
+//     required this.isPinned,
+//     this.publishedAt,
+//     required this.likesCount,
+//     required this.commentsCount,
+//     required this.viewsCount,
+//     required this.postMedia,
+//     required this.createdAt,
+//     this.poll,
+//   });
+
+//   factory PostModel.fromJson(Map<String, dynamic> json) {
+//     return PostModel(
+//       id: json['id'] ?? 0,
+//       userId: json['user_id'] ?? 0,
+//       status: json['status'] ?? '',
+//       type: json['type'] ?? '',
+//       title: json['title'],
+//       content: json['content'],
+//       visibility: json['visibility'] ?? 'public',
+//       allowComments: (json['allow_comments'] ?? 0) == 1,
+//       hideCommentsCount: (json['hide_comments_count'] ?? 0) == 1,
+//       hideReactions: (json['hide_reactions'] ?? 0) == 1,
+//       hideReactionsCount: (json['hide_reactions_count'] ?? 0) == 1,
+//       hideViews: (json['hide_views'] ?? 0) == 1,
+//       hideViewsCount: (json['hide_views_count'] ?? 0) == 1,
+//       isEdited: (json['is_edited'] ?? 0) == 1,
+//       isPinned: (json['is_pinned'] ?? 0) == 1,
+//       publishedAt: json['published_at'],
+//       likesCount: json['likes_count'] ?? 0,
+//       commentsCount: json['comments_count'] ?? 0,
+//       viewsCount: json['views_count'] ?? 0,
+//       postMedia: (json['post_media'] as List<dynamic>? ?? [])
+//           .map((e) => PostMediaModel.fromJson(e))
+//           .toList(),
+//       poll: json['poll'] != null ? PollModel.fromJson(json['poll']) : null,
+//       createdAt: json['created_at'] ?? '',
+//     );
+//   }
+// }
+
 class PostModel {
   final String createdAt;
   final int id;
@@ -76,6 +157,8 @@ class PostModel {
   final List<PostMediaModel> postMedia;
   final PollModel? poll;
 
+  final ProfileData? profileData;
+
   PostModel({
     required this.id,
     required this.userId,
@@ -99,6 +182,7 @@ class PostModel {
     required this.postMedia,
     required this.createdAt,
     this.poll,
+    this.profileData,
   });
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
@@ -122,11 +206,22 @@ class PostModel {
       likesCount: json['likes_count'] ?? 0,
       commentsCount: json['comments_count'] ?? 0,
       viewsCount: json['views_count'] ?? 0,
+
       postMedia: (json['post_media'] as List<dynamic>? ?? [])
           .map((e) => PostMediaModel.fromJson(e))
           .toList(),
+
       poll: json['poll'] != null ? PollModel.fromJson(json['poll']) : null,
+
       createdAt: json['created_at'] ?? '',
+
+      profileData: json['user'] != null
+          ? ProfileData.fromJson({
+              ...json['user'],
+              ...?json['user']['user_profile'],
+              'user_id': json['user']['id'],
+            })
+          : null,
     );
   }
 }

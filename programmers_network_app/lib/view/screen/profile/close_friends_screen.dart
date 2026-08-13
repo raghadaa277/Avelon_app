@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:programmers_network_app/core/const/color_const.dart';
 
 import '../../../cubit/profile/close_friends_cubit.dart';
 import '../../../cubit/profile/close_friends_state.dart';
@@ -23,7 +23,6 @@ class _CloseFriendsScreenState extends State<CloseFriendsScreen> {
 
     context.read<CloseFriendsCubit>().fetchCloseFriends();
 
-
     _historyScrollController.addListener(() {
       if (_historyScrollController.position.pixels >=
           _historyScrollController.position.maxScrollExtent - 200) {
@@ -42,14 +41,13 @@ class _CloseFriendsScreenState extends State<CloseFriendsScreen> {
   @override
   Widget build(BuildContext context) {
     const primaryGreen = Color(0xFF4CAE47);
-    const lightBg = Color(0xFFF8F9FA);
 
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: lightBg,
+        backgroundColor: ColorConst.colorBackGroung,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: ColorConst.colorBackGroung,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
@@ -62,7 +60,11 @@ class _CloseFriendsScreenState extends State<CloseFriendsScreen> {
               SizedBox(width: 8),
               Text(
                 'Get My Close',
-                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
             ],
           ),
@@ -89,7 +91,6 @@ class _CloseFriendsScreenState extends State<CloseFriendsScreen> {
     );
   }
 
-
   Widget _buildCloseFriendsTab(Color primaryGreen) {
     return BlocConsumer<CloseFriendsCubit, CloseFriendsState>(
       listener: (context, state) {
@@ -104,9 +105,7 @@ class _CloseFriendsScreenState extends State<CloseFriendsScreen> {
       },
       builder: (context, state) {
         if (state is CloseFriendsLoading) {
-          return Center(
-            child: CircularProgressIndicator(color: primaryGreen),
-          );
+          return Center(child: CircularProgressIndicator(color: primaryGreen));
         }
 
         List<CloseFriendModel> friends = [];
@@ -154,7 +153,11 @@ class _CloseFriendsScreenState extends State<CloseFriendsScreen> {
                             color: Colors.white,
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(Icons.star, color: primaryGreen, size: 12),
+                          child: Icon(
+                            Icons.star,
+                            color: primaryGreen,
+                            size: 12,
+                          ),
                         ),
                       ),
                     ],
@@ -175,16 +178,25 @@ class _CloseFriendsScreenState extends State<CloseFriendsScreen> {
                         const SizedBox(height: 2),
                         Text(
                           friend.email,
-                          style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
+                          style: TextStyle(
+                            color: Colors.grey.shade500,
+                            fontSize: 11,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   OutlinedButton.icon(
                     onPressed: () {
-                      context.read<CloseFriendsCubit>().toggleCloseFriend(friend.id);
+                      context.read<CloseFriendsCubit>().toggleCloseFriend(
+                        friend.id,
+                      );
                     },
-                    icon: const Icon(Icons.delete_outline, size: 15, color: Colors.redAccent),
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      size: 15,
+                      color: Colors.redAccent,
+                    ),
                     label: const Text(
                       'Unclose',
                       style: TextStyle(
@@ -196,10 +208,15 @@ class _CloseFriendsScreenState extends State<CloseFriendsScreen> {
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Color(0xFFFFEBEE)),
                       backgroundColor: const Color(0xFFFFF5F5),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
                 ],
@@ -211,11 +228,9 @@ class _CloseFriendsScreenState extends State<CloseFriendsScreen> {
     );
   }
 
-
   Widget _buildHistoryTab(Color primaryGreen) {
     return Column(
       children: [
-
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Container(
@@ -237,7 +252,11 @@ class _CloseFriendsScreenState extends State<CloseFriendsScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.person_outline, size: 18, color: isMyActions ? primaryGreen : Colors.grey),
+                          Icon(
+                            Icons.person_outline,
+                            size: 18,
+                            color: isMyActions ? primaryGreen : Colors.grey,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             'sent',
@@ -263,7 +282,11 @@ class _CloseFriendsScreenState extends State<CloseFriendsScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.people_outline, size: 18, color: !isMyActions ? primaryGreen : Colors.grey),
+                          Icon(
+                            Icons.people_outline,
+                            size: 18,
+                            color: !isMyActions ? primaryGreen : Colors.grey,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             'received',
@@ -282,12 +305,13 @@ class _CloseFriendsScreenState extends State<CloseFriendsScreen> {
           ),
         ),
 
-
         Expanded(
           child: BlocBuilder<CloseFriendsCubit, CloseFriendsState>(
             builder: (context, state) {
               if (state is CloseFriendsLoading) {
-                return Center(child: CircularProgressIndicator(color: primaryGreen));
+                return Center(
+                  child: CircularProgressIndicator(color: primaryGreen),
+                );
               }
 
               List historyList = [];
@@ -310,7 +334,8 @@ class _CloseFriendsScreenState extends State<CloseFriendsScreen> {
                 itemCount: historyList.length,
                 itemBuilder: (context, index) {
                   final item = historyList[index];
-                  final bool isMuted = item.actionType?.toLowerCase() == 'muted';
+                  final bool isMuted =
+                      item.actionType?.toLowerCase() == 'muted';
 
                   return Container(
                     margin: const EdgeInsets.only(bottom: 10),
@@ -324,11 +349,15 @@ class _CloseFriendsScreenState extends State<CloseFriendsScreen> {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: isMuted ? const Color(0xFFFFEBEE) : const Color(0xFFE8F5E9),
+                            color: isMuted
+                                ? const Color(0xFFFFEBEE)
+                                : const Color(0xFFE8F5E9),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
-                            isMuted ? Icons.volume_off_outlined : Icons.volume_up_outlined,
+                            isMuted
+                                ? Icons.volume_off_outlined
+                                : Icons.volume_up_outlined,
                             color: isMuted ? Colors.redAccent : primaryGreen,
                             size: 18,
                           ),
@@ -346,12 +375,17 @@ class _CloseFriendsScreenState extends State<CloseFriendsScreen> {
                             children: [
                               Text(
                                 item.userName ?? 'User',
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
                               ),
                               Text(
                                 isMuted ? 'Muted' : 'Unmuted',
                                 style: TextStyle(
-                                  color: isMuted ? Colors.redAccent : primaryGreen,
+                                  color: isMuted
+                                      ? Colors.redAccent
+                                      : primaryGreen,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -361,12 +395,19 @@ class _CloseFriendsScreenState extends State<CloseFriendsScreen> {
                         ),
                         Row(
                           children: [
-                            const Icon(Icons.access_time, size: 14, color: Colors.grey),
+                            const Icon(
+                              Icons.access_time,
+                              size: 14,
+                              color: Colors.grey,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               item.createdAt ?? '',
                               textAlign: TextAlign.right,
-                              style: const TextStyle(color: Colors.grey, fontSize: 10),
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 10,
+                              ),
                             ),
                           ],
                         ),

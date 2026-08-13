@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import 'package:programmers_network_app/data/models/Home/personalPage/follower/get_follows_model.dart';
 import 'package:programmers_network_app/view/screen/Home/personalPage/other_user_profile_page.dart';
+
 // import 'package:programmers_network_app/view/widget/Home/personalProfile/block_dialog_widget.dart';
 
 class FollowUserCard extends StatelessWidget {
@@ -11,7 +12,7 @@ class FollowUserCard extends StatelessWidget {
   const FollowUserCard({super.key, required this.user});
 
   void openProfile(BuildContext context) {
-    // if (user.userProfile.isBlocked == true) {
+    // if (user.userProfile.isBlockedBy == true) {
     //   Get.dialog(const BlockedFollowDialog());
     //   return;
     // }

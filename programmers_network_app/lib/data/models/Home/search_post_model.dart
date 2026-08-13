@@ -157,6 +157,7 @@ class Post {
   final Poll? poll;
   final List<Viewer> viewers;
   final PostUser user;
+  int? feedId;
 
   Post({
     required this.id,
@@ -194,6 +195,7 @@ class Post {
     this.poll,
     required this.viewers,
     required this.user,
+    this.feedId,
   });
 
   Post copyWith({
@@ -242,6 +244,7 @@ class Post {
       poll: poll,
       viewers: viewers ?? this.viewers,
       user: user,
+      feedId: feedId,
     );
   }
 
@@ -292,6 +295,7 @@ class Post {
       isSaved: _toBool(json['is_saved']),
       isViewed: _toBool(json['is_viewed']),
       followStatus: json['follow_status'],
+      feedId: json['feed_id'] ?? 0,
       postMedia: (json['post_media'] as List<dynamic>? ?? [])
           .map((e) => PostMedia.fromJson(e as Map<String, dynamic>))
           .toList(),

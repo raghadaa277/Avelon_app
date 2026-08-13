@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:programmers_network_app/core/const/color_const.dart';
 
 import '../../../cubit/profile/muted_users_cubit.dart';
 import '../../../cubit/profile/muted_users_state.dart';
@@ -59,14 +60,13 @@ class _MutedUsersViewState extends State<_MutedUsersView> {
   @override
   Widget build(BuildContext context) {
     const primaryGreen = Color(0xFF4CAE47);
-    const lightBg = Color(0xFFF8F9FA);
 
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: lightBg,
+        backgroundColor: ColorConst.colorBackGroung,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: ColorConst.colorBackGroung,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),

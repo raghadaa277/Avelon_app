@@ -103,4 +103,12 @@ class TargetUserPostsController extends GetxController {
       reactionStatus: newStatus,
     );
   }
+
+  void updateSavedPost(int postId) {
+    final index = posts.indexWhere((p) => p.id == postId);
+    if (index != -1) {
+      posts[index] = posts[index].copyWith(isSaved: !posts[index].isSaved);
+      posts.refresh();
+    }
+  }
 }

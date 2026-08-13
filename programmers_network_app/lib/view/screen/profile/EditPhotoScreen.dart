@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:image_picker/image_picker.dart';
+import 'package:programmers_network_app/core/const/color_const.dart';
 
 import '../../../cubit/profile/profile_cubit.dart';
 import '../../../cubit/profile/profile_state.dart';
@@ -44,7 +45,7 @@ class _EditPhotoScreenState extends State<EditPhotoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1FDE1),
+      backgroundColor: ColorConst.colorBackGroung,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

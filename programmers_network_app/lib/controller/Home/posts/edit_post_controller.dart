@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:programmers_network_app/controller/Home/personalPage/get_target_user_post_controllerl.dart';
 import 'package:programmers_network_app/controller/Home/posts/my_posts_controller.dart';
 import 'package:programmers_network_app/controller/Home/search_controller.dart';
 import 'package:programmers_network_app/data/models/Home/posts/get_my_posts_model.dart';
@@ -69,6 +70,35 @@ class EditPostController extends GetxController {
     }
   }
 
+  // Future<void> savePost({
+  //   required int targetUserId,
+  //   required int postId,
+  // }) async {
+  //   isLoading = true;
+  //   errorMessage.value = '';
+
+  //   try {
+  //     final result = await _editPostServices.savePost(
+  //       targetUserId: targetUserId,
+  //       postId: postId,
+  //     );
+
+  //     if (result.success) {
+  //       if (Get.isRegistered<SearchPageController>()) {
+  //         Get.find<SearchPageController>().updateSavedPost(postId);
+  //       }
+  //       Get.snackbar("Success", result.message);
+  //     } else {
+  //       Get.snackbar("Error", result.message);
+  //     }
+  //   } catch (e) {
+  //     errorMessage.value = e.toString();
+  //     Get.snackbar("Error", errorMessage.value);
+  //   } finally {
+  //     isLoading = false;
+  //   }
+  // }
+
   Future<void> savePost({
     required int targetUserId,
     required int postId,
@@ -86,6 +116,12 @@ class EditPostController extends GetxController {
         if (Get.isRegistered<SearchPageController>()) {
           Get.find<SearchPageController>().updateSavedPost(postId);
         }
+
+        final tag = 'posts_$targetUserId';
+        if (Get.isRegistered<TargetUserPostsController>(tag: tag)) {
+          Get.find<TargetUserPostsController>(tag: tag).updateSavedPost(postId);
+        }
+
         Get.snackbar("Success", result.message);
       } else {
         Get.snackbar("Error", result.message);

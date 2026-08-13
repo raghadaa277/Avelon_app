@@ -6,10 +6,10 @@ import 'package:programmers_network_app/controller/Home/posts/my_posts_controlle
 
 import 'package:programmers_network_app/controller/auth/logout_controller.dart';
 import 'package:programmers_network_app/cubit/profile/close_friends_cubit.dart';
-import 'package:programmers_network_app/cubit/profile/muted_users_cubit.dart';
-import 'package:programmers_network_app/data/services/profile/MutedUsersService.dart';
 import 'package:programmers_network_app/data/services/profile/close_friends_service.dart';
 import 'package:programmers_network_app/view/screen/Home/posts/save_post_page.dart';
+import 'package:programmers_network_app/view/screen/Home/time_line_page.dart';
+import 'package:programmers_network_app/view/screen/auth/activity_page.dart';
 import 'package:programmers_network_app/view/screen/profile/FollowScreen.dart';
 
 import 'package:programmers_network_app/view/screen/profile/PrivacySettingsPage.dart';
@@ -157,26 +157,38 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return BlocProvider<ProfileCubit>(
       create: (context) => ProfileCubit(ProfileServices())..fetchProfile(),
+
       child: BlocBuilder<ProfileCubit, ProfileState>(
         builder: (context, state) {
           if (state is ProfileLoading) {
             return Scaffold(
               backgroundColor: const Color(0xFFF1FDE1),
+
               appBar: const ProfileAppBar(),
+
               body: const Center(
                 child: CircularProgressIndicator(color: Color(0xffB8FF1A)),
               ),
             );
-          } else if (state is ProfileError) {
+          }
+
+          if (state is ProfileError) {
             return Scaffold(
               backgroundColor: const Color(0xFFF1FDE1),
+
               appBar: const ProfileAppBar(),
-              body: Center(child: Text(state.errorMessage)),
+
+              body: Center(
+                child: Text(state.errorMessage, textAlign: TextAlign.center),
+              ),
             );
-          } else if (state is ProfileLoaded) {
-            final profileData = state.profileModel.data;
+          }
+
+          if (state is ProfileLoaded) {
+            final ProfileData profileData = state.profileModel.data;
 
             Widget activeContent;
+
             if (state.activeTabIndex == 0) {
               activeContent = PostsTabContent(
                 isActive: true,
@@ -185,132 +197,179 @@ class _ProfilePageState extends State<ProfilePage> {
             } else if (state.activeTabIndex == 1) {
               activeContent = AboutTabContent(data: profileData);
             } else {
-              activeContent = SkillsTabContent(isActive: true);
+              activeContent = const SkillsTabContent(isActive: true);
             }
 
-            return AvelonHomeShell(
-              menu: ProfileSideMenu(
-                data: profileData,
-                onSettings: () async {
-                  AvelonHomeShell.of(context)?.closeMenu();
-                  await Future.delayed(const Duration(milliseconds: 280));
-                  Get.to(
-                    () => BlocProvider(
-                      create: (_) =>
-                          PrivacySettingsCubit(services: ProfileServices()),
-                      child: const PrivacySettingsPage(),
-                    ),
-                  );
-                },
-                onTimeManagement: () async {
-                  AvelonHomeShell.of(context)?.closeMenu();
-                  await Future.delayed(const Duration(milliseconds: 280));
-                  Get.to(() => UserActivityScreen());
-                },
-                onStatusUser: () async {
-                  AvelonHomeShell.of(context)?.closeMenu();
-                  await Future.delayed(const Duration(milliseconds: 280));
-                  Get.to(() => UserStatusHistoryScreen());
-                },
-                onArchive: () async {
-                  AvelonHomeShell.of(context)?.closeMenu();
-                  await Future.delayed(const Duration(milliseconds: 280));
-                  Get.to(() => ArchivedPage(profileData: profileData));
-                },
-                onSave: () async {
-                  AvelonHomeShell.of(context)?.closeMenu();
-                  await Future.delayed(const Duration(milliseconds: 280));
-                  Get.to(() => SavedPostsPage());
-                },
-                onFavoritePeople: () async {
-                  AvelonHomeShell.of(context)?.closeMenu();
-                  await Future.delayed(const Duration(milliseconds: 280));
+            return Scaffold(
+              backgroundColor: const Color(0xFFF1FDE1),
 
+              appBar: ProfileAppBar(
+                data: profileData,
+
+                onMenuPressed: () {
                   Get.to(
-                    () => BlocProvider(
-                      create: (_) => CloseFriendsCubit(CloseFriendsService()),
-                      child: const CloseFriendsScreen(),
+                    () => ProfileMenuPage(
+                      data: profileData,
+
+                      onSettings: () async {
+                        await Future.delayed(const Duration(milliseconds: 280));
+
+                        Get.to(
+                          () => BlocProvider(
+                            create: (_) => PrivacySettingsCubit(
+                              services: ProfileServices(),
+                            ),
+                            child: const PrivacySettingsPage(),
+                          ),
+                        );
+                      },
+                      activity: () async {
+                        await Future.delayed(const Duration(milliseconds: 280));
+                        Get.to(() => ActivitiesPage());
+                      },
+                      onTimeLine: () async {
+                        await Future.delayed(const Duration(milliseconds: 280));
+
+                        Get.to(() => FollowersTimelinePage());
+                      },
+                      onStatusUser: () async {
+                        await Future.delayed(const Duration(milliseconds: 280));
+
+                        Get.to(() => UserStatusHistoryScreen());
+                      },
+
+                      onTimeManagement: () async {
+                        await Future.delayed(const Duration(milliseconds: 280));
+
+                        Get.to(() => UserActivityScreen());
+                      },
+
+                      onArchive: () async {
+                        await Future.delayed(const Duration(milliseconds: 280));
+
+                        Get.to(() => ArchivedPage(profileData: profileData));
+                      },
+
+                      onSave: () async {
+                        await Future.delayed(const Duration(milliseconds: 280));
+
+                        Get.to(() => SavedPostsPage());
+                      },
+
+                      onFavoritePeople: () async {
+                        await Future.delayed(const Duration(milliseconds: 280));
+
+                        Get.to(
+                          () => BlocProvider(
+                            create: (_) =>
+                                CloseFriendsCubit(CloseFriendsService()),
+                            child: const CloseFriendsScreen(),
+                          ),
+                        );
+                      },
+
+                      onFollowingTracking: () async {
+                        await Future.delayed(const Duration(milliseconds: 280));
+
+                        Get.to(() => FollowScreen(userId: profileData.userId));
+                      },
+
+                      onMutedPeople: () async {
+                        await Future.delayed(const Duration(milliseconds: 280));
+
+                        Get.to(() => MutedUsersScreen());
+                      },
+
+                      onBlockTracking: () async {
+                        await Future.delayed(const Duration(milliseconds: 280));
+
+                        // TODO:
+                        // Get.to(() => BlockedUsersScreen());
+                      },
+
+                      onDashboard: () async {
+                        await Future.delayed(const Duration(milliseconds: 280));
+
+                        // TODO:
+                        // Get.to(() => DashboardPage());
+                      },
+
+                      onLogout: () {
+                        Get.back();
+
+                        _showLogoutDialog(context);
+                      },
                     ),
                   );
-                },
-                onFollowingTracking: () async {
-                  AvelonHomeShell.of(context)?.closeMenu();
-                  await Future.delayed(const Duration(milliseconds: 280));
-                  Get.to(() => FollowScreen(userId: profileData.userId));
-                },
-                onMutedPeople: () async {
-                  AvelonHomeShell.of(context)?.closeMenu();
-                  await Future.delayed(const Duration(milliseconds: 280));
-                  Get.to(
-                    () => BlocProvider(
-                      create: (_) => MutedUsersCubit(MutedUsersService()),
-                      child: const MutedUsersScreen(),
-                    ),
-                  );
-                },
-                onLogout: () {
-                  _showLogoutDialog(context);
                 },
               ),
-              body: Scaffold(
-                backgroundColor: const Color(0xFFF1FDE1),
-                appBar: const ProfileAppBar(),
-                body: NotificationListener<ScrollNotification>(
-                  onNotification: (scroll) {
-                    if (scroll.metrics.pixels >=
-                        scroll.metrics.maxScrollExtent - 200) {
-                      if (Get.isRegistered<MyPostsController>()) {
-                        Get.find<MyPostsController>().loadMore();
-                      }
+
+              body: NotificationListener<ScrollNotification>(
+                onNotification: (scroll) {
+                  if (scroll.metrics.pixels >=
+                      scroll.metrics.maxScrollExtent - 200) {
+                    if (Get.isRegistered<MyPostsController>()) {
+                      Get.find<MyPostsController>().loadMore();
                     }
-                    return false;
+                  }
+
+                  return false;
+                },
+
+                child: RefreshIndicator(
+                  color: const Color(0xffB8FF1A),
+                  backgroundColor: Colors.white,
+
+                  onRefresh: () async {
+                    await context.read<ProfileCubit>().fetchProfile();
+
+                    if (Get.isRegistered<MyPostsController>()) {
+                      await Get.find<MyPostsController>().refreshPosts();
+                    }
                   },
-                  child: RefreshIndicator(
-                    color: const Color(0xffB8FF1A),
-                    backgroundColor: Colors.white,
-                    onRefresh: () async {
-                      await context.read<ProfileCubit>().fetchProfile();
 
-                      if (Get.isRegistered<MyPostsController>()) {
-                        Get.find<MyPostsController>().refreshPosts();
-                      }
-                    },
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 10),
-                          UserHeaderCard(data: profileData),
-                          const SizedBox(height: 16),
-                          ActionButtonsRow(profileData: profileData),
-                          const SizedBox(height: 20),
-                          _buildTabBar(context, state.activeTabIndex),
-                          const SizedBox(height: 16),
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
 
-                          if (state.activeTabIndex == 0) ...[
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              child: PostInputSection(profileData: profileData),
-                            ),
-                            const SizedBox(height: 16),
-                          ],
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 10),
 
+                        UserHeaderCard(data: profileData),
+
+                        const SizedBox(height: 16),
+
+                        ActionButtonsRow(profileData: profileData),
+
+                        const SizedBox(height: 20),
+
+                        _buildTabBar(context, state.activeTabIndex),
+
+                        const SizedBox(height: 16),
+
+                        if (state.activeTabIndex == 0) ...[
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: activeContent,
+                            child: PostInputSection(profileData: profileData),
                           ),
 
-                          const SizedBox(height: 40),
+                          const SizedBox(height: 16),
                         ],
-                      ),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: activeContent,
+                        ),
+
+                        const SizedBox(height: 40),
+                      ],
                     ),
                   ),
                 ),
               ),
             );
           }
+
           return const SizedBox.shrink();
         },
       ),

@@ -161,14 +161,14 @@ class PostEngagementBar extends StatelessWidget {
           icon: HugeIcon(
             icon: HugeIcons.strokeRoundedComment01,
             size: 20,
-            color: PostColors.comment,
+            color: const Color(0xFF14B8A6),
           ),
           disabledIcon: HugeIcon(
             icon: HugeIcons.strokeRoundedComment01,
             size: 20,
             color: PostColors.neutralIcon,
           ),
-          color: PostColors.comment,
+          color: const Color(0xFF14B8A6),
           disabled: !post.allowComments,
           count: !post.allowComments || post.hideCommentsCount
               ? null

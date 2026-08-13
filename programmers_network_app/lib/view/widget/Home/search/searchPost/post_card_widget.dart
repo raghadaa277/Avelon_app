@@ -19,6 +19,11 @@ class PostCardWidget extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onUserTap;
 
+  // Optional: only wired up on the home feed for now, so it's nullable
+  // rather than required — other screens using this card simply won't
+  // pass it and the icon/button won't render (see PostHeaderWidget).
+  final VoidCallback? onWhySeeing;
+
   const PostCardWidget({
     super.key,
     required this.post,
@@ -30,6 +35,7 @@ class PostCardWidget extends StatelessWidget {
     this.onSave,
     this.onTap,
     this.onUserTap,
+    this.onWhySeeing,
   });
 
   @override
@@ -56,7 +62,11 @@ class PostCardWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            PostHeaderWidget(post: post, onUserTap: onUserTap),
+            PostHeaderWidget(
+              post: post,
+              onUserTap: onUserTap,
+              onWhySeeing: onWhySeeing,
+            ),
             const SizedBox(height: 10),
 
             Column(
