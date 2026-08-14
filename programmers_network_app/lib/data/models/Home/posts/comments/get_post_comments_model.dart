@@ -169,6 +169,8 @@ class DataPostComments {
     int? disLikesCount,
     int? repliesCount,
     bool? repliesExists,
+    bool? isPinned,
+    bool? isBest,
   }) {
     return DataPostComments(
       id: id,
@@ -177,8 +179,8 @@ class DataPostComments {
       postId: postId,
       parentId: parentId,
       content: content ?? this.content,
-      isPinned: isPinned,
-      isBest: isBest,
+      isPinned: isPinned ?? this.isPinned,
+      isBest: isBest ?? this.isBest,
       isHidden: isHidden,
       repliesCount: repliesCount ?? this.repliesCount,
       likesCount: likesCount ?? this.likesCount,

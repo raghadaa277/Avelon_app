@@ -7,11 +7,45 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 class PostViewedBadge extends StatelessWidget {
   final Post post;
+  final bool isOwner;
 
-  const PostViewedBadge({super.key, required this.post});
+  const PostViewedBadge({super.key, required this.post, this.isOwner = false});
 
   @override
   Widget build(BuildContext context) {
+    if (isOwner) {
+      final int views = post.viewsCount;
+
+      final String label = views == 0
+          ? "No views yet"
+          : views == 1
+          ? "1 view"
+          : "$views views";
+
+      final Color color = views > 0 ? Colors.green : Colors.grey;
+
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          HugeIcon(
+            icon: views > 0
+                ? HugeIcons.strokeRoundedView
+                : HugeIcons.strokeRoundedViewOffSlash,
+            size: 16,
+            color: color,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+        ],
+      );
+    }
     int myViewCount = 0;
 
     if (post.viewers.isNotEmpty) {

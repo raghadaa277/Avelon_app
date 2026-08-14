@@ -2,13 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:programmers_network_app/controller/Home/posts/archive_post_controller.dart';
+import 'package:programmers_network_app/controller/Home/posts/edit_post_controller.dart';
 import 'package:programmers_network_app/controller/Home/posts/my_posts_controller.dart';
+import 'package:programmers_network_app/controller/Home/reactions_controller.dart';
 
 import 'package:programmers_network_app/controller/auth/logout_controller.dart';
 import 'package:programmers_network_app/cubit/profile/close_friends_cubit.dart';
+import 'package:programmers_network_app/data/models/Home/posts/get_my_posts_model.dart';
 import 'package:programmers_network_app/data/services/profile/close_friends_service.dart';
+import 'package:programmers_network_app/view/screen/Home/growth_page.dart';
+import 'package:programmers_network_app/view/screen/Home/overView_page.dart';
+
 import 'package:programmers_network_app/view/screen/Home/posts/save_post_page.dart';
 import 'package:programmers_network_app/view/screen/Home/time_line_page.dart';
+
 import 'package:programmers_network_app/view/screen/auth/activity_page.dart';
 import 'package:programmers_network_app/view/screen/profile/FollowScreen.dart';
 
@@ -18,7 +25,9 @@ import 'package:programmers_network_app/view/screen/profile/close_friends_screen
 import 'package:programmers_network_app/view/screen/profile/muted_users_screen.dart';
 import 'package:programmers_network_app/view/screen/profile/user_activity/user_activity_page.dart';
 import 'package:programmers_network_app/view/screen/profile/user_status_history/user_status_history_page.dart';
-import 'package:programmers_network_app/view/widget/Home/posts/getPost/post_card_widget.dart';
+import 'package:programmers_network_app/view/widget/Home/comment_widget.dart';
+
+import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_card_widget.dart';
 
 import 'package:programmers_network_app/view/widget/profile/slider_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -254,6 +263,18 @@ class _ProfilePageState extends State<ProfilePage> {
                         await Future.delayed(const Duration(milliseconds: 280));
 
                         Get.to(() => SavedPostsPage());
+                      },
+
+                      onGrwoth: () async {
+                        await Future.delayed(const Duration(milliseconds: 280));
+
+                        Get.to(() => GrowthPage());
+                      },
+
+                      onOverview: () async {
+                        await Future.delayed(const Duration(milliseconds: 280));
+
+                        Get.to(() => OverviewPage());
                       },
 
                       onFavoritePeople: () async {
@@ -495,6 +516,12 @@ class PostsTabContent extends StatefulWidget {
 class _PostsTabContentState extends State<PostsTabContent> {
   late MyPostsController ctrl;
   final ScrollController scrollController = ScrollController();
+  final ReactionsController reactionsController = Get.put(
+    ReactionsController(),
+  );
+  final EditPostController editPostController = Get.put(EditPostController());
+
+  final FocusNode _profileFocus = FocusNode();
 
   @override
   void initState() {
@@ -540,10 +567,8 @@ class _PostsTabContentState extends State<PostsTabContent> {
           controller: scrollController,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-
           itemCount:
               controller.posts.length + (controller.isLoadingMore ? 1 : 0),
-
           itemBuilder: (context, index) {
             if (index == controller.posts.length) {
               return const Padding(
@@ -554,10 +579,59 @@ class _PostsTabContentState extends State<PostsTabContent> {
               );
             }
 
-            return PostCard(
-              key: ValueKey(controller.posts[index].id),
-              post: controller.posts[index],
-              profileData: widget.profileData,
+            final postModel = controller.posts[index];
+            final post = postModel.toSearchPost();
+
+            return PostCardWidget(
+              key: ValueKey(post.id),
+              post: post,
+              media: post.postMedia,
+              isOwner: true,
+              onLike: () async {
+                _profileFocus.unfocus();
+                controller.updateReaction(postId: post.id, reaction: "like");
+
+                final success = await reactionsController.reactions(
+                  targetUserId: post.userId,
+                  postId: post.id,
+                  type: "like",
+                );
+
+                if (!success) {
+                  ctrl.refreshPosts();
+                }
+              },
+              onDislike: () async {
+                _profileFocus.unfocus();
+                controller.updateReaction(postId: post.id, reaction: "dislike");
+
+                final success = await reactionsController.reactions(
+                  targetUserId: post.userId,
+                  postId: post.id,
+                  type: "dislike",
+                );
+
+                if (!success) {
+                  ctrl.refreshPosts();
+                }
+              },
+              onComment: () {
+                _profileFocus.unfocus();
+                showCommentsPage(
+                  context,
+                  postId: post.id,
+                  targetUserId: post.userId,
+                );
+              },
+              onShare: () {},
+              onSave: () async {
+                _profileFocus.unfocus();
+                await editPostController.savePost(
+                  targetUserId: post.userId,
+                  postId: post.id,
+                );
+              },
+              onTap: () {},
             );
           },
         );

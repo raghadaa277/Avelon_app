@@ -132,4 +132,35 @@ class MyPostsController extends GetxController {
   }
 
   bool get hasMore => currentPage < lastPage;
+
+  void updateReaction({required int postId, required String reaction}) {
+    final index = posts.indexWhere((p) => p.id == postId);
+    if (index == -1) return;
+
+    final post = posts[index];
+    final wasLiked = post.reactionStatus == 'like';
+    final wasDisliked = post.reactionStatus == 'dislike';
+
+    int likes = post.likesCount;
+    String newStatus;
+
+    if (reaction == 'like') {
+      if (wasLiked) {
+        likes--;
+        newStatus = '';
+      } else {
+        likes++;
+        newStatus = 'like';
+      }
+    } else {
+      newStatus = wasDisliked ? '' : 'dislike';
+    }
+
+    posts[index] = post.copyWith(
+      likesCount: likes < 0 ? 0 : likes,
+      reactionStatus: newStatus,
+    );
+
+    update();
+  }
 }

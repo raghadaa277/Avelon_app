@@ -59,11 +59,22 @@ class PostOptionsMenu extends StatelessWidget {
           label: isSaved ? 'Unsave' : 'Save',
           color: isSaved ? primaryColor : Colors.black87,
         ),
+        _buildItem(
+          value: 'post overview',
+          icon: HugeIcons.strokeRoundedAnalytics01,
+          label: 'Post Insights',
+        ),
 
         _buildItem(
-          value: 'statistics',
-          icon: HugeIcons.strokeRoundedChartHistogram,
-          label: 'Statistics',
+          value: 'audience',
+          icon: HugeIcons.strokeRoundedUserGroup,
+          label: 'Audience Insights',
+        ),
+
+        _buildItem(
+          value: 'post views overview',
+          icon: HugeIcons.strokeRoundedArrowUp01,
+          label: 'Post Views Overview',
         ),
 
         _buildItem(

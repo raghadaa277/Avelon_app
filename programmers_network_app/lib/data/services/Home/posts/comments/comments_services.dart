@@ -7,6 +7,7 @@ import 'package:programmers_network_app/data/models/Home/posts/comments/delete_c
 import 'package:programmers_network_app/data/models/Home/posts/comments/edit_comment_model.dart';
 import 'package:programmers_network_app/data/models/Home/posts/comments/get_post_comments_model.dart';
 import 'package:programmers_network_app/data/models/Home/posts/comments/get_reactions_comment_model.dart';
+import 'package:programmers_network_app/data/models/Home/posts/comments/manage_comments_model.dart';
 import 'package:programmers_network_app/data/models/Home/posts/comments/reactions_comments_model.dart';
 import 'package:programmers_network_app/data/models/Home/posts/comments/replies_comments_model.dart';
 
@@ -163,6 +164,27 @@ class CommentsServices {
         return EditCommentModel.fromJson(decodedResponse);
       }
       throw Exception(decodedResponse['message'] ?? 'Failed to edit comment');
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<ManageCommentModel> manageComments({
+    required int postId,
+    required int commentId,
+    required String action,
+  }) async {
+    try {
+      final response = await apiClient.post(
+        "${ApiConstants.manageComments}/$postId/$commentId",
+        body: {'action': action},
+      );
+      final decodedResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return ManageCommentModel.fromJson(decodedResponse);
+      }
+      throw Exception(decodedResponse['message'] ?? 'Failed to manage comment');
     } catch (e) {
       rethrow;
     }

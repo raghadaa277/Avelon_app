@@ -22,6 +22,8 @@ class ProfileMenuPage extends StatelessWidget {
     this.onSave,
     this.activity,
     this.onTimeLine,
+    this.onGrwoth,
+    this.onOverview,
   });
 
   final ProfileData data;
@@ -40,6 +42,8 @@ class ProfileMenuPage extends StatelessWidget {
   final VoidCallback? onLogout;
   final VoidCallback? onSave;
   final VoidCallback? onTimeLine;
+  final VoidCallback? onGrwoth;
+  final VoidCallback? onOverview;
 
   static const Color accent = Color(0xFFB8FF1A);
 
@@ -134,7 +138,7 @@ class ProfileMenuPage extends StatelessWidget {
                   icon: HugeIcons.strokeRoundedActivity01,
                   label: 'Activities',
                   subtitle: 'View your activities posts',
-                  tint: const Color(0xFFFBF0E4),
+                  tint: const Color.fromARGB(255, 251, 234, 228),
                   iconColor: Colors.deepOrangeAccent,
                   onTap: activity,
                 ),
@@ -221,7 +225,39 @@ class ProfileMenuPage extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 24),
 
+            const _SectionTitle(
+              title: 'Statistics',
+              subtitle: 'You can view user statistics and posts.',
+              icon: HugeIcons.strokeRoundedAnalytics01,
+            ),
+
+            const SizedBox(height: 10),
+
+            _MenuSection(
+              children: [
+                _MenuItem(
+                  icon: HugeIcons.strokeRoundedChartIncrease,
+                  label: 'User Analytics',
+                  subtitle: 'View user analytics',
+                  tint: const Color.fromARGB(5, 226, 95, 169),
+                  iconColor: Colors.purpleAccent,
+                  onTap: onGrwoth,
+                ),
+
+                _MenuItem(
+                  icon: HugeIcons.strokeRoundedAnalytics01,
+                  label: 'Overview Metrics',
+                  subtitle: 'Track your key performance metrics',
+                  tint: const Color.fromARGB(5, 226, 219, 95),
+                  iconColor: Colors.amber,
+                  onTap: onOverview,
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
             const SizedBox(height: 24),
 
             const _SectionTitle(
@@ -242,11 +278,7 @@ class ProfileMenuPage extends StatelessWidget {
                   iconColor: Colors.cyan,
                   onTap: onDashboard,
                 ),
-              ],
-            ),
 
-            _MenuSection(
-              children: [
                 _MenuItem(
                   icon: HugeIcons.strokeRoundedTimeline,
                   label: 'TimeLine',
@@ -258,6 +290,7 @@ class ProfileMenuPage extends StatelessWidget {
               ],
             ),
 
+            const SizedBox(height: 30),
             const SizedBox(height: 30),
 
             _LogoutTile(onTap: onLogout),

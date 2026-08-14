@@ -189,6 +189,54 @@ class CommentsController extends GetxController {
     update();
   }
 
+  /// دالة عامة تدور على الكومنت (بالـ comments الرئيسية أو جوا الـ replies)
+  /// وبتطبّق التعديل عليه. مستخدمة لتحديث isPinned/isBest محلياً بعد نجاح الـ API.
+  void _updateCommentInPlace(
+    int commentId,
+    DataPostComments Function(DataPostComments) transform,
+  ) {
+    final index = comments.indexWhere((c) => c.id == commentId);
+    if (index != -1) {
+      comments[index] = transform(comments[index]);
+      update();
+      return;
+    }
+
+    for (final entry in repliesMap.entries) {
+      final i = entry.value.indexWhere((c) => c.id == commentId);
+      if (i != -1) {
+        entry.value[i] = transform(entry.value[i]);
+        update();
+        return;
+      }
+    }
+  }
+
+  void updatePinStatus({required int commentId, required bool isPinned}) {
+    _updateCommentInPlace(commentId, (c) => c.copyWith(isPinned: isPinned));
+  }
+
+  void updateBestStatus({required int commentId, required bool isBest}) {
+    _updateCommentInPlace(commentId, (c) => c.copyWith(isBest: isBest));
+  }
+
+  Future<bool> manageDeleteComment({
+    required int postId,
+    required int commentId,
+  }) async {
+    final success = await _manage(
+      postId: postId,
+      commentId: commentId,
+      action: 'delete',
+    );
+
+    if (success) {
+      removeCommentById(commentId);
+    }
+
+    return success;
+  }
+
   Future<void> reactToComment({
     required int targetUserId,
     required int postId,
@@ -500,11 +548,100 @@ class CommentsController extends GetxController {
   }
 
   void removeCommentById(int commentId) {
-    final before = comments.length;
+    final beforeTop = comments.length;
     comments.removeWhere((comment) => comment.id == commentId);
-    if (comments.length != before && total > 0) {
-      total -= 1;
+
+    if (comments.length != beforeTop) {
+      if (total > 0) total -= 1;
+      update();
+      return;
     }
+
+    for (final entry in repliesMap.entries) {
+      final beforeReplies = entry.value.length;
+      entry.value.removeWhere((c) => c.id == commentId);
+
+      if (entry.value.length != beforeReplies) {
+        final parentIndex = comments.indexWhere((c) => c.id == entry.key);
+        if (parentIndex != -1) {
+          final parent = comments[parentIndex];
+          final newCount = (parent.repliesCount - 1).clamp(0, 1 << 30);
+          comments[parentIndex] = parent.copyWith(
+            repliesCount: newCount,
+            repliesExists: newCount > 0,
+          );
+        }
+        if (total > 0) total -= 1;
+        break;
+      }
+    }
+
     update();
   }
+
+  bool isProcessing = false;
+
+  Future<bool> _manage({
+    required int postId,
+    required int commentId,
+    required String action,
+  }) async {
+    try {
+      isProcessing = true;
+      update();
+
+      final response = await _commentsServices.manageComments(
+        postId: postId,
+        commentId: commentId,
+        action: action,
+      );
+
+      return response.success;
+    } catch (e) {
+      return false;
+    } finally {
+      isProcessing = false;
+      update();
+    }
+  }
+
+  Future<bool> pinComment({required int postId, required int commentId}) {
+    return _manage(postId: postId, commentId: commentId, action: 'pin');
+  }
+
+  Future<bool> unpinComment({required int postId, required int commentId}) {
+    return _manage(postId: postId, commentId: commentId, action: 'unpin');
+  }
+
+  Future<bool> markAsBest({required int postId, required int commentId}) {
+    return _manage(postId: postId, commentId: commentId, action: 'best');
+  }
+
+  Future<bool> unmarkAsBest({required int postId, required int commentId}) {
+    return _manage(postId: postId, commentId: commentId, action: 'unbest');
+  }
+
+  // Future<bool> deleteYourComment({
+  //   required int targetUserId,
+  //   required int postId,
+  //   required int commentId,
+  // }) async {
+  //   try {
+  //     isProcessing = true;
+  //     update();
+
+  //     final response = await _commentsServices.deleteComment(
+  //       targetUserId: targetUserId,
+  //       postId: postId,
+  //       commentId: commentId,
+  //     );
+
+  //     return response.success;
+  //   } catch (e) {
+  //     return false;
+  //   } finally {
+  //     isProcessing = false;
+  //     update();
+  //   }
+  // }
 }

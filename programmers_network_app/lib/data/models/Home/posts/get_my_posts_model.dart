@@ -1,3 +1,4 @@
+import 'package:programmers_network_app/data/models/Home/search_post_model.dart';
 import 'package:programmers_network_app/data/models/Profile/profile_model.dart';
 
 class GetMyPostsModel {
@@ -156,6 +157,7 @@ class PostModel {
   final int viewsCount;
   final List<PostMediaModel> postMedia;
   final PollModel? poll;
+  final String? reactionStatus;
 
   final ProfileData? profileData;
 
@@ -183,6 +185,7 @@ class PostModel {
     required this.createdAt,
     this.poll,
     this.profileData,
+    this.reactionStatus,
   });
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
@@ -206,6 +209,7 @@ class PostModel {
       likesCount: json['likes_count'] ?? 0,
       commentsCount: json['comments_count'] ?? 0,
       viewsCount: json['views_count'] ?? 0,
+      reactionStatus: json['reaction_status'],
 
       postMedia: (json['post_media'] as List<dynamic>? ?? [])
           .map((e) => PostMediaModel.fromJson(e))
@@ -222,6 +226,34 @@ class PostModel {
               'user_id': json['user']['id'],
             })
           : null,
+    );
+  }
+  PostModel copyWith({int? likesCount, String? reactionStatus}) {
+    return PostModel(
+      id: id,
+      userId: userId,
+      status: status,
+      type: type,
+      title: title,
+      content: content,
+      visibility: visibility,
+      allowComments: allowComments,
+      hideCommentsCount: hideCommentsCount,
+      hideReactions: hideReactions,
+      hideReactionsCount: hideReactionsCount,
+      hideViews: hideViews,
+      hideViewsCount: hideViewsCount,
+      isEdited: isEdited,
+      isPinned: isPinned,
+      publishedAt: publishedAt,
+      likesCount: likesCount ?? this.likesCount,
+      commentsCount: commentsCount,
+      viewsCount: viewsCount,
+      postMedia: postMedia,
+      createdAt: createdAt,
+      poll: poll,
+      profileData: profileData,
+      reactionStatus: reactionStatus ?? this.reactionStatus,
     );
   }
 }
@@ -299,6 +331,90 @@ class PollOptionModel {
       id: json['id'] ?? 0,
       option: json['option'] ?? '',
       voteCount: json['vote_count'] ?? 0,
+    );
+  }
+}
+
+extension PostModelMapper on PostModel {
+  Post toSearchPost() {
+    return Post(
+      id: id,
+      userId: userId,
+      status: status,
+      type: type,
+      title: title ?? '',
+      content: content ?? '',
+      visibility: visibility,
+      allowComments: allowComments,
+      hideCommentsCount: hideCommentsCount,
+      hideReactions: hideReactions,
+      hideReactionsCount: hideReactionsCount,
+      hideShares: false, // TODO: بدك ياها من الباك اند
+      hideViews: hideViews,
+      hideViewsCount: hideViewsCount,
+      isEdited: isEdited,
+      editedAt: null,
+      isPinned: isPinned,
+      publishedAt: publishedAt != null ? DateTime.tryParse(publishedAt!) : null,
+      deletedAt: null,
+      likesCount: likesCount,
+      disLikesCount: 0,
+      commentsCount: commentsCount,
+      viewsCount: viewsCount,
+      createdAt: DateTime.tryParse(createdAt),
+      updatedAt: null,
+      followingOrder: null,
+      searchOrder: null,
+      reactionStatus: null,
+      isSaved: false,
+      isViewed: false,
+      followStatus: null,
+      postMedia: postMedia
+          .map(
+            (m) => PostMedia(
+              id: m.id,
+              postId: id,
+              mimeType: m.mimeType,
+              size: m.size,
+              width: m.width,
+              height: m.height,
+              order: 0,
+              status: 'completed',
+              mediaFullUrl: m.mediaFullUrl,
+            ),
+          )
+          .toList(),
+      poll: poll == null
+          ? null
+          : Poll(
+              id: poll!.id,
+              postId: id,
+              question: poll!.question,
+              options: poll!.pollOptions
+                  .map(
+                    (o) => {
+                      'id': o.id,
+                      'option': o.option,
+                      'vote_count': o.voteCount,
+                    },
+                  )
+                  .toList(),
+              expiresAt: null,
+            ),
+      viewers: const [],
+      user: profileData == null
+          ? PostUser(id: userId, roleId: 0, fullName: '', email: '')
+          : PostUser(
+              id: profileData!.userId,
+              roleId: 0,
+              fullName: profileData!.fullName,
+              email: '',
+              userProfile: UserProfile(
+                userId: profileData!.userId,
+                avatarFullUrl: profileData!.avatarFullUrl,
+              ),
+            ),
+      feedId: null,
     );
   }
 }

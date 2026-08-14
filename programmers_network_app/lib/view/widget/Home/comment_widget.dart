@@ -288,11 +288,10 @@ class _CommentsPageState extends State<CommentsPage> {
           final comment = c.sortedComments[index];
           return CommentCard(
             comment: comment,
+            isPostOwner: c.isMyPost,
 
             replies: c.repliesOf(comment.id),
-
             isLoadingReplies: c.isLoadingRepliesOf(comment.id),
-
             isExpanded: c.isRepliesExpanded(comment.id),
 
             getReplies: c.repliesOf,
@@ -303,22 +302,18 @@ class _CommentsPageState extends State<CommentsPage> {
 
             onReply: (target, rootId) =>
                 _startReply(rootId, target.userPostComment.fullName),
-            onLike: (target) {
-              controller.reactToComment(
-                targetUserId: widget.targetUserId,
-                postId: widget.postId,
-                commentId: target.id,
-                type: 'like',
-              );
-            },
-            onDislike: (target) {
-              controller.reactToComment(
-                targetUserId: widget.targetUserId,
-                postId: widget.postId,
-                commentId: target.id,
-                type: 'dislike',
-              );
-            },
+            onLike: (target) => controller.reactToComment(
+              targetUserId: widget.targetUserId,
+              postId: widget.postId,
+              commentId: target.id,
+              type: 'like',
+            ),
+            onDislike: (target) => controller.reactToComment(
+              targetUserId: widget.targetUserId,
+              postId: widget.postId,
+              commentId: target.id,
+              type: 'dislike',
+            ),
             onUserTap: (target) {
               Navigator.pop(context);
               Get.toNamed(
@@ -326,20 +321,17 @@ class _CommentsPageState extends State<CommentsPage> {
                 arguments: target.userPostComment.id,
               );
             },
-            onToggleExpand: (target) {
-              controller.toggleReplies(
-                targetUserId: widget.targetUserId,
-                postId: widget.postId,
-                commentId: target.id,
-              );
-            },
-            onLoadMoreReplies: (target) {
-              controller.loadMoreReplies(
-                targetUserId: widget.targetUserId,
-                postId: widget.postId,
-                commentId: target.id,
-              );
-            },
+            onToggleExpand: (target) => controller.toggleReplies(
+              targetUserId: widget.targetUserId,
+              postId: widget.postId,
+              commentId: target.id,
+            ),
+            onLoadMoreReplies: (target) => controller.loadMoreReplies(
+              targetUserId: widget.targetUserId,
+              postId: widget.postId,
+              commentId: target.id,
+            ),
+
             onEdit: (target) async {
               final editController = TextEditingController(
                 text: target.content,
@@ -387,7 +379,6 @@ class _CommentsPageState extends State<CommentsPage> {
                 commentId: target.id,
                 content: newContent,
               );
-              print('Edit success: $success');
 
               if (success) {
                 controller.updateCommentContent(
@@ -396,6 +387,7 @@ class _CommentsPageState extends State<CommentsPage> {
                 );
               }
             },
+
             onDelete: (comment) {
               controller.deleteComment(
                 targetUserId: widget.targetUserId,
@@ -404,6 +396,59 @@ class _CommentsPageState extends State<CommentsPage> {
                 removeMyComment: true,
               );
             },
+
+            onPin: (target) async {
+              final success = await controller.pinComment(
+                postId: widget.postId,
+                commentId: target.id,
+              );
+              if (success) {
+                controller.updatePinStatus(
+                  commentId: target.id,
+                  isPinned: true,
+                );
+              }
+            },
+            onUnpin: (target) async {
+              final success = await controller.unpinComment(
+                postId: widget.postId,
+                commentId: target.id,
+              );
+              if (success) {
+                controller.updatePinStatus(
+                  commentId: target.id,
+                  isPinned: false,
+                );
+              }
+            },
+            onMarkBest: (target) async {
+              final success = await controller.markAsBest(
+                postId: widget.postId,
+                commentId: target.id,
+              );
+              if (success) {
+                controller.updateBestStatus(commentId: target.id, isBest: true);
+              }
+            },
+            onUnmarkBest: (target) async {
+              final success = await controller.unmarkAsBest(
+                postId: widget.postId,
+                commentId: target.id,
+              );
+              if (success) {
+                controller.updateBestStatus(
+                  commentId: target.id,
+                  isBest: false,
+                );
+              }
+            },
+            onManageDelete: (target) async {
+              await controller.manageDeleteComment(
+                postId: widget.postId,
+                commentId: target.id,
+              );
+            },
+
             targetUserId: widget.targetUserId,
             postId: widget.postId,
           );

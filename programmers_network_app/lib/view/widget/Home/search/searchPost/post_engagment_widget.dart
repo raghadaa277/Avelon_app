@@ -70,6 +70,7 @@ class PostEngagementBar extends StatelessWidget {
   final VoidCallback? onDislike;
   final VoidCallback? onComment;
   final VoidCallback? onSave;
+  final bool isOwner;
 
   const PostEngagementBar({
     super.key,
@@ -79,6 +80,7 @@ class PostEngagementBar extends StatelessWidget {
     this.onDislike,
     this.onComment,
     this.onSave,
+    this.isOwner = false,
   });
 
   @override
@@ -86,6 +88,10 @@ class PostEngagementBar extends StatelessWidget {
     final String? normalizedStatus = post.reactionStatus;
     final isLiked = normalizedStatus == 'like';
     final isDisliked = normalizedStatus == 'dislike';
+
+    final bool showReactionsCount = isOwner || !post.hideReactionsCount;
+    final bool showCommentsCount = isOwner || !post.hideCommentsCount;
+    final bool showViewsCount = isOwner || !post.hideViewsCount;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -105,10 +111,10 @@ class PostEngagementBar extends StatelessWidget {
           color: PostColors.like,
           active: isLiked,
           disabled: false,
-          count: post.hideReactionsCount ? null : post.likesCount,
+          count: showReactionsCount ? post.likesCount : null,
           onTap: onLike,
           onLongPress: () {
-            if (post.hideReactions) {
+            if (post.hideReactions && !isOwner) {
               showHiddenCountDialog(context, countType: 'People who liked');
               return;
             }
@@ -138,10 +144,10 @@ class PostEngagementBar extends StatelessWidget {
           color: PostColors.dislike,
           active: isDisliked,
           disabled: false,
-          count: post.hideReactionsCount ? null : post.disLikesCount,
+          count: showReactionsCount ? post.disLikesCount : null,
           onTap: onDislike,
           onLongPress: () {
-            if (post.hideReactions) {
+            if (post.hideReactions && !isOwner) {
               showHiddenCountDialog(context, countType: 'People who disliked');
               return;
             }
@@ -170,7 +176,7 @@ class PostEngagementBar extends StatelessWidget {
           ),
           color: const Color(0xFF14B8A6),
           disabled: !post.allowComments,
-          count: !post.allowComments || post.hideCommentsCount
+          count: !post.allowComments || !showCommentsCount
               ? null
               : post.commentsCount,
           onTap: onComment,
@@ -190,10 +196,10 @@ class PostEngagementBar extends StatelessWidget {
           ),
           color: PostColors.views,
           disabled: false,
-          count: post.hideViewsCount ? null : post.viewsCount,
+          count: showViewsCount ? post.viewsCount : null,
           onTap: null,
           onLongPress: () {
-            if (post.hideViews) {
+            if (post.hideViews && !isOwner) {
               showHiddenCountDialog(context, countType: 'Viewers');
               return;
             }

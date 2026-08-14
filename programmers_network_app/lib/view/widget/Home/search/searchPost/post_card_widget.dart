@@ -18,10 +18,7 @@ class PostCardWidget extends StatelessWidget {
   final VoidCallback? onSave;
   final VoidCallback? onTap;
   final VoidCallback? onUserTap;
-
-  // Optional: only wired up on the home feed for now, so it's nullable
-  // rather than required — other screens using this card simply won't
-  // pass it and the icon/button won't render (see PostHeaderWidget).
+  final bool isOwner;
   final VoidCallback? onWhySeeing;
 
   const PostCardWidget({
@@ -36,6 +33,7 @@ class PostCardWidget extends StatelessWidget {
     this.onTap,
     this.onUserTap,
     this.onWhySeeing,
+    this.isOwner = false,
   });
 
   @override
@@ -51,7 +49,6 @@ class PostCardWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: Colors.grey.shade200),
           boxShadow: [
-            // ignore: deprecated_member_use
             BoxShadow(
               color: Colors.black,
               blurRadius: 6,
@@ -97,7 +94,7 @@ class PostCardWidget extends StatelessWidget {
             ),
 
             const SizedBox(height: 8),
-            PostViewedBadge(post: post),
+            PostViewedBadge(post: post, isOwner: isOwner),
             const SizedBox(height: 8),
 
             const Divider(height: 1),
@@ -108,7 +105,7 @@ class PostCardWidget extends StatelessWidget {
               onLike: onLike,
               onDislike: onDislike,
               onComment: onComment,
-
+              isOwner: isOwner,
               onSave: onSave,
             ),
           ],

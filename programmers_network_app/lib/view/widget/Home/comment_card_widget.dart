@@ -13,6 +13,7 @@ class CommentCard extends StatefulWidget {
   final bool isExpanded;
   final int targetUserId;
   final int postId;
+  final bool isPostOwner;
 
   final void Function(DataPostComments comment, int rootCommentId) onReply;
   final void Function(DataPostComments comment) onLike;
@@ -20,6 +21,12 @@ class CommentCard extends StatefulWidget {
 
   final void Function(DataPostComments comment)? onEdit;
   final void Function(DataPostComments comment)? onDelete;
+
+  final void Function(DataPostComments comment)? onPin;
+  final void Function(DataPostComments comment)? onUnpin;
+  final void Function(DataPostComments comment)? onMarkBest;
+  final void Function(DataPostComments comment)? onUnmarkBest;
+  final void Function(DataPostComments comment)? onManageDelete;
 
   final void Function(DataPostComments comment) onToggleExpand;
 
@@ -30,7 +37,6 @@ class CommentCard extends StatefulWidget {
   final void Function(DataPostComments comment)? onUserTap;
 
   final int depth;
-
   final int? rootCommentId;
 
   final List<DataPostComments> Function(int) getReplies;
@@ -43,6 +49,7 @@ class CommentCard extends StatefulWidget {
     super.key,
 
     required this.comment,
+    this.isPostOwner = false, // ✅ مرة وحدة بس
 
     required this.targetUserId,
     required this.postId,
@@ -57,10 +64,18 @@ class CommentCard extends StatefulWidget {
     this.onEdit,
     this.onDelete,
 
+    // ✅ ضفتهن هون، كانوا ناقصين
+    this.onPin,
+    this.onUnpin,
+    this.onMarkBest,
+    this.onUnmarkBest,
+    this.onManageDelete,
+
     required this.onToggleExpand,
 
     this.hasMoreReplies = false,
     this.isLoadingMoreReplies = false,
+    // ❌ حذفت التكرار يلي كان هون
     this.onLoadMoreReplies,
 
     this.depth = 0,
@@ -419,6 +434,7 @@ class _CommentCardState extends State<CommentCard> {
                     padding: const EdgeInsets.only(top: 8),
                     child: CommentCard(
                       comment: reply,
+                      isPostOwner: widget.isPostOwner,
                       targetUserId: widget.targetUserId,
                       postId: widget.postId,
                       replies: widget.getReplies(reply.id),
@@ -485,13 +501,19 @@ class _CommentCardState extends State<CommentCard> {
   }
 
   void _showOptionsMenu(BuildContext context) {
+    final bool canManage = widget.isPostOwner;
+    final bool isMine = widget.comment.isMyComment;
+
+    if (!canManage && !isMine) return; // ما في شي تعرضه
+
     showModalBottomSheet(
       context: context,
       builder: (_) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (widget.comment.isMyComment) ...[
+            // Edit: بس لصاحب التعليق
+            if (isMine)
               ListTile(
                 leading: HugeIcon(
                   icon: HugeIcons.strokeRoundedPencilEdit01,
@@ -504,6 +526,49 @@ class _CommentCardState extends State<CommentCard> {
                   widget.onEdit?.call(widget.comment);
                 },
               ),
+
+            // Pin/Unpin: بس لصاحب البوست
+            if (canManage)
+              ListTile(
+                leading: HugeIcon(
+                  icon: HugeIcons.strokeRoundedPin,
+                  size: 20,
+                  color: Colors.grey.shade700,
+                ),
+                title: Text(widget.comment.isPinned ? 'Unpin' : 'Pin'),
+                onTap: () {
+                  Navigator.pop(context);
+                  if (widget.comment.isPinned) {
+                    widget.onUnpin?.call(widget.comment);
+                  } else {
+                    widget.onPin?.call(widget.comment);
+                  }
+                },
+              ),
+
+            // Best/Unbest: بس لصاحب البوست
+            if (canManage)
+              ListTile(
+                leading: HugeIcon(
+                  icon: HugeIcons.strokeRoundedStar,
+                  size: 20,
+                  color: Colors.grey.shade700,
+                ),
+                title: Text(
+                  widget.comment.isBest ? 'Remove best answer' : 'Mark as best',
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  if (widget.comment.isBest) {
+                    widget.onUnmarkBest?.call(widget.comment);
+                  } else {
+                    widget.onMarkBest?.call(widget.comment);
+                  }
+                },
+              ),
+
+            // Delete: تعليقك انت (endpoint قديم) أو أي تعليق (صاحب البوست، manage)
+            if (isMine || canManage)
               ListTile(
                 leading: HugeIcon(
                   icon: HugeIcons.strokeRoundedDelete02,
@@ -516,20 +581,13 @@ class _CommentCardState extends State<CommentCard> {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  widget.onDelete?.call(widget.comment);
+                  if (isMine) {
+                    widget.onDelete?.call(widget.comment);
+                  } else {
+                    widget.onManageDelete?.call(widget.comment);
+                  }
                 },
               ),
-            ],
-            //else
-            //   ListTile(
-            //     leading: HugeIcon(
-            //       icon: HugeIcons.strokeRoundedFlag02,
-            //       size: 20,
-            //       color: Colors.grey.shade700,
-            //     ),
-            //     title: const Text('Report'),
-            //     onTap: () => Navigator.pop(context),
-            //   ),
           ],
         ),
       ),

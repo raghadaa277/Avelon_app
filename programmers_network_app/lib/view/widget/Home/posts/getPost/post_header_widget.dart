@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import 'package:programmers_network_app/controller/Home/posts/edit_post_controller.dart';
 import 'package:programmers_network_app/data/models/Home/posts/get_my_posts_model.dart';
 import 'package:programmers_network_app/data/models/Profile/profile_model.dart';
+import 'package:programmers_network_app/view/screen/Home/post_audience_insights_page.dart';
+import 'package:programmers_network_app/view/screen/Home/post_views_overview_page.dart';
+import 'package:programmers_network_app/view/screen/Home/views_overview_page.dart';
 import 'package:programmers_network_app/view/widget/Home/posts/confirm_delete_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/posts/poup_button/post_options_menu_widget.dart';
 import 'package:programmers_network_app/controller/Home/posts/archive_post_controller.dart';
@@ -62,6 +66,17 @@ class PostHeader extends StatelessWidget {
         break;
       case 'pin':
         Get.find<EditPostController>().pinnedPost(post.id);
+        break;
+      case 'post overview':
+        Get.to(() => ViewsOverviewPage(postId: post.id));
+        break;
+
+      case 'audience':
+        Get.to(() => PostAudienceInsightsPage(postId: post.id));
+        break;
+
+      case 'post views overview':
+        Get.to(() => PostViewsOverviewPage(postId: post.id));
         break;
 
       case 'save':
