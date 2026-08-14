@@ -38,29 +38,29 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 color: Colors.black,
               ),
             ),
-            const Spacer(),
-            Stack(
-              children: [
-                const Icon(Icons.notifications_none, size: 23),
-                Positioned(
-                  right: 2,
-                  top: 2,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: Color(0xffB8FF1A),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(width: 12),
-            const CircleAvatar(
-              radius: 16,
-              backgroundImage: NetworkImage(''),
-            ),
+            // const Spacer(),
+            // Stack(
+            //   children: [
+            //     const Icon(Icons.notifications_none, size: 23),
+            //     Positioned(
+            //       right: 2,
+            //       top: 2,
+            //       child: Container(
+            //         width: 8,
+            //         height: 8,
+            //         decoration: const BoxDecoration(
+            //           color: Color(0xffB8FF1A),
+            //           shape: BoxShape.circle,
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            // const SizedBox(width: 12),
+            // const CircleAvatar(
+            //   radius: 16,
+            //   backgroundImage: NetworkImage(''),
+            // ),
           ],
         ),
       ),

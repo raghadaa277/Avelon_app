@@ -256,6 +256,7 @@ class _SearchPageState extends State<SearchPage> {
           return PostViewTrackerWrapper(
             source: "search",
             post: post,
+            isOwner: true,
             child: PostCardWidget(
               key: ValueKey(post.id),
               post: post,

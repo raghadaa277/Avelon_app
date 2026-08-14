@@ -132,34 +132,111 @@ class MyPostsController extends GetxController {
   }
 
   bool get hasMore => currentPage < lastPage;
+  // void updateReaction({required int postId, required String reaction}) {
+  //   final index = posts.indexWhere((p) => p.id == postId);
+  //   if (index == -1) return;
+
+  //   final post = posts[index];
+  //   final wasLiked = post.reactionStatus == 'like';
+  //   final wasDisliked = post.reactionStatus == 'dislike';
+
+  //   int likes = post.likesCount;
+  //   int dislikes = post.disLikesCount;
+  //   String newStatus;
+
+  //   if (reaction == 'like') {
+  //     if (wasLiked) {
+  //       likes--;
+  //       newStatus = '';
+  //     } else {
+  //       likes++;
+  //       if (wasDisliked) dislikes--;
+  //       newStatus = 'like';
+  //     }
+  //   } else {
+  //     if (wasDisliked) {
+  //       dislikes--;
+  //       newStatus = '';
+  //     } else {
+  //       dislikes++;
+  //       if (wasLiked) likes--;
+  //       newStatus = 'dislike';
+  //     }
+  //   }
+
+  //   posts[index] = post.copyWith(
+  //     likesCount: likes < 0 ? 0 : likes,
+  //     disLikesCount: dislikes < 0 ? 0 : dislikes,
+  //     reactionStatus: newStatus,
+  //   );
+
+  //   update();
+  // }
 
   void updateReaction({required int postId, required String reaction}) {
-    final index = posts.indexWhere((p) => p.id == postId);
+    final index = posts.indexWhere((e) => e.id == postId);
+
     if (index == -1) return;
 
     final post = posts[index];
-    final wasLiked = post.reactionStatus == 'like';
-    final wasDisliked = post.reactionStatus == 'dislike';
 
     int likes = post.likesCount;
-    String newStatus;
+    int dislikes = post.disLikesCount;
 
-    if (reaction == 'like') {
-      if (wasLiked) {
-        likes--;
-        newStatus = '';
-      } else {
-        likes++;
-        newStatus = 'like';
-      }
-    } else {
-      newStatus = wasDisliked ? '' : 'dislike';
+    String? status = post.reactionStatus;
+    if (status == "nolike" ||
+        status == "null" ||
+        status == "" ||
+        status == null) {
+      status = null;
     }
 
+    if (reaction == "like") {
+      if (status == "like") {
+        likes--;
+        status = null;
+      } else if (status == "dislike") {
+        dislikes--;
+        likes++;
+        status = "like";
+      } else {
+        likes++;
+        status = "like";
+      }
+    } else if (reaction == "dislike") {
+      if (status == "dislike") {
+        dislikes--;
+        status = null;
+      } else if (status == "like") {
+        likes--;
+        dislikes++;
+        status = "dislike";
+      } else {
+        dislikes++;
+        status = "dislike";
+      }
+    }
+
+    if (likes < 0) likes = 0;
+    if (dislikes < 0) dislikes = 0;
+
     posts[index] = post.copyWith(
-      likesCount: likes < 0 ? 0 : likes,
-      reactionStatus: newStatus,
+      likesCount: likes,
+      disLikesCount: dislikes,
+      reactionStatus: status ?? "",
     );
+
+    update();
+  }
+
+  void updateSavedPost(int postId) {
+    final index = posts.indexWhere((post) => post.id == postId);
+
+    if (index == -1) return;
+
+    final post = posts[index];
+
+    posts[index] = post.copyWith(isSave: !post.isSave);
 
     update();
   }

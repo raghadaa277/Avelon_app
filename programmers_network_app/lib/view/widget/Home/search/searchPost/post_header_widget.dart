@@ -2,25 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:programmers_network_app/core/const/post_color.dart';
 import 'package:programmers_network_app/data/models/Home/search_post_model.dart';
+import 'package:programmers_network_app/view/widget/Home/posts/poup_button/post_options_menu_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/search/searchPost/info_pill.dart';
 import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_style.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class PostHeaderWidget extends StatelessWidget {
   final Post post;
+
   final VoidCallback? onUserTap;
   final VoidCallback? onWhySeeing;
+
+  final ValueChanged<String>? onPostMenuSelected;
+
+  final bool isOwner;
 
   const PostHeaderWidget({
     super.key,
     required this.post,
     this.onUserTap,
     this.onWhySeeing,
+    this.onPostMenuSelected,
+    this.isOwner = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final PostUser author = post.user;
+
     final type = postTypeInfo(post.type);
     final visibility = postVisibilityInfo(post.visibility);
     final followStatus = followStatusInfo(post.followStatus);
@@ -45,7 +54,7 @@ class PostHeaderWidget extends StatelessWidget {
                       child: author.userProfile?.avatarFullUrl == null
                           ? Text(
                               author.fullName.isNotEmpty
-                                  ? author.fullName[0]
+                                  ? author.fullName[0].toUpperCase()
                                   : '?',
                             )
                           : null,
@@ -64,20 +73,21 @@ class PostHeaderWidget extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(width: 8),
-
-                    InfoPill(
-                      icon: followStatus.icon,
-                      color: followStatus.color,
-                      label: followStatus.label,
-                      iconOnly: false,
-                    ),
+                    if (!isOwner) ...[
+                      const SizedBox(width: 8),
+                      InfoPill(
+                        icon: followStatus.icon,
+                        color: followStatus.color,
+                        label: followStatus.label,
+                        iconOnly: false,
+                      ),
+                    ],
                   ],
                 ),
               ),
             ),
 
-            if (onWhySeeing != null)
+            if (!isOwner && onWhySeeing != null)
               IconButton(
                 onPressed: onWhySeeing,
                 tooltip: "Why you're seeing this",
@@ -90,16 +100,12 @@ class PostHeaderWidget extends StatelessWidget {
                 ),
               ),
 
-            // More
-            IconButton(
-              icon: HugeIcon(
-                icon: HugeIcons.strokeRoundedMoreHorizontal,
-                color: Colors.grey.shade700,
-                size: 21,
+            if (isOwner && onPostMenuSelected != null)
+              PostOptionsMenu(
+                isPinned: post.isPinned,
+                isSaved: post.isSaved,
+                onSelected: onPostMenuSelected!,
               ),
-              onPressed: () {},
-              visualDensity: VisualDensity.compact,
-            ),
           ],
         ),
 
@@ -130,10 +136,8 @@ class PostHeaderWidget extends StatelessWidget {
               iconOnly: true,
             ),
 
-            const SizedBox(width: 8),
-
             if (post.isEdited) ...[
-              const SizedBox(width: 6),
+              const SizedBox(width: 8),
               Tooltip(
                 message: 'Edited',
                 child: HugeIcon(
@@ -160,3 +164,345 @@ class PostHeaderWidget extends StatelessWidget {
     );
   }
 }
+
+// import 'package:flutter/material.dart';
+// import 'package:get/route_manager.dart';
+// import 'package:get/utils.dart';
+// import 'package:hugeicons/hugeicons.dart';
+// import 'package:programmers_network_app/core/const/post_color.dart';
+// import 'package:programmers_network_app/data/models/Home/search_post_model.dart';
+// import 'package:programmers_network_app/view/widget/Home/posts/getPost/post_header_widget.dart';
+// import 'package:programmers_network_app/view/widget/Home/posts/poup_button/post_options_menu_widget.dart';
+// import 'package:programmers_network_app/view/widget/Home/search/searchPost/info_pill.dart';
+// import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_style.dart';
+// import 'package:timeago/timeago.dart' as timeago;
+
+// class PostHeaderWidget extends StatelessWidget {
+//   final Post post;
+
+//   final VoidCallback? onUserTap;
+//   final VoidCallback? onWhySeeing;
+
+//   final VoidCallback? onPostMenuSelected;
+
+//   final bool isOwner;
+
+//   const PostHeaderWidget({
+//     super.key,
+//     required this.post,
+//     this.onUserTap,
+//     this.onWhySeeing,
+//     this.onPostMenuSelected,
+//     this.isOwner = false,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final PostUser author = post.user;
+
+//     final type = postTypeInfo(post.type);
+//     final visibility = postVisibilityInfo(post.visibility);
+
+//     final followStatus = followStatusInfo(post.followStatus);
+
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Row(
+//           children: [
+//             Expanded(
+//               child: GestureDetector(
+//                 behavior: HitTestBehavior.opaque,
+//                 onTap: onUserTap,
+//                 child: Row(
+//                   children: [
+//                     CircleAvatar(
+//                       radius: 20,
+//                       backgroundColor: Colors.grey.shade200,
+//                       backgroundImage: author.userProfile?.avatarFullUrl != null
+//                           ? NetworkImage(author.userProfile!.avatarFullUrl!)
+//                           : null,
+//                       child: author.userProfile?.avatarFullUrl == null
+//                           ? Text(
+//                               author.fullName.isNotEmpty
+//                                   ? author.fullName[0].toUpperCase()
+//                                   : '?',
+//                             )
+//                           : null,
+//                     ),
+
+//                     const SizedBox(width: 10),
+
+//                     Flexible(
+//                       child: Text(
+//                         author.fullName,
+//                         style: const TextStyle(
+//                           fontWeight: FontWeight.bold,
+//                           fontSize: 15,
+//                         ),
+//                         overflow: TextOverflow.ellipsis,
+//                       ),
+//                     ),
+
+//                     if (!isOwner) ...[
+//                       const SizedBox(width: 8),
+
+//                       InfoPill(
+//                         icon: followStatus.icon,
+//                         color: followStatus.color,
+//                         label: followStatus.label,
+//                         iconOnly: false,
+//                       ),
+//                     ],
+//                   ],
+//                 ),
+//               ),
+//             ),
+
+//             if (!isOwner && onWhySeeing != null)
+//               IconButton(
+//                 onPressed: onWhySeeing,
+//                 tooltip: "Why you're seeing this",
+//                 visualDensity: VisualDensity.compact,
+//                 padding: const EdgeInsets.all(6),
+//                 icon: HugeIcon(
+//                   icon: HugeIcons.strokeRoundedInformationCircle,
+//                   color: Colors.grey.shade700,
+//                   size: 21,
+//                 ),
+//               ),
+
+//             if (onPostMenuSelected != null)
+//               IconButton(
+//                 icon: HugeIcon(
+//                   icon: HugeIcons.strokeRoundedMoreHorizontal,
+//                   color: Colors.grey.shade700,
+//                   size: 21,
+//                 ),
+//                 onPressed:(){ Get.to(()=>PostHeader(post: post, profileData: profileData))},
+//                 tooltip: 'Post settings',
+//                 visualDensity: VisualDensity.compact,
+//               ),
+//           ],
+//         ),
+
+//         const SizedBox(height: 6),
+
+//         Row(
+//           children: [
+//             Text(
+//               post.publishedAt != null ? timeago.format(post.publishedAt!) : '',
+//               style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+//             ),
+
+//             const SizedBox(width: 5),
+
+//             InfoPill(
+//               icon: visibility.icon,
+//               color: visibility.color,
+//               label: visibility.label,
+//               iconOnly: true,
+//             ),
+
+//             const SizedBox(width: 5),
+
+//             InfoPill(
+//               icon: type.icon,
+//               color: type.color,
+//               label: type.label,
+//               iconOnly: true,
+//             ),
+
+//             if (post.isEdited) ...[
+//               const SizedBox(width: 8),
+//               Tooltip(
+//                 message: 'Edited',
+//                 child: HugeIcon(
+//                   icon: HugeIcons.strokeRoundedEdit02,
+//                   color: Colors.grey.shade600,
+//                   size: 14,
+//                 ),
+//               ),
+//             ],
+
+//             if (post.isPinned) ...[
+//               const SizedBox(width: 8),
+//               InfoPill(
+//                 icon: HugeIcons.strokeRoundedPin,
+//                 color: PostColors.pinned,
+//                 label: 'Pinned',
+//                 filled: true,
+//                 iconOnly: true,
+//               ),
+//             ],
+//           ],
+//         ),
+//       ],
+//     );
+//   }
+// }
+
+// // import 'package:flutter/material.dart';
+// // import 'package:hugeicons/hugeicons.dart';
+// // import 'package:programmers_network_app/core/const/post_color.dart';
+// // import 'package:programmers_network_app/data/models/Home/search_post_model.dart';
+// // import 'package:programmers_network_app/view/widget/Home/search/searchPost/info_pill.dart';
+// // import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_style.dart';
+// // import 'package:timeago/timeago.dart' as timeago;
+
+// // class PostHeaderWidget extends StatelessWidget {
+// //   final Post post;
+// //   final VoidCallback? onUserTap;
+// //   final VoidCallback? onWhySeeing;
+// //   final VoidCallback? onPostMenuSelected;
+
+// //   const PostHeaderWidget({
+// //     super.key,
+// //     required this.post,
+// //     this.onUserTap,
+// //     this.onWhySeeing,
+// //     this.onPostMenuSelected
+// //   });
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     final PostUser author = post.user;
+// //     final type = postTypeInfo(post.type);
+// //     final visibility = postVisibilityInfo(post.visibility);
+// //     final followStatus = followStatusInfo(post.followStatus);
+
+// //     return Column(
+// //       crossAxisAlignment: CrossAxisAlignment.start,
+// //       children: [
+// //         Row(
+// //           children: [
+// //             Expanded(
+// //               child: GestureDetector(
+// //                 behavior: HitTestBehavior.opaque,
+// //                 onTap: onUserTap,
+// //                 child: Row(
+// //                   children: [
+// //                     CircleAvatar(
+// //                       radius: 20,
+// //                       backgroundColor: Colors.grey.shade200,
+// //                       backgroundImage: author.userProfile?.avatarFullUrl != null
+// //                           ? NetworkImage(author.userProfile!.avatarFullUrl!)
+// //                           : null,
+// //                       child: author.userProfile?.avatarFullUrl == null
+// //                           ? Text(
+// //                               author.fullName.isNotEmpty
+// //                                   ? author.fullName[0]
+// //                                   : '?',
+// //                             )
+// //                           : null,
+// //                     ),
+
+// //                     const SizedBox(width: 10),
+
+// //                     Flexible(
+// //                       child: Text(
+// //                         author.fullName,
+// //                         style: const TextStyle(
+// //                           fontWeight: FontWeight.bold,
+// //                           fontSize: 15,
+// //                         ),
+// //                         overflow: TextOverflow.ellipsis,
+// //                       ),
+// //                     ),
+
+// //                     const SizedBox(width: 8),
+
+// //                     InfoPill(
+// //                       icon: followStatus.icon,
+// //                       color: followStatus.color,
+// //                       label: followStatus.label,
+// //                       iconOnly: false,
+// //                     ),
+// //                   ],
+// //                 ),
+// //               ),
+// //             ),
+
+// //             if (onWhySeeing != null)
+// //               IconButton(
+// //                 onPressed: onWhySeeing,
+// //                 tooltip: "Why you're seeing this",
+// //                 visualDensity: VisualDensity.compact,
+// //                 padding: const EdgeInsets.all(6),
+// //                 icon: HugeIcon(
+// //                   icon: HugeIcons.strokeRoundedInformationCircle,
+// //                   color: Colors.grey.shade700,
+// //                   size: 21,
+// //                 ),
+// //               ),
+
+// //             // More
+// //             IconButton(
+// //               icon: HugeIcon(
+// //                 icon: HugeIcons.strokeRoundedMoreHorizontal,
+// //                 color: Colors.grey.shade700,
+// //                 size: 21,
+// //               ),
+// //               onPressed: () {},
+// //               visualDensity: VisualDensity.compact,
+// //             ),
+// //           ],
+// //         ),
+
+// //         const SizedBox(height: 6),
+
+// //         Row(
+// //           children: [
+// //             Text(
+// //               post.publishedAt != null ? timeago.format(post.publishedAt!) : '',
+// //               style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+// //             ),
+
+// //             const SizedBox(width: 5),
+
+// //             InfoPill(
+// //               icon: visibility.icon,
+// //               color: visibility.color,
+// //               label: visibility.label,
+// //               iconOnly: true,
+// //             ),
+
+// //             const SizedBox(width: 5),
+
+// //             InfoPill(
+// //               icon: type.icon,
+// //               color: type.color,
+// //               label: type.label,
+// //               iconOnly: true,
+// //             ),
+
+// //             const SizedBox(width: 8),
+
+// //             if (post.isEdited) ...[
+// //               const SizedBox(width: 6),
+// //               Tooltip(
+// //                 message: 'Edited',
+// //                 child: HugeIcon(
+// //                   icon: HugeIcons.strokeRoundedEdit02,
+// //                   color: Colors.grey.shade600,
+// //                   size: 14,
+// //                 ),
+// //               ),
+// //             ],
+
+// //             if (post.isPinned) ...[
+// //               const SizedBox(width: 8),
+// //               InfoPill(
+// //                 icon: HugeIcons.strokeRoundedPin,
+// //                 color: PostColors.pinned,
+// //                 label: 'Pinned',
+// //                 filled: true,
+// //                 iconOnly: true,
+// //               ),
+// //             ],
+// //           ],
+// //         ),
+// //       ],
+// //     );
+// //   }
+// // }

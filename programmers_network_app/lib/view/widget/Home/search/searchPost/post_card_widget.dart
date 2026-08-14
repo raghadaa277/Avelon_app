@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:programmers_network_app/data/models/Home/search_post_model.dart';
-
 import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_engagment_widget.dart';
 import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_header_widget.dart';
-
 import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_media.dart';
 import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_viewed.dart';
 
@@ -18,8 +16,11 @@ class PostCardWidget extends StatelessWidget {
   final VoidCallback? onSave;
   final VoidCallback? onTap;
   final VoidCallback? onUserTap;
-  final bool isOwner;
   final VoidCallback? onWhySeeing;
+
+  final ValueChanged<String>? onPostMenuSelected;
+
+  final bool isOwner;
 
   const PostCardWidget({
     super.key,
@@ -33,6 +34,7 @@ class PostCardWidget extends StatelessWidget {
     this.onTap,
     this.onUserTap,
     this.onWhySeeing,
+    this.onPostMenuSelected,
     this.isOwner = false,
   });
 
@@ -50,7 +52,7 @@ class PostCardWidget extends StatelessWidget {
           border: Border.all(color: Colors.grey.shade200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black,
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
@@ -61,43 +63,44 @@ class PostCardWidget extends StatelessWidget {
           children: [
             PostHeaderWidget(
               post: post,
+              isOwner: isOwner,
               onUserTap: onUserTap,
               onWhySeeing: onWhySeeing,
+              onPostMenuSelected: isOwner ? onPostMenuSelected : null,
             ),
+
             const SizedBox(height: 10),
 
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  post.title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  post.content,
-                  style: TextStyle(
-                    fontSize: 13.5,
-                    color: Colors.grey.shade700,
-                    height: 1.4,
-                  ),
-                ),
-
-                if (post.postMedia.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  PostMediaSliderSearch(media: media, postId: post.id),
-                ],
-              ],
+            Text(
+              post.title,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
 
-            const SizedBox(height: 8),
-            PostViewedBadge(post: post, isOwner: isOwner),
+            const SizedBox(height: 4),
+
+            Text(
+              post.content,
+              style: TextStyle(
+                fontSize: 13.5,
+                color: Colors.grey.shade700,
+                height: 1.4,
+              ),
+            ),
+
+            if (post.postMedia.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              PostMediaSliderSearch(media: media, postId: post.id),
+            ],
+
+            if (!isOwner) ...[
+              const SizedBox(height: 8),
+              PostViewedBadge(post: post),
+            ],
+
             const SizedBox(height: 8),
 
             const Divider(height: 1),
+
             const SizedBox(height: 6),
 
             PostEngagementBar(
@@ -114,3 +117,252 @@ class PostCardWidget extends StatelessWidget {
     );
   }
 }
+
+// import 'package:flutter/material.dart';
+// import 'package:programmers_network_app/data/models/Home/search_post_model.dart';
+
+// import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_engagment_widget.dart';
+// import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_header_widget.dart';
+// import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_media.dart';
+// import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_viewed.dart';
+
+// class PostCardWidget extends StatelessWidget {
+//   final Post post;
+//   final List<PostMedia> media;
+
+//   final VoidCallback? onLike;
+//   final VoidCallback? onDislike;
+//   final VoidCallback? onComment;
+//   final VoidCallback? onShare;
+//   final VoidCallback? onSave;
+//   final VoidCallback? onTap;
+//   final VoidCallback? onUserTap;
+//   final VoidCallback? onWhySeeing;
+
+//   final VoidCallback? onPostMenuSelected;
+
+//   final bool isOwner;
+
+//   const PostCardWidget({
+//     super.key,
+//     required this.post,
+//     required this.media,
+//     this.onLike,
+//     this.onDislike,
+//     this.onComment,
+//     this.onShare,
+//     this.onSave,
+//     this.onTap,
+//     this.onUserTap,
+//     this.onWhySeeing,
+//     this.onPostMenuSelected,
+//     this.isOwner = false,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return InkWell(
+//       onTap: onTap,
+//       borderRadius: BorderRadius.circular(14),
+//       child: Container(
+//         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+//         padding: const EdgeInsets.all(14),
+//         decoration: BoxDecoration(
+//           color: Colors.white,
+//           borderRadius: BorderRadius.circular(14),
+//           border: Border.all(color: Colors.grey.shade200),
+//           boxShadow: [
+//             BoxShadow(
+//               color: Colors.black.withValues(alpha: 0.08),
+//               blurRadius: 6,
+//               offset: const Offset(0, 2),
+//             ),
+//           ],
+//         ),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             PostHeaderWidget(
+//               post: post,
+//               isOwner: isOwner,
+//               onUserTap: onUserTap,
+//               onWhySeeing: onWhySeeing,
+//               onPostMenuSelected: onPostMenuSelected,
+//             ),
+
+//             const SizedBox(height: 10),
+
+//             Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Text(
+//                   post.title,
+//                   style: const TextStyle(
+//                     fontSize: 16,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                 ),
+
+//                 const SizedBox(height: 4),
+
+//                 Text(
+//                   post.content,
+//                   style: TextStyle(
+//                     fontSize: 13.5,
+//                     color: Colors.grey.shade700,
+//                     height: 1.4,
+//                   ),
+//                 ),
+
+//                 if (post.postMedia.isNotEmpty) ...[
+//                   const SizedBox(height: 12),
+
+//                   PostMediaSliderSearch(media: media, postId: post.id),
+//                 ],
+//               ],
+//             ),
+
+//             if (isOwner) ...[
+//               const SizedBox(height: 8),
+
+//               PostViewedBadge(post: post),
+//             ],
+
+//             const SizedBox(height: 8),
+
+//             const Divider(height: 1),
+
+//             const SizedBox(height: 6),
+
+//             PostEngagementBar(
+//               post: post,
+//               onLike: onLike,
+//               onDislike: onDislike,
+//               onComment: onComment,
+//               isOwner: isOwner,
+//               onSave: onSave,
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// // import 'package:flutter/material.dart';
+// // import 'package:programmers_network_app/data/models/Home/search_post_model.dart';
+
+// // import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_engagment_widget.dart';
+// // import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_header_widget.dart';
+
+// // import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_media.dart';
+// // import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_viewed.dart';
+
+// // class PostCardWidget extends StatelessWidget {
+// //   final Post post;
+// //   final List<PostMedia> media;
+
+// //   final VoidCallback? onLike;
+// //   final VoidCallback? onDislike;
+// //   final VoidCallback? onComment;
+// //   final VoidCallback? onShare;
+// //   final VoidCallback? onSave;
+// //   final VoidCallback? onTap;
+// //   final VoidCallback? onUserTap;
+// //   final bool isOwner;
+// //   final VoidCallback? onWhySeeing;
+
+// //   const PostCardWidget({
+// //     super.key,
+// //     required this.post,
+// //     required this.media,
+// //     this.onLike,
+// //     this.onDislike,
+// //     this.onComment,
+// //     this.onShare,
+// //     this.onSave,
+// //     this.onTap,
+// //     this.onUserTap,
+// //     this.onWhySeeing,
+// //     this.isOwner = false,
+// //   });
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     return InkWell(
+// //       onTap: onTap,
+// //       borderRadius: BorderRadius.circular(14),
+// //       child: Container(
+// //         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+// //         padding: const EdgeInsets.all(14),
+// //         decoration: BoxDecoration(
+// //           color: Colors.white,
+// //           borderRadius: BorderRadius.circular(14),
+// //           border: Border.all(color: Colors.grey.shade200),
+// //           boxShadow: [
+// //             BoxShadow(
+// //               color: Colors.black,
+// //               blurRadius: 6,
+// //               offset: const Offset(0, 2),
+// //             ),
+// //           ],
+// //         ),
+// //         child: Column(
+// //           crossAxisAlignment: CrossAxisAlignment.start,
+// //           children: [
+// //             PostHeaderWidget(
+// //               post: post,
+// //               onUserTap: onUserTap,
+// //               onWhySeeing: onWhySeeing,
+// //               onPostMenuSelected: onPostMenuSelected,
+// //             ),
+// //             const SizedBox(height: 10),
+
+// //             Column(
+// //               crossAxisAlignment: CrossAxisAlignment.start,
+// //               children: [
+// //                 Text(
+// //                   post.title,
+// //                   style: const TextStyle(
+// //                     fontSize: 16,
+// //                     fontWeight: FontWeight.bold,
+// //                   ),
+// //                 ),
+// //                 const SizedBox(height: 4),
+// //                 Text(
+// //                   post.content,
+// //                   style: TextStyle(
+// //                     fontSize: 13.5,
+// //                     color: Colors.grey.shade700,
+// //                     height: 1.4,
+// //                   ),
+// //                 ),
+
+// //                 if (post.postMedia.isNotEmpty) ...[
+// //                   const SizedBox(height: 12),
+// //                   PostMediaSliderSearch(media: media, postId: post.id),
+// //                 ],
+// //               ],
+// //             ),
+
+// //             const SizedBox(height: 8),
+// //             PostViewedBadge(post: post, isOwner: isOwner),
+// //             const SizedBox(height: 8),
+
+// //             const Divider(height: 1),
+// //             const SizedBox(height: 6),
+
+// //             PostEngagementBar(
+// //               post: post,
+// //               onLike: onLike,
+// //               onDislike: onDislike,
+// //               onComment: onComment,
+// //               isOwner: isOwner,
+// //               onSave: onSave,
+// //             ),
+// //           ],
+// //         ),
+// //       ),
+// //     );
+// //   }
+// // }

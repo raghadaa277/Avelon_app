@@ -70,6 +70,53 @@ class EditPostController extends GetxController {
     }
   }
 
+  Future<void> savePost({
+    required int targetUserId,
+    required int postId,
+  }) async {
+    isLoading = true;
+    errorMessage.value = '';
+    update();
+
+    try {
+      final result = await _editPostServices.savePost(
+        targetUserId: targetUserId,
+        postId: postId,
+      );
+
+      if (result.success) {
+        if (Get.isRegistered<MyPostsController>()) {
+          Get.find<MyPostsController>().updateSavedPost(postId);
+        }
+
+        if (Get.isRegistered<SearchPageController>()) {
+          Get.find<SearchPageController>().updateSavedPost(postId);
+        }
+
+        final tag = 'posts_$targetUserId';
+
+        if (Get.isRegistered<TargetUserPostsController>(tag: tag)) {
+          Get.find<TargetUserPostsController>(tag: tag).updateSavedPost(postId);
+        }
+
+        Get.snackbar("Success", result.message);
+      } else {
+        Get.snackbar("Error", result.message);
+      }
+    } catch (e) {
+      errorMessage.value = e.toString();
+
+      Get.snackbar(
+        "Error",
+        errorMessage.value,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isLoading = false;
+      update();
+    }
+  }
+
   // Future<void> savePost({
   //   required int targetUserId,
   //   required int postId,
@@ -87,6 +134,12 @@ class EditPostController extends GetxController {
   //       if (Get.isRegistered<SearchPageController>()) {
   //         Get.find<SearchPageController>().updateSavedPost(postId);
   //       }
+
+  //       final tag = 'posts_$targetUserId';
+  //       if (Get.isRegistered<TargetUserPostsController>(tag: tag)) {
+  //         Get.find<TargetUserPostsController>(tag: tag).updateSavedPost(postId);
+  //       }
+
   //       Get.snackbar("Success", result.message);
   //     } else {
   //       Get.snackbar("Error", result.message);
@@ -98,41 +151,6 @@ class EditPostController extends GetxController {
   //     isLoading = false;
   //   }
   // }
-
-  Future<void> savePost({
-    required int targetUserId,
-    required int postId,
-  }) async {
-    isLoading = true;
-    errorMessage.value = '';
-
-    try {
-      final result = await _editPostServices.savePost(
-        targetUserId: targetUserId,
-        postId: postId,
-      );
-
-      if (result.success) {
-        if (Get.isRegistered<SearchPageController>()) {
-          Get.find<SearchPageController>().updateSavedPost(postId);
-        }
-
-        final tag = 'posts_$targetUserId';
-        if (Get.isRegistered<TargetUserPostsController>(tag: tag)) {
-          Get.find<TargetUserPostsController>(tag: tag).updateSavedPost(postId);
-        }
-
-        Get.snackbar("Success", result.message);
-      } else {
-        Get.snackbar("Error", result.message);
-      }
-    } catch (e) {
-      errorMessage.value = e.toString();
-      Get.snackbar("Error", errorMessage.value);
-    } finally {
-      isLoading = false;
-    }
-  }
 
   final Set<int> _sentUserId = {};
 

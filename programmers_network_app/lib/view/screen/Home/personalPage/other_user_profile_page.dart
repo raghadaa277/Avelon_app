@@ -9,6 +9,7 @@ import 'package:programmers_network_app/controller/Home/personalPage/mutualFollo
 import 'package:programmers_network_app/controller/Home/personalPage/profile_view_controller.dart';
 import 'package:programmers_network_app/controller/Home/personalPage/user%20Flag/user_flag_controller.dart';
 import 'package:programmers_network_app/core/const/color_const.dart';
+import 'package:programmers_network_app/view/screen/Home/personalPage/ask_questions_page.dart';
 import 'package:programmers_network_app/view/screen/Home/personalPage/connection_analysis_page.dart';
 import 'package:programmers_network_app/view/screen/Home/personalPage/followers_page.dart';
 import 'package:programmers_network_app/view/screen/Home/personalPage/mutual_followers_page.dart';
@@ -183,9 +184,7 @@ class _OtherUserProfilePageState extends State<OtherUserProfilePage>
                         widget.targetUserId,
                       ),
                     );
-                    // blockedUserIds is an RxSet, so the Obx() around this
-                    // whole action button already rebuilds on its own —
-                    // no extra controller.setX(...) call needed here.
+
                     break;
 
                   case SettingAction.report:
@@ -297,7 +296,13 @@ class _OtherUserProfilePageState extends State<OtherUserProfilePage>
                         );
                       },
 
-                      onMessage: () {},
+                      onMessage: () {
+                        Get.to(
+                          () => AskQuestionPage(
+                            targetUserId: widget.targetUserId,
+                          ),
+                        );
+                      },
 
                       onShare: () {},
                       onMenuSelected: (action) async {

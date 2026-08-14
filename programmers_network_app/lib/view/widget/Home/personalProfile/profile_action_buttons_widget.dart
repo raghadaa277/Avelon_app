@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:programmers_network_app/view/widget/Home/personalProfile/profile_theme_widget.dart';
 
 enum ProfileMenuAction { toggleCloseFriend, toggleMute, report }
@@ -38,8 +39,11 @@ class ProfileActionButtonsWidget extends StatelessWidget {
           flex: 3,
           child: OutlinedButton.icon(
             onPressed: onMessage,
-            icon: const Icon(Icons.chat_bubble_outline, size: 18),
-            label: const Text('Message'),
+            icon: const HugeIcon(
+              icon: HugeIcons.strokeRoundedMessageQuestion,
+              size: 18,
+            ),
+            label: const Text('Ask Question', style: TextStyle(fontSize: 13)),
             style: OutlinedButton.styleFrom(
               foregroundColor: ProfileTheme.textDark,
               side: const BorderSide(color: ProfileTheme.divider),

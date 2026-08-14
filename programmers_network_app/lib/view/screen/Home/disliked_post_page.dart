@@ -151,7 +151,7 @@ class _DisLikedPostsPageState extends State<DisLikedPostsPage> {
               return PostViewTrackerWrapper(
                 source: 'activities_disliked',
                 post: post,
-
+                isOwner: false,
                 child: PostCardWidget(
                   key: ValueKey('disliked -${post.id}'),
 

@@ -49,7 +49,7 @@ class CommentCard extends StatefulWidget {
     super.key,
 
     required this.comment,
-    this.isPostOwner = false, // ✅ مرة وحدة بس
+    this.isPostOwner = false,
 
     required this.targetUserId,
     required this.postId,
@@ -64,7 +64,6 @@ class CommentCard extends StatefulWidget {
     this.onEdit,
     this.onDelete,
 
-    // ✅ ضفتهن هون، كانوا ناقصين
     this.onPin,
     this.onUnpin,
     this.onMarkBest,
@@ -75,7 +74,7 @@ class CommentCard extends StatefulWidget {
 
     this.hasMoreReplies = false,
     this.isLoadingMoreReplies = false,
-    // ❌ حذفت التكرار يلي كان هون
+
     this.onLoadMoreReplies,
 
     this.depth = 0,
@@ -504,7 +503,7 @@ class _CommentCardState extends State<CommentCard> {
     final bool canManage = widget.isPostOwner;
     final bool isMine = widget.comment.isMyComment;
 
-    if (!canManage && !isMine) return; // ما في شي تعرضه
+    if (!canManage && !isMine) return;
 
     showModalBottomSheet(
       context: context,
@@ -512,7 +511,6 @@ class _CommentCardState extends State<CommentCard> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Edit: بس لصاحب التعليق
             if (isMine)
               ListTile(
                 leading: HugeIcon(
@@ -527,17 +525,31 @@ class _CommentCardState extends State<CommentCard> {
                 },
               ),
 
-            // Pin/Unpin: بس لصاحب البوست
             if (canManage)
               ListTile(
                 leading: HugeIcon(
-                  icon: HugeIcons.strokeRoundedPin,
+                  icon: widget.comment.isPinned
+                      ? HugeIcons.strokeRoundedPin02
+                      : HugeIcons.strokeRoundedPin,
                   size: 20,
-                  color: Colors.grey.shade700,
+                  color: widget.comment.isPinned
+                      ? const Color(0xFFF59E0B)
+                      : Colors.grey.shade700,
                 ),
-                title: Text(widget.comment.isPinned ? 'Unpin' : 'Pin'),
+                title: Text(
+                  widget.comment.isPinned ? 'Unpin' : 'Pin',
+                  style: TextStyle(
+                    color: widget.comment.isPinned
+                        ? const Color(0xFFF59E0B)
+                        : Colors.black87,
+                    fontWeight: widget.comment.isPinned
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                  ),
+                ),
                 onTap: () {
                   Navigator.pop(context);
+
                   if (widget.comment.isPinned) {
                     widget.onUnpin?.call(widget.comment);
                   } else {
@@ -546,19 +558,31 @@ class _CommentCardState extends State<CommentCard> {
                 },
               ),
 
-            // Best/Unbest: بس لصاحب البوست
             if (canManage)
               ListTile(
                 leading: HugeIcon(
-                  icon: HugeIcons.strokeRoundedStar,
+                  icon: widget.comment.isBest
+                      ? HugeIcons.strokeRoundedStarOff
+                      : HugeIcons.strokeRoundedStar,
                   size: 20,
-                  color: Colors.grey.shade700,
+                  color: widget.comment.isBest
+                      ? const Color(0xFF10B981)
+                      : Colors.grey.shade700,
                 ),
                 title: Text(
                   widget.comment.isBest ? 'Remove best answer' : 'Mark as best',
+                  style: TextStyle(
+                    color: widget.comment.isBest
+                        ? const Color(0xFF10B981)
+                        : Colors.black87,
+                    fontWeight: widget.comment.isBest
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                  ),
                 ),
                 onTap: () {
                   Navigator.pop(context);
+
                   if (widget.comment.isBest) {
                     widget.onUnmarkBest?.call(widget.comment);
                   } else {
@@ -567,7 +591,6 @@ class _CommentCardState extends State<CommentCard> {
                 },
               ),
 
-            // Delete: تعليقك انت (endpoint قديم) أو أي تعليق (صاحب البوست، manage)
             if (isMine || canManage)
               ListTile(
                 leading: HugeIcon(

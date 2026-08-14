@@ -150,7 +150,7 @@ class _CommentedPostsPageState extends State<CommentedPostsPage> {
               return PostViewTrackerWrapper(
                 source: 'activities_commented',
                 post: post,
-
+                isOwner: false,
                 child: PostCardWidget(
                   key: ValueKey('commented-${post.id}'),
 

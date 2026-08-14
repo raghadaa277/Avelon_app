@@ -12,9 +12,12 @@ import 'package:programmers_network_app/data/models/Home/posts/get_my_posts_mode
 import 'package:programmers_network_app/data/services/profile/close_friends_service.dart';
 import 'package:programmers_network_app/view/screen/Home/growth_page.dart';
 import 'package:programmers_network_app/view/screen/Home/overView_page.dart';
+import 'package:programmers_network_app/view/screen/Home/post_audience_insights_page.dart';
+import 'package:programmers_network_app/view/screen/Home/post_views_overview_page.dart';
 
 import 'package:programmers_network_app/view/screen/Home/posts/save_post_page.dart';
 import 'package:programmers_network_app/view/screen/Home/time_line_page.dart';
+import 'package:programmers_network_app/view/screen/Home/views_overview_page.dart';
 
 import 'package:programmers_network_app/view/screen/auth/activity_page.dart';
 import 'package:programmers_network_app/view/screen/profile/FollowScreen.dart';
@@ -26,6 +29,7 @@ import 'package:programmers_network_app/view/screen/profile/muted_users_screen.d
 import 'package:programmers_network_app/view/screen/profile/user_activity/user_activity_page.dart';
 import 'package:programmers_network_app/view/screen/profile/user_status_history/user_status_history_page.dart';
 import 'package:programmers_network_app/view/widget/Home/comment_widget.dart';
+import 'package:programmers_network_app/view/widget/Home/posts/confirm_delete_widget.dart';
 
 import 'package:programmers_network_app/view/widget/Home/search/searchPost/post_card_widget.dart';
 
@@ -587,6 +591,61 @@ class _PostsTabContentState extends State<PostsTabContent> {
               post: post,
               media: post.postMedia,
               isOwner: true,
+              onPostMenuSelected: (action) async {
+                switch (action) {
+                  case 'pin':
+                    await editPostController.pinnedPost(post.id);
+                    break;
+
+                  case 'edit':
+                    break;
+
+                  case 'archive':
+                    if (!Get.isRegistered<ArchivePostController>()) {
+                      Get.put(ArchivePostController());
+                    }
+
+                    await Get.find<ArchivePostController>().archivePost(
+                      post.id,
+                    );
+
+                    break;
+
+                  case 'post overview':
+                    Get.to(() => ViewsOverviewPage(postId: post.id));
+
+                    break;
+
+                  case 'audience':
+                    Get.to(() => PostAudienceInsightsPage(postId: post.id));
+
+                    break;
+
+                  case 'post views overview':
+                    Get.to(() => PostViewsOverviewPage(postId: post.id));
+
+                    break;
+
+                  case 'delete':
+                    Get.dialog(
+                      ConfirmDeleteDialog(
+                        onConfirm: () {
+                          if (!Get.isRegistered<ArchivePostController>()) {
+                            Get.put(ArchivePostController());
+                          }
+
+                          Get.find<ArchivePostController>().forceDeletePost(
+                            post.id,
+                            removeFromMyPosts: true,
+                          );
+                        },
+                      ),
+                      barrierDismissible: false,
+                    );
+
+                    break;
+                }
+              },
               onLike: () async {
                 _profileFocus.unfocus();
                 controller.updateReaction(postId: post.id, reaction: "like");
@@ -630,6 +689,7 @@ class _PostsTabContentState extends State<PostsTabContent> {
                   targetUserId: post.userId,
                   postId: post.id,
                 );
+                ctrl.update();
               },
               onTap: () {},
             );

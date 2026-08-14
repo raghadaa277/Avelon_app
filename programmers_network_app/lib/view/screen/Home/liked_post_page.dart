@@ -151,7 +151,7 @@ class _LikedPostsPageState extends State<LikedPostsPage> {
               return PostViewTrackerWrapper(
                 source: 'activities_liked',
                 post: post,
-
+                isOwner: true,
                 child: PostCardWidget(
                   key: ValueKey('liked -${post.id}'),
 

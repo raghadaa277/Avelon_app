@@ -88,6 +88,7 @@ class _OtherUserPostsTabState extends State<OtherUserPostsTab> {
 
             return PostViewTrackerWrapper(
               source: "profile",
+              isOwner: true,
               post: post,
               child: PostCardWidget(
                 key: ValueKey(post.id),

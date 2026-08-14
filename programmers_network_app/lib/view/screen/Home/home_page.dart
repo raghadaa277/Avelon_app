@@ -136,7 +136,7 @@ class _HomePageState extends State<HomePage> {
 
                   return PostViewTrackerWrapper(
                     source: "feed",
-
+                    isOwner: false,
                     post: post,
 
                     onSeen: () {

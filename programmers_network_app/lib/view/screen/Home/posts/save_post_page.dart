@@ -140,6 +140,7 @@ class _SavedPostsPageState extends State<SavedPostsPage> {
           return PostViewTrackerWrapper(
             source: "saved",
             post: post,
+            isOwner: true,
             child: PostCardWidget(
               key: ValueKey(post.id),
               post: post,
